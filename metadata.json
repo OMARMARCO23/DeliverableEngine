@@ -1,0 +1,6 @@
+{
+  "name": "Deliverable Engine",
+  "description": "Landing page de Deliverable Engine — Vos livrables de conseil en 10 minutes au lieu de 4 heures.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
