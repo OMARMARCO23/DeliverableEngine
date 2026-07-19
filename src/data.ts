@@ -7,6 +7,11 @@ import { FaqItem, PricingTier, DeliverableExample } from './types';
 
 export const FAQ_DATA: FaqItem[] = [
   {
+    id: 'why-not-chatgpt',
+    question: "Pourquoi pas ChatGPT ?",
+    answer: "ChatGPT et Claude sont d'excellents outils généralistes, mais ils manquent de spécialisation opérationnelle pour un consultant : ils ne respectent pas nativement vos templates Google Docs complexes, n'adoptent pas votre ton de voix d'expert de façon persistante, et imposent des copier-coller fastidieux. Deliverable Engine est une plateforme intégrée qui automatise l'ensemble de votre flux de rédaction de bout en bout, applique un contrôle qualité rigoureux par double agent IA, et garantit une étanchéité totale de vos données confidentielles (vos données ne sont jamais utilisées pour entraîner des modèles généraux)."
+  },
+  {
     id: 'data-security',
     question: 'Est-ce que mes données sont en sécurité ?',
     answer: "Vos données ne sont jamais stockées ni utilisées pour entraîner d'autres modèles d'IA généraux. Elles transitent uniquement par notre infrastructure sécurisée pour générer vos livrables de conseil et sont supprimées immédiatement après. Nous n'avons aucun accès direct à vos informations client confidentielles."
@@ -35,49 +40,47 @@ export const FAQ_DATA: FaqItem[] = [
 
 export const PRICING_DATA: PricingTier[] = [
   {
-    id: 'starter',
-    name: 'STARTER',
-    price: '297',
-    period: 'mois',
-    description: 'Idéal pour les consultants indépendants spécialisés qui ont un format de livrable récurrent.',
+    id: 'freelance',
+    name: 'Freelance',
+    priceMonthly: '49',
+    priceYearly: '490',
+    savingsYearly: '-17%',
+    target: 'Consultant indépendant (1 pers.)',
     features: [
-      '1 type de livrable au choix (ex: uniquement propales)',
-      'Génération jusqu\'à 20 documents / mois',
-      'Intégration de vos templates standards',
-      'Format de sortie : Google Docs prêt à l\'emploi',
-      'Support client réactif par email'
+      '50 livrables/mois',
+      '3 types de documents',
+      'Support e-mail'
     ],
-    ctaText: 'Choisir l\'offre Starter',
+    ctaText: 'Choisir l\'offre Freelance',
     recommended: false
   },
   {
     id: 'pro',
-    name: 'PRO',
-    price: '597',
-    period: 'mois',
-    description: 'La solution complète pour optimiser l\'ensemble de votre flux de rédaction et maximiser votre TJM.',
+    name: 'Pro',
+    priceMonthly: '149',
+    priceYearly: '1490',
+    savingsYearly: '-17%',
+    target: 'Consultant senior / petit cabinet (2-5 pers.)',
     features: [
-      'Tous les types de livrables inclus (propales, rapports, CR...)',
-      'Génération jusqu\'à 50 documents / mois',
-      'Modélisation avancée de vos templates & ton de voix',
-      'Format de sortie : Google Docs & export Notion',
-      'Support prioritaire par email + 1 appel de coaching / mois'
+      'Volume de documents illimité',
+      '5 types de documents',
+      'Templates personnalisables',
+      'Support prioritaire'
     ],
     ctaText: 'Choisir l\'offre Pro',
     recommended: true
   },
   {
-    id: 'enterprise',
-    name: 'ENTERPRISE',
-    price: 'Sur devis',
-    period: '',
-    description: 'Pour les cabinets de conseil structurés et les équipes cherchant une automatisation sur-mesure.',
+    id: 'entreprise',
+    name: 'Entreprise',
+    priceMonthly: 'Sur devis',
+    priceYearly: 'Sur devis',
+    target: 'Cabinets 5+ pers.',
     features: [
-      'Volume de documents illimité',
-      'Tous types de livrables et formats personnalisés',
-      'Création de templates 100% sur-mesure',
-      'Intégrations API dédiées (CRM, Notion, Slack, Drive)',
-      'Accompagnement & account manager dédié'
+      'SSO, API',
+      'Templates sur-mesure',
+      'Formation équipe',
+      'SLA'
     ],
     ctaText: 'Nous contacter',
     recommended: false
