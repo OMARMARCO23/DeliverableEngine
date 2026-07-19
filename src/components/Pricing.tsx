@@ -13,12 +13,14 @@ interface PricingProps {
 }
 
 export default function Pricing({ onOpenDemo }: PricingProps) {
+  const [isAnnual, setIsAnnual] = React.useState(false);
+
   return (
     <section id="pricing" className="py-20 lg:py-28 bg-slate-50 border-t border-gray-100">
       <div className="mx-auto max-w-7xl px-6 sm:px-8">
         
         {/* Header Section */}
-        <div className="text-center max-w-3xl mx-auto mb-16">
+        <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 mb-4">
             <Star className="h-3.5 w-3.5 text-indigo-600 fill-indigo-600" />
             Tarifs transparents
@@ -29,6 +31,35 @@ export default function Pricing({ onOpenDemo }: PricingProps) {
           <p className="mt-4 text-gray-500">
             Choisissez l'abonnement adapté à votre rythme d'activité et commencez à récupérer des heures précieuses dès cette semaine.
           </p>
+        </div>
+
+        {/* Billing cycle selector */}
+        <div className="flex justify-center mb-12">
+          <div className="relative flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200">
+            <button
+              onClick={() => setIsAnnual(false)}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                !isAnnual
+                  ? 'bg-white text-indigo-700 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-950'
+              }`}
+            >
+              Mensuel
+            </button>
+            <button
+              onClick={() => setIsAnnual(true)}
+              className={`relative px-4 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                isAnnual
+                  ? 'bg-white text-indigo-700 shadow-xs'
+                  : 'text-slate-600 hover:text-slate-950'
+              }`}
+            >
+              Annuel
+              <span className="inline-flex items-center rounded-full bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-700">
+                -17%
+              </span>
+            </button>
+          </div>
         </div>
 
         {/* Pricing Cards Grid */}
@@ -56,21 +87,38 @@ export default function Pricing({ onOpenDemo }: PricingProps) {
                   {tier.name}
                 </h3>
                 
+                <p className="mt-1.5 text-xs text-slate-500 font-semibold flex items-center gap-1.5">
+                  <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                  {tier.target}
+                </p>
+                
                 {/* Pricing amount */}
-                <div className="mt-4 flex items-baseline">
-                  {tier.price === 'Sur devis' ? (
-                    <span className="text-3xl font-extrabold font-display text-gray-900">{tier.price}</span>
+                <div className="mt-4 flex flex-col justify-center min-h-[64px]">
+                  {tier.priceMonthly === 'Sur devis' ? (
+                    <span className="text-3xl font-extrabold font-display text-gray-900">{tier.priceMonthly}</span>
                   ) : (
                     <>
-                      <span className="text-4xl font-extrabold font-display tracking-tight text-gray-900">{tier.price}€</span>
-                      <span className="ml-1 text-sm font-medium text-gray-500">/{tier.period}</span>
+                      <div className="flex items-baseline">
+                        <span className="text-4xl font-extrabold font-display tracking-tight text-gray-900">
+                          {isAnnual ? `${tier.priceYearly}€` : `${tier.priceMonthly}€`}
+                        </span>
+                        <span className="ml-1 text-sm font-medium text-gray-500">
+                          /{isAnnual ? 'an' : 'mois'}
+                        </span>
+                      </div>
+                      {isAnnual && tier.savingsYearly && (
+                        <span className="mt-1 text-[10px] font-semibold text-emerald-600">
+                          Soit {tier.priceYearly}€ payés annuellement (économisez 17%)
+                        </span>
+                      )}
+                      {!isAnnual && tier.priceYearly && (
+                        <span className="mt-1 text-[10px] text-gray-400">
+                          Soit {tier.priceYearly}€/an en paiement annuel
+                        </span>
+                      )}
                     </>
                   )}
                 </div>
-
-                <p className="mt-3 text-xs text-gray-500 leading-relaxed min-h-[40px]">
-                  {tier.description}
-                </p>
 
                 {/* Features list */}
                 <ul className="mt-6 border-t border-gray-100 pt-6 space-y-3.5">
