@@ -12,9 +12,10 @@ export interface FaqItem {
 export interface PricingTier {
   id: string;
   name: string;
-  price: string;
-  period: string;
-  description: string;
+  priceMonthly: string;
+  priceYearly?: string;
+  savingsYearly?: string;
+  target: string;
   features: string[];
   ctaText: string;
   recommended: boolean;
