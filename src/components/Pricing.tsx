@@ -9,10 +9,11 @@ import { Check, Star, ShieldCheck, TrendingUp, AlertCircle } from 'lucide-react'
 import { PRICING_DATA } from '../data';
 
 interface PricingProps {
+  onOpenTrial: (planId?: string) => void;
   onOpenDemo: (planId?: string) => void;
 }
 
-export default function Pricing({ onOpenDemo }: PricingProps) {
+export default function Pricing({ onOpenTrial, onOpenDemo }: PricingProps) {
   const [isAnnual, setIsAnnual] = React.useState(false);
 
   return (
@@ -133,9 +134,9 @@ export default function Pricing({ onOpenDemo }: PricingProps) {
                 </ul>
               </div>
 
-              {/* Action Button */}
+               {/* Action Button */}
               <button
-                onClick={() => onOpenDemo(tier.id)}
+                onClick={() => tier.id === 'entreprise' ? onOpenDemo(tier.id) : onOpenTrial(tier.id)}
                 className={`mt-8 w-full rounded-xl py-3 text-xs font-bold transition-all active:scale-[0.98] cursor-pointer ${
                   tier.recommended
                     ? 'bg-indigo-600 text-white shadow-md hover:bg-indigo-700 hover:shadow-lg'
@@ -144,6 +145,11 @@ export default function Pricing({ onOpenDemo }: PricingProps) {
               >
                 {tier.ctaText}
               </button>
+              {tier.id !== 'entreprise' && (
+                <p className="text-[10px] text-center text-slate-400 mt-2 font-medium">
+                  Essai gratuit 14j — sans carte bancaire
+                </p>
+              )}
             </motion.div>
           ))}
         </div>
