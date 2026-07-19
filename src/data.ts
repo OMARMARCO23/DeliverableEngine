@@ -8,33 +8,28 @@ import { FaqItem, PricingTier, DeliverableExample } from './types';
 export const FAQ_DATA: FaqItem[] = [
   {
     id: 'why-not-chatgpt',
-    question: "Pourquoi pas ChatGPT ?",
-    answer: "ChatGPT et Claude sont d'excellents outils généralistes, mais ils manquent de spécialisation opérationnelle pour un consultant : ils ne respectent pas nativement vos templates Google Docs complexes, n'adoptent pas votre ton de voix d'expert de façon persistante, et imposent des copier-coller fastidieux. Deliverable Engine est une plateforme intégrée qui automatise l'ensemble de votre flux de rédaction de bout en bout, applique un contrôle qualité rigoureux par double agent IA, et garantit une étanchéité totale de vos données confidentielles (vos données ne sont jamais utilisées pour entraîner des modèles généraux)."
+    question: "Pourquoi pas simplement utiliser ChatGPT, Claude ou Gemini ?",
+    answer: "ChatGPT et Claude sont des outils généraux. Ils produisent du contenu correct, mais pas VOS contenus. Avec Deliverable Engine, l'IA apprend votre ton de voix, vos structures habituelles et vos grilles de templates métiers — pas un ton générique de consultant McKinsey. Vous ne perdez pas 30 minutes à re-rédiger ce que l'IA a généré. Résultat : un document prêt à envoyer en 10 minutes, pas en 1h30 de corrections. La différence en un chiffre : nos utilisateurs passent en moyenne 8 minutes de relecture finale contre 45 minutes avec ChatGPT."
   },
   {
     id: 'data-security',
-    question: 'Est-ce que mes données sont en sécurité ?',
-    answer: "Vos données ne sont jamais stockées ni utilisées pour entraîner d'autres modèles d'IA généraux. Elles transitent uniquement par notre infrastructure sécurisée pour générer vos livrables de conseil et sont supprimées immédiatement après. Nous n'avons aucun accès direct à vos informations client confidentielles."
+    question: "Mes données clients sont-elles vraiment sécurisées ?",
+    answer: "Absolument. Trois garanties : 1) Hébergement Europe — vos données ne quittent jamais l'Union Européenne. 2) Aucun entraînement — vos documents ne servent jamais à entraîner des modèles publics. 3) Accès sécurisé — liens Google Docs avec permissions restreintes, logs traçables. Nous sommes en cours de certification RGPD complète et DPA (Data Processing Agreement) pour les cabinets."
   },
   {
-    id: 'sectors',
-    question: 'Est-ce que ça marche pour mon domaine ?',
-    answer: "Absolument. Si vous produisez des propositions commerciales (propales), des rapports d'audit, des livrables de conseil stratégique ou des comptes-rendus de réunion, notre système s'adapte à vous. Grâce à l'apprentissage de votre ton, de votre style d'écriture et de vos structures de templates, le rendu final est indistinguable d'un document rédigé par vos soins."
+    id: 'custom-templates',
+    question: "Puis-je personnaliser les templates avec ma charte graphique ?",
+    answer: "Oui, et c'est le cœur du produit. Lors de l'onboarding, vous nous fournissez 2-3 exemples de vos livrables existants (propales, rapports, CR). Notre système analyse votre structure, votre vocabulaire, votre ton et vos sections récurrentes. Résultat : chaque document généré respecte votre méthodologie propre. Pas de \"copier-coller générique\". Plan Pro et Entreprise : personnalisation avancée avec variables dynamiques (logo client, charte couleurs, en-têtes personnalisés)."
   },
   {
-    id: 'quality',
-    question: 'Est-ce que le contenu généré est vraiment qualitatif ?',
-    answer: "Oui, car nous utilisons une architecture à double agent IA : un premier agent rédige le document en se basant sur vos inputs et votre méthodologie, tandis qu'un second agent (le 'Superviseur') relit, affine le style, corrige les imperfections et applique vos standards de qualité. Vous gardez ensuite le contrôle final pour relire et valider."
+    id: 'not-satisfied',
+    question: "Que se passe-t-il si le livrable généré ne me convient pas ?",
+    answer: "Deux lignes de défense : 1) Agent superviseur — un second agent IA relit et critique le document avant livraison (structure, cohérence, ton). 2) Garantie 30 jours — si le système ne s'adapte pas à vos templates ou ne vous fait pas gagner de temps dès le premier mois, remboursement intégral. Un simple email suffit. En pratique, nos utilisateurs modifient moins de 10% du contenu généré."
   },
   {
-    id: 'onboarding-time',
-    question: 'Combien de temps pour être opérationnel ?',
-    answer: "Seulement 5 jours ouvrés. Dès votre souscription, notre équipe prend en charge la configuration de vos modèles, de votre ton de voix et de vos templates types. Nous réalisons des tests de calibrage et vous livrons votre Deliverable Engine personnalisé le 5ème jour, prêt à l'emploi."
-  },
-  {
-    id: 'cancellation',
-    question: 'Et si je veux annuler ou si je ne suis pas satisfait ?',
-    answer: "Notre service est sans engagement : vous pouvez suspendre ou résilier votre abonnement à tout moment. De plus, nous offrons une garantie 'Satisfait ou remboursé' de 30 jours : si l'outil ne vous fait pas gagner un temps précieux dès le premier mois, un simple email suffit pour obtenir un remboursement intégral."
+    id: 'technical-expertise',
+    question: "Faut-il être expert en IA ou en tech pour l'utiliser ?",
+    answer: "Non. L'interface est un formulaire simple — comme remplir un brief client. Vous saisissez : nom du client, contexte, objectifs, données brutes. L'IA fait le reste. Aucun prompt engineering, aucune connaissance technique requise. Temps moyen d'onboarding : 15 minutes. Premier livrable généré : 10 minutes après."
   }
 ];
 
