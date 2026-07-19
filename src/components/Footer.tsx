@@ -7,10 +7,11 @@ import React from 'react';
 import { ArrowRight, Sparkles } from 'lucide-react';
 
 interface FooterProps {
+  onOpenTrial: () => void;
   onOpenDemo: () => void;
 }
 
-export default function Footer({ onOpenDemo }: FooterProps) {
+export default function Footer({ onOpenTrial, onOpenDemo }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -31,22 +32,31 @@ export default function Footer({ onOpenDemo }: FooterProps) {
         </h2>
 
         <p className="mt-6 text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-          Réservez un appel de 15 minutes. On configure le système en live avec VOS vrais documents d'exemples et vos tonalités favorites.
+          Commencez dès aujourd'hui à automatiser vos propositions commerciales, vos rapports d'audit et vos comptes-rendus de réunion au format Google Docs avec notre double agent IA de confiance.
         </p>
 
         {/* CTA Button */}
         <div className="mt-10 flex flex-col items-center gap-3">
           <button
-            onClick={onOpenDemo}
+            onClick={onOpenTrial}
             className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-8 py-4 text-sm font-bold text-white shadow-sm shadow-indigo-500/20 transition-all active:scale-[0.98] cursor-pointer"
           >
-            Réserver ma démo gratuite
+            Démarrer mon essai gratuit (14 jours)
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
-          <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 font-medium">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-            Essai gratuit 14 jours — pas de carte requise
-          </p>
+          
+          <div className="flex flex-col items-center gap-2 mt-2">
+            <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 font-medium">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Essai gratuit 14 jours — pas de carte requise
+            </p>
+            <button
+              onClick={onOpenDemo}
+              className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 cursor-pointer transition-colors mt-1"
+            >
+              Ou réserver un appel de démo de 15 min en direct
+            </button>
+          </div>
         </div>
 
         <p className="mt-6 text-xs text-slate-400 font-mono">
