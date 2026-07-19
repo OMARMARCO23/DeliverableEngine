@@ -19,6 +19,7 @@ import Footer from './components/Footer';
 
 // Modals
 import DemoModal from './components/DemoModal';
+import TrialModal from './components/TrialModal';
 import VideoModal from './components/VideoModal';
 import DocViewerModal from './components/DocViewerModal';
 
@@ -29,6 +30,10 @@ export default function App() {
   // Modal states
   const [isDemoOpen, setIsDemoOpen] = useState(false);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
+  
+  const [isTrialOpen, setIsTrialOpen] = useState(false);
+  const [selectedTrialPlanId, setSelectedTrialPlanId] = useState<string | null>(null);
+
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   
   // Document reader states
@@ -41,6 +46,12 @@ export default function App() {
     setIsDemoOpen(true);
   };
 
+  // Trigger trial with specific plan
+  const handleOpenTrialWithPlan = (planId?: string) => {
+    setSelectedTrialPlanId(planId || null);
+    setIsTrialOpen(true);
+  };
+
   // Open Document Viewer
   const handleViewDocument = (doc: DeliverableExample) => {
     setActiveDoc(doc);
@@ -50,11 +61,15 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-50 text-gray-800 font-sans selection:bg-blue-100 selection:text-blue-900 scroll-smooth">
       {/* 1. Header Navigation Bar */}
-      <Header onOpenDemo={() => handleOpenDemoWithPlan()} />
+      <Header
+        onOpenTrial={() => handleOpenTrialWithPlan()}
+        onOpenDemo={() => handleOpenDemoWithPlan()}
+      />
 
       <main>
         {/* 2. BLOC 1: Hero Section */}
         <Hero
+          onOpenTrial={() => handleOpenTrialWithPlan()}
           onOpenDemo={() => handleOpenDemoWithPlan()}
           onOpenVideo={() => setIsVideoOpen(true)}
         />
@@ -81,17 +96,33 @@ export default function App() {
         <Testimonials />
 
         {/* 8. BLOC 7: Pricing Section (3 Tiers with Value Anchoring) */}
-        <Pricing onOpenDemo={handleOpenDemoWithPlan} />
+        <Pricing
+          onOpenTrial={handleOpenTrialWithPlan}
+          onOpenDemo={handleOpenDemoWithPlan}
+        />
 
         {/* 9. BLOC 8: FAQ Accordion */}
         <FAQ />
       </main>
 
       {/* 10. BLOC 9 & FOOTER: Final CTA + Footer Details */}
-      <Footer onOpenDemo={() => handleOpenDemoWithPlan()} />
+      <Footer
+        onOpenTrial={() => handleOpenTrialWithPlan()}
+        onOpenDemo={() => handleOpenDemoWithPlan()}
+      />
 
       {/* --- Interactive Modals --- */}
       
+      {/* 14-day Free Trial Form Overlay */}
+      <TrialModal
+        isOpen={isTrialOpen}
+        onClose={() => {
+          setIsTrialOpen(false);
+          setSelectedTrialPlanId(null);
+        }}
+        selectedPlanId={selectedTrialPlanId}
+      />
+
       {/* Simulated Calendly Appointment Booking Scheduler */}
       <DemoModal
         isOpen={isDemoOpen}
