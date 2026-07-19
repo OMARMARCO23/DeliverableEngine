@@ -13,6 +13,23 @@ interface HeroProps {
 }
 
 export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
+  const [consultantCount, setConsultantCount] = React.useState(1350);
+
+  React.useEffect(() => {
+    let start = 1350;
+    const end = 1428;
+    const duration = 1500;
+    const stepTime = Math.max(Math.floor(duration / (end - start)), 15);
+    const timer = setInterval(() => {
+      start += 1;
+      setConsultantCount(start);
+      if (start >= end) {
+        clearInterval(timer);
+      }
+    }, stepTime);
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <section className="relative overflow-hidden bg-radial from-slate-50 to-white py-20 lg:py-28">
       {/* Decorative background grid and orbs */}
@@ -65,23 +82,29 @@ export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="mt-8 flex flex-col sm:flex-row gap-4 items-stretch sm:items-center"
+              className="mt-8 flex flex-col gap-3"
             >
-              <button
-                onClick={onOpenDemo}
-                className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98] cursor-pointer"
-              >
-                Réserver ma démo gratuite
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </button>
+              <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+                <button
+                  onClick={onOpenDemo}
+                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  Réserver ma démo gratuite
+                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+                </button>
 
-              <button
-                onClick={onOpenVideo}
-                className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all active:scale-[0.98] cursor-pointer"
-              >
-                <Play className="h-4 w-4 text-indigo-600 fill-indigo-600" />
-                Voir la démo vidéo
-              </button>
+                <button
+                  onClick={onOpenVideo}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all active:scale-[0.98] cursor-pointer"
+                >
+                  <Play className="h-4 w-4 text-indigo-600 fill-indigo-600" />
+                  Voir la démo vidéo
+                </button>
+              </div>
+              <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium mt-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Essai gratuit 14 jours — pas de carte requise
+              </p>
             </motion.div>
 
             {/* Social Proof */}
@@ -101,7 +124,7 @@ export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
                 <div className="flex items-center gap-1 text-amber-500 font-medium">
                   ★★★★★ <span className="text-gray-900 font-semibold ml-1">4.9/5</span>
                 </div>
-                <p className="mt-0.5">Déjà adopté par <strong className="text-gray-900">142 consultants indépendants</strong> en France</p>
+                <p className="mt-0.5">Plus de <strong className="text-gray-900 font-bold font-mono text-indigo-600 bg-indigo-50/50 px-1 py-0.5 rounded border border-indigo-100">{consultantCount}</strong> consultants nous font confiance</p>
               </div>
             </motion.div>
           </div>
