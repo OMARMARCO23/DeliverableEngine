@@ -8,12 +8,15 @@ import { motion } from 'motion/react';
 import { Play, ArrowRight, CheckCircle2, FileText, Send, Sparkles, Wand2 } from 'lucide-react';
 
 interface HeroProps {
+  onOpenTrial: () => void;
   onOpenDemo: () => void;
   onOpenVideo: () => void;
 }
 
-export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
+export default function Hero({ onOpenTrial, onOpenDemo, onOpenVideo }: HeroProps) {
   const [consultantCount, setConsultantCount] = React.useState(1350);
+  const [leadEmail, setLeadEmail] = React.useState('');
+  const [leadSubmitted, setLeadSubmitted] = React.useState(false);
 
   React.useEffect(() => {
     let start = 1350;
@@ -29,6 +32,13 @@ export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
     }, stepTime);
     return () => clearInterval(timer);
   }, []);
+
+  const handleLeadSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (leadEmail.trim()) {
+      setLeadSubmitted(true);
+    }
+  };
 
   return (
     <section className="relative overflow-hidden bg-radial from-slate-50 to-white py-20 lg:py-28">
@@ -86,25 +96,35 @@ export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
             >
               <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
                 <button
-                  onClick={onOpenDemo}
-                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-semibold text-white shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98] cursor-pointer"
+                  onClick={onOpenTrial}
+                  className="group inline-flex items-center justify-center gap-2 rounded-xl bg-indigo-600 px-6 py-3.5 text-sm font-bold text-white shadow-md shadow-indigo-200 hover:bg-indigo-700 transition-all active:scale-[0.98] cursor-pointer"
                 >
-                  Réserver ma démo gratuite
+                  Démarrer l'essai gratuit 14 jours
                   <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                 </button>
 
                 <button
                   onClick={onOpenVideo}
-                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-50 transition-all active:scale-[0.98] cursor-pointer"
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-sm hover:bg-slate-55 transition-all active:scale-[0.98] cursor-pointer"
                 >
                   <Play className="h-4 w-4 text-indigo-600 fill-indigo-600" />
                   Voir la démo vidéo
                 </button>
               </div>
-              <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium mt-1">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                Essai gratuit 14 jours — pas de carte requise
-              </p>
+
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-1">
+                <p className="text-[11px] text-slate-500 flex items-center gap-1.5 font-medium">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  Pas de carte bancaire requise
+                </p>
+                <span className="hidden sm:inline text-slate-300 text-[11px]">•</span>
+                <button
+                  onClick={onOpenDemo}
+                  className="text-[11px] font-bold text-indigo-600 hover:text-indigo-700 underline underline-offset-2 transition-colors cursor-pointer"
+                >
+                  Préférer un appel de démo de 15 min
+                </button>
+              </div>
             </motion.div>
 
             {/* Social Proof */}
@@ -112,20 +132,65 @@ export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.4 }}
-              className="mt-10 flex items-center gap-3.5 border-t border-gray-100 pt-8"
+              className="mt-10 flex flex-col sm:flex-row sm:items-center gap-6 border-t border-gray-100 pt-8"
             >
-              <div className="flex -space-x-2">
-                <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
-                <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
-                <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
-                <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
-              </div>
-              <div className="text-xs text-gray-500">
-                <div className="flex items-center gap-1 text-amber-500 font-medium">
-                  ★★★★★ <span className="text-gray-900 font-semibold ml-1">4.9/5</span>
+              <div className="flex items-center gap-3.5">
+                <div className="flex -space-x-2">
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
+                  <img className="inline-block h-8 w-8 rounded-full ring-2 ring-white" src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=120" alt="Consultant portrait" referrerPolicy="no-referrer" />
                 </div>
-                <p className="mt-0.5">Plus de <strong className="text-gray-900 font-bold font-mono text-indigo-600 bg-indigo-50/50 px-1 py-0.5 rounded border border-indigo-100">{consultantCount}</strong> consultants nous font confiance</p>
+                <div className="text-xs text-gray-500">
+                  <div className="flex items-center gap-1 text-amber-500 font-medium">
+                    ★★★★★ <span className="text-gray-900 font-semibold ml-1">4.9/5</span>
+                  </div>
+                  <p className="mt-0.5">Plus de <strong className="text-gray-900 font-bold font-mono text-indigo-600 bg-indigo-50/50 px-1 py-0.5 rounded border border-indigo-100">{consultantCount}</strong> consultants nous font confiance</p>
+                </div>
               </div>
+            </motion.div>
+
+            {/* Email Lead Capture Block */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              className="mt-8 p-4 rounded-xl border border-slate-200 bg-slate-50 max-w-md shadow-xs relative"
+            >
+              {!leadSubmitted ? (
+                <form onSubmit={handleLeadSubmit} className="space-y-2.5">
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+                    <FileText className="h-4 w-4 text-indigo-600" />
+                    <span>Offert : Recevez le template de propale qui convertit à 80%</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      required
+                      placeholder="Votre e-mail pro (ex: jean@conseil.fr)"
+                      value={leadEmail}
+                      onChange={(e) => setLeadEmail(e.target.value)}
+                      className="flex-1 text-xs border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                    />
+                    <button
+                      type="submit"
+                      className="bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] px-3.5 py-2 rounded-lg transition-colors cursor-pointer"
+                    >
+                      Recevoir
+                    </button>
+                  </div>
+                </form>
+              ) : (
+                <div className="flex items-start gap-2.5 text-xs text-slate-700">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold text-slate-900">C'est parti !</p>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Le template de proposition commerciale ultra-optimisé a été envoyé à <strong>{leadEmail}</strong>. Bon téléchargement !
+                    </p>
+                  </div>
+                </div>
+              )}
             </motion.div>
           </div>
 
@@ -219,6 +284,58 @@ export default function Hero({ onOpenDemo, onOpenVideo }: HeroProps) {
           </div>
 
         </div>
+
+        {/* Security & Compliance Trust Ribbon */}
+        <div className="mt-16 sm:mt-24 pt-8 border-t border-slate-200/60">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 items-center">
+            <div className="text-left md:col-span-1">
+              <span className="text-[10px] font-mono font-bold tracking-wider text-slate-400 uppercase">SÉCURITÉ & CONFORMITÉ</span>
+              <h4 className="text-sm font-extrabold text-slate-800 mt-1">Souveraineté & protection totale</h4>
+            </div>
+            
+            <div className="md:col-span-3 grid grid-cols-1 sm:grid-cols-3 gap-6">
+              {/* Item 1 */}
+              <div className="flex items-start gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 002 2h1.5a3 3 0 003-3V6.7m-2 9h-1.262a2 2 0 00-1.213.414l-1.166.875a2 2 0 00-.696 1.487v.183M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+                  </svg>
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold text-slate-800">Hébergement 100% Europe</h5>
+                  <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">Serveurs souverains en France / Allemagne. Isolation complète.</p>
+                </div>
+              </div>
+
+              {/* Item 2 */}
+              <div className="flex items-start gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 border border-indigo-100">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                  </svg>
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold text-slate-800">Conformité RGPD & DPA</h5>
+                  <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">Données étanches. Aucun usage de vos documents pour entraîner des modèles IA.</p>
+                </div>
+              </div>
+
+              {/* Item 3 */}
+              <div className="flex items-start gap-2.5">
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <div>
+                  <h5 className="text-xs font-bold text-slate-800">SOC 2 Type II</h5>
+                  <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">Certification rigoureuse en cours d'audit par un cabinet indépendant.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );
