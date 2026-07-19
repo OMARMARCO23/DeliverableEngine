@@ -7,10 +7,12 @@ import React, { useState } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Problem from './components/Problem';
+import BeforeAfter from './components/BeforeAfter';
 import CostCalculator from './components/CostCalculator';
 import Solution from './components/Solution';
 import HowItWorks from './components/HowItWorks';
 import DeliverablesShowcase from './components/DeliverablesShowcase';
+import Testimonials from './components/Testimonials';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
@@ -60,6 +62,9 @@ export default function App() {
         {/* 3. BLOC 2: Problem Section */}
         <Problem />
 
+        {/* 3.5 BLOC 2.5: Before / After Comparison */}
+        <BeforeAfter />
+
         {/* 4. BLOC 3: Cost of the Problem (Interactive Visual Calculator) */}
         <CostCalculator />
 
@@ -71,6 +76,9 @@ export default function App() {
 
         {/* 7. BLOC 6: Deliverables Showcase (3 side-by-side with viewer) */}
         <DeliverablesShowcase onViewDoc={handleViewDocument} />
+
+        {/* 7.5 BLOC 6.5: Testimonials with detailed quantitative results */}
+        <Testimonials />
 
         {/* 8. BLOC 7: Pricing Section (3 Tiers with Value Anchoring) */}
         <Pricing onOpenDemo={handleOpenDemoWithPlan} />
