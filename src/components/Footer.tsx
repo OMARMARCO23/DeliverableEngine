@@ -35,7 +35,7 @@ export default function Footer({ onOpenDemo }: FooterProps) {
         </p>
 
         {/* CTA Button */}
-        <div className="mt-10">
+        <div className="mt-10 flex flex-col items-center gap-3">
           <button
             onClick={onOpenDemo}
             className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-8 py-4 text-sm font-bold text-white shadow-sm shadow-indigo-500/20 transition-all active:scale-[0.98] cursor-pointer"
@@ -43,6 +43,10 @@ export default function Footer({ onOpenDemo }: FooterProps) {
             Réserver ma démo gratuite
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
           </button>
+          <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 font-medium">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Essai gratuit 14 jours — pas de carte requise
+          </p>
         </div>
 
         <p className="mt-6 text-xs text-slate-400 font-mono">
