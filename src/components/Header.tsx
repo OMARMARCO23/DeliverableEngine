@@ -6,10 +6,11 @@
 import React from 'react';
 
 interface HeaderProps {
+  onOpenTrial: () => void;
   onOpenDemo: () => void;
 }
 
-export default function Header({ onOpenDemo }: HeaderProps) {
+export default function Header({ onOpenTrial, onOpenDemo }: HeaderProps) {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 sm:px-8">
@@ -36,12 +37,20 @@ export default function Header({ onOpenDemo }: HeaderProps) {
           <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">FAQ</a>
         </nav>
 
-        <button
-          onClick={onOpenDemo}
-          className="px-5 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200"
-        >
-          Réserver ma démo gratuite →
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={onOpenDemo}
+            className="hidden sm:block text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+          >
+            Réserver démo
+          </button>
+          <button
+            onClick={onOpenTrial}
+            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200 cursor-pointer"
+          >
+            Essai gratuit 14j
+          </button>
+        </div>
       </div>
     </header>
   );
