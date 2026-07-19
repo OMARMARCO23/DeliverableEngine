@@ -36,13 +36,13 @@ export default function CostCalculator() {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 text-xs font-semibold text-indigo-400 mb-4">
             <Calculator className="h-3.5 w-3.5" />
-            Analyse d'impact financier
+            Calculatrice ROI Interactive
           </div>
-          <h2 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Ce que la rédaction vous <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-300">coûte vraiment</span>
+          <h2 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
+            Combien de temps <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-300">perdez-vous par semaine ?</span>
           </h2>
           <p className="mt-4 text-gray-400">
-            Ajustez vos paramètres ci-dessous pour calculer en temps réel l'impact financier de la rédaction manuelle sur votre activité de conseil.
+            Ajustez vos paramètres ci-dessous pour calculer en temps réel l'impact financier de la rédaction manuelle et votre retour sur investissement immédiat avec Deliverable Engine.
           </p>
         </div>
 
