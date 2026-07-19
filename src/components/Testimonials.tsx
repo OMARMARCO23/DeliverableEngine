@@ -130,6 +130,11 @@ export default function Testimonials() {
           ))}
         </div>
 
+        {/* Discreet mention */}
+        <div className="mt-10 text-center text-[11px] text-slate-400/90 font-medium italic">
+          * Photos d'illustration, noms et détails modifiés pour garantir la stricte confidentialité de nos clients.
+        </div>
+
       </div>
     </section>
   );
