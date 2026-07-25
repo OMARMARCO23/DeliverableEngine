@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import Solution from './components/Solution';
@@ -13,17 +13,37 @@ import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 
-// Modals
+// Modals & Pages
 import RfpFormWizard from './components/RfpFormWizard';
 import VideoModal from './components/VideoModal';
+import MerciPage from './components/MerciPage';
 
 export default function App() {
+  const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentPath(window.location.pathname);
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const handleGoHome = () => {
+    window.history.pushState({}, '', '/');
+    setCurrentPath('/');
+  };
 
   const handleOpenGenerate = () => {
     setIsGenerateModalOpen(true);
   };
+
+  // Render Merci Page if URL is /merci or #merci
+  if (currentPath === '/merci' || currentPath === '/merci/' || window.location.hash === '#merci') {
+    return <MerciPage onGoHome={handleGoHome} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-[#B8935A]/20 selection:text-[#1B263B] scroll-smooth">
