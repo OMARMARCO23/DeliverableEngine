@@ -1,8 +1,30 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-serif: "Georgia", "Playfair Display", ui-serif, serif;
+  --font-display: "Georgia", "Playfair Display", ui-serif, serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-navy-950: #0f1726;
+  --color-navy-900: #1B263B;
+  --color-navy-800: #273754;
+  --color-navy-700: #33486c;
+  --color-gold-500: #B8935A;
+  --color-gold-600: #9e7b45;
+  --color-gold-400: #cfab72;
+  --color-gold-100: #f7f2e8;
+  --color-gold-50: #fbf9f4;
 }
+
+body {
+  font-family: var(--font-sans);
+  background-color: #fafafa;
+  color: #1e293b;
+}
+
+.font-serif-heading {
+  font-family: "Georgia", "Playfair Display", ui-serif, serif;
+}
+
