@@ -174,10 +174,19 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         }).catch((err) => console.warn('n8n Webhook POST attempt:', err));
       }
 
-      // Check for Stripe Link or simulate Stripe redirect
-      const stripeUrl = envMeta?.VITE_STRIPE_PAYMENT_LINK;
-      if (stripeUrl) {
-        window.location.href = stripeUrl;
+      // Check for Lemon Squeezy or Stripe Link or generic payment link
+      const paymentUrl = envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK || envMeta?.VITE_PAYMENT_LINK || envMeta?.VITE_STRIPE_PAYMENT_LINK;
+      if (paymentUrl) {
+        let checkoutRedirect = paymentUrl;
+        // Append prefilled email if lemon squeezy or standard checkout link
+        if (formData.email) {
+          const hasParams = checkoutRedirect.includes('?');
+          const emailParam = checkoutRedirect.includes('lemonsqueezy')
+            ? `checkout[email]=${encodeURIComponent(formData.email)}`
+            : `prefilled_email=${encodeURIComponent(formData.email)}`;
+          checkoutRedirect += `${hasParams ? '&' : '?'}${emailParam}`;
+        }
+        window.location.href = checkoutRedirect;
       } else {
         // Show success confirmation screen
         setTimeout(() => {
@@ -784,7 +793,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
               ) : (
                 <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3 w-full sm:w-auto ml-auto">
                   <div className="text-right text-[11px] text-slate-500 hidden sm:block">
-                    <span>Paiement sécurisé via Stripe · Aucun abonnement</span>
+                    <span>Paiement 100% sécurisé · Aucun abonnement</span>
                   </div>
                   <button
                     type="button"
