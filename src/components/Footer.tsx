@@ -98,7 +98,7 @@ export default function Footer({ onOpenGenerate }: FooterProps) {
           
           {/* Discrete privacy notice */}
           <p className="text-[11px] text-slate-500 italic text-center md:text-right">
-            Photos d'illustration, noms modifiés pour la confidentialité
+            
           </p>
 
         </div>
