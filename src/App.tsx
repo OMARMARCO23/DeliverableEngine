@@ -14,7 +14,7 @@ import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 
 // Modals
-import TrialModal from './components/TrialModal';
+import RfpFormWizard from './components/RfpFormWizard';
 import VideoModal from './components/VideoModal';
 
 export default function App() {
@@ -57,7 +57,7 @@ export default function App() {
       <Footer onOpenGenerate={handleOpenGenerate} />
 
       {/* --- Interactive Modals --- */}
-      <TrialModal
+      <RfpFormWizard
         isOpen={isGenerateModalOpen}
         onClose={() => setIsGenerateModalOpen(false)}
       />
