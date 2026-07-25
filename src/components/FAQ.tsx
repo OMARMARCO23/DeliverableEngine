@@ -9,27 +9,27 @@ import { HelpCircle, ChevronDown, MessageSquare } from 'lucide-react';
 import { FAQ_DATA } from '../data';
 
 export default function FAQ() {
-  const [openId, setOpenId] = useState<string | null>(null);
+  const [openId, setOpenId] = useState<string | null>('faq-1');
 
   const toggleItem = (id: string) => {
     setOpenId(openId === id ? null : id);
   };
 
   return (
-    <section id="faq" className="py-20 lg:py-28 bg-white">
-      <div className="mx-auto max-w-4xl px-6 sm:px-8">
+    <section id="faq" className="py-16 sm:py-24 bg-slate-50 border-b border-slate-200">
+      <div className="mx-auto max-w-4xl px-4 sm:px-8">
         
         {/* Header Block */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 mb-4">
-            <HelpCircle className="h-3.5 w-3.5" />
-            Une question ?
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/10 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
+            <HelpCircle className="h-3.5 w-3.5 text-[#B8935A]" />
+            Questions & Réponses
           </div>
-          <h2 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+          <h2 className="font-serif-heading text-3xl sm:text-4xl font-extrabold text-[#1B263B]">
             Questions fréquentes
           </h2>
-          <p className="mt-4 text-gray-500">
-            Tout ce qu'il faut savoir sur l'agent IA d'écriture Deliverable Engine, la sécurité de vos données, et le processus d'onboarding.
+          <p className="mt-4 text-slate-600 text-sm font-sans">
+            Toutes les réponses pour comprendre comment notre IA génère des propositions uniques et sécurisées.
           </p>
         </div>
 
@@ -42,21 +42,21 @@ export default function FAQ() {
                 key={faq.id}
                 className={`border rounded-2xl transition-all ${
                   isOpen
-                    ? 'border-indigo-500 bg-indigo-50/10 shadow-sm shadow-indigo-50'
+                    ? 'border-[#B8935A] bg-white shadow-md'
                     : 'border-slate-200 hover:border-slate-300 bg-white'
                 }`}
               >
                 <button
                   onClick={() => toggleItem(faq.id)}
-                  className="w-full flex items-center justify-between p-5 text-left font-display text-sm font-bold text-gray-900 cursor-pointer select-none"
+                  className="w-full flex items-center justify-between p-5 sm:p-6 text-left font-serif-heading text-base sm:text-lg font-bold text-[#1B263B] cursor-pointer select-none"
                 >
-                  <span className="flex items-center gap-3">
-                    <MessageSquare className={`h-4 w-4 shrink-0 transition-colors ${isOpen ? 'text-indigo-600' : 'text-gray-400'}`} />
+                  <span className="flex items-center gap-3 pr-4">
+                    <MessageSquare className={`h-5 w-5 shrink-0 transition-colors ${isOpen ? 'text-[#B8935A]' : 'text-slate-400'}`} />
                     {faq.question}
                   </span>
                   <ChevronDown
-                    className={`h-4 w-4 shrink-0 transition-transform duration-200 text-gray-500 ${
-                      isOpen ? 'rotate-180 text-indigo-600' : ''
+                    className={`h-5 w-5 shrink-0 transition-transform duration-200 text-slate-500 ${
+                      isOpen ? 'rotate-180 text-[#B8935A]' : ''
                     }`}
                   />
                 </button>
@@ -70,7 +70,7 @@ export default function FAQ() {
                       transition={{ duration: 0.25 }}
                       className="overflow-hidden"
                     >
-                      <div className="px-5 pb-5 pt-1 text-xs text-slate-600 leading-relaxed border-t border-slate-100">
+                      <div className="px-5 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans border-t border-slate-100 whitespace-pre-line">
                         {faq.answer}
                       </div>
                     </motion.div>
@@ -81,16 +81,8 @@ export default function FAQ() {
           })}
         </div>
 
-        {/* Unresolved doubt prompt */}
-        <div className="mt-12 text-center text-xs text-gray-500">
-          Vous avez une question spécifique sur votre secteur d'activité ?{' '}
-          <a href="#pricing" className="text-indigo-600 font-semibold hover:underline">
-            Réservez un appel de démo gratuit
-          </a>{' '}
-          pour en discuter en direct.
-        </div>
-
       </div>
     </section>
   );
 }
+

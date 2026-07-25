@@ -5,114 +5,90 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { FormInput, Cpu, CheckCircle2, FileVideo, Play } from 'lucide-react';
+import { Upload, Compass, Send, Sparkles, CheckCircle2 } from 'lucide-react';
 
-interface HowItWorksProps {
-  onOpenVideo: () => void;
-}
-
-export default function HowItWorks({ onOpenVideo }: HowItWorksProps) {
+export default function HowItWorks() {
   const steps = [
     {
-      num: "01",
-      title: "BRIEFEZ",
-      icon: <FormInput className="h-5 w-5 text-indigo-600" />,
-      desc: "Remplissez un formulaire simple avec les informations clés de votre mission : nom du client, contexte, objectifs stratégiques, et données brutes. Remplissage ultra rapide en 5 minutes maximum."
+      num: "Étape 1",
+      title: "Upload du RFP",
+      icon: <Upload className="h-6 w-6 text-[#B8935A]" />,
+      desc: "Upload ton RFP (PDF ou Word) ou colle le texte"
     },
     {
-      num: "02",
-      title: "L'IA RÉDIGE",
-      icon: <Cpu className="h-5 w-5 text-indigo-600 animate-pulse" />,
-      desc: "L'agent IA principal génère votre livrable selon votre ton de voix et vos grilles de templates habituels. Immédiatement après, un second agent superviseur relit, peaufine et garantit des standards de qualité irréprochables."
+      num: "Étape 2",
+      title: "Positionnement",
+      icon: <Compass className="h-6 w-6 text-[#B8935A]" />,
+      desc: "Indique ton positionnement et tes points forts"
     },
     {
-      num: "03",
-      title: "RECEVEZ",
-      icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
-      desc: "Vous recevez instantanément une notification par email avec le lien de partage sécurisé vers votre nouveau fichier Google Doc. Le document est parfaitement structuré, mis en page et prêt à être envoyé."
+      num: "Étape 3",
+      title: "Livraison",
+      icon: <Send className="h-6 w-6 text-[#B8935A]" />,
+      desc: "Reçois ta réponse structurée par email (PDF + version éditable)"
     }
   ];
 
   return (
-    <section id="how-it-works" className="py-20 lg:py-28 bg-slate-50 border-y border-slate-200 relative">
-      <div className="mx-auto max-w-7xl px-6 sm:px-8">
+    <section id="fonctionnement" className="py-16 sm:py-24 bg-slate-900 text-white relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(#ffffff0a_1px,transparent_1px)] [background-size:16px_16px]" />
+
+      <div className="mx-auto max-w-7xl px-4 sm:px-8 relative z-10">
         
         {/* Title */}
         <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 mb-4">
-            <Cpu className="h-3.5 w-3.5" />
-            Méthodologie agile
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/15 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#B8935A] mb-4">
+            <Sparkles className="h-3.5 w-3.5 fill-[#B8935A]" />
+            Comment ça marche
           </div>
-          <h2 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            3 étapes. 10 minutes. <span className="text-indigo-600">C'est prêt.</span>
+          <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white">
+            Simple. Rapide. Professionnel.
           </h2>
-          <p className="mt-4 text-gray-500">
-            Un processus simple, sans frictions administratives, conçu exclusivement pour la rapidité opérationnelle des consultants indépendants.
+          <p className="mt-4 text-slate-300 text-sm sm:text-base">
+            Aucun apprentissage complexe, aucun prompt engineering requis. L'outil s'occupe de l'analyse et de la rédaction.
           </p>
         </div>
 
-        {/* 3 Step pathway */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative mb-16">
-          {/* Connector Line (visible on desktop) */}
-          <div className="hidden md:block absolute top-[44px] left-[15%] right-[15%] h-0.5 bg-gradient-to-r from-indigo-200 via-indigo-300 to-emerald-200 -z-0" />
-
+        {/* 3 Step Pathway */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
           {steps.map((step, idx) => (
             <motion.div
               key={step.num}
               initial={{ opacity: 0, y: 15 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
+              viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.15 }}
-              className="flex flex-col items-center text-center bg-white border border-slate-100 p-6 sm:p-8 rounded-2xl shadow-xs relative z-10"
+              className="flex flex-col items-center text-center bg-slate-800/80 border border-slate-700/80 p-8 rounded-2xl relative shadow-lg hover:border-[#B8935A]/50 transition-colors"
             >
-              <span className="absolute -top-4 font-mono text-[11px] font-bold tracking-widest px-2.5 py-0.5 bg-slate-900 text-white rounded-full">
+              <span className="font-mono text-xs font-bold tracking-widest text-[#B8935A] uppercase bg-[#B8935A]/10 border border-[#B8935A]/30 px-3 py-1 rounded-full mb-6">
                 {step.num}
               </span>
               
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-slate-50 border border-slate-100 shadow-inner mb-6">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#1B263B] border border-slate-700 shadow-inner mb-6">
                 {step.icon}
               </div>
 
-              <h3 className="font-display text-sm font-bold tracking-wider text-gray-900 mb-2.5 uppercase">
+              <h3 className="font-serif-heading text-lg font-bold text-white mb-3">
                 {step.title}
               </h3>
               
-              <p className="text-xs text-gray-500 leading-relaxed">
+              <p className="text-sm text-slate-300 leading-relaxed font-sans">
                 {step.desc}
               </p>
             </motion.div>
           ))}
         </div>
 
-        {/* Video trigger card */}
-        <div className="max-w-2xl mx-auto">
-          <motion.button
-            whileHover={{ y: -2 }}
-            onClick={onOpenVideo}
-            className="w-full flex flex-col sm:flex-row items-center justify-between p-4 rounded-xl border border-indigo-100 bg-white shadow-sm hover:shadow-md hover:border-indigo-200 transition-all cursor-pointer text-left gap-4"
-          >
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 rounded-lg bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600">
-                <FileVideo className="h-5 w-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-bold text-gray-900">
-                  Démo en vidéo (Loom) — 1 min 45
-                </h4>
-                <p className="text-xs text-gray-500">
-                  Découvrez l'interface de rédaction en direct de bout en bout.
-                </p>
-              </div>
-            </div>
-            
-            <div className="inline-flex items-center gap-1 bg-indigo-600 text-white font-semibold text-xs px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
-              <Play className="h-3.5 w-3.5 fill-white text-white" />
-              Voir la vidéo
-            </div>
-          </motion.button>
+        {/* Delivery Guarantee note */}
+        <div className="mt-12 text-center">
+          <p className="inline-flex items-center gap-2 text-xs text-slate-400 bg-slate-800/50 border border-slate-700/60 px-4 py-2 rounded-lg">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <span>Livraison moyenne constatée : <strong>6 minutes et 30 secondes</strong> après validation</span>
+          </p>
         </div>
 
       </div>
     </section>
   );
 }
+

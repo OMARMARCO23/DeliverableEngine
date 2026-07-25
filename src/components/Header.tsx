@@ -4,54 +4,53 @@
  */
 
 import React from 'react';
+import { FileText, Sparkles } from 'lucide-react';
 
 interface HeaderProps {
-  onOpenTrial: () => void;
-  onOpenDemo: () => void;
+  onOpenGenerate: () => void;
 }
 
-export default function Header({ onOpenTrial, onOpenDemo }: HeaderProps) {
+export default function Header({ onOpenGenerate }: HeaderProps) {
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 sm:px-8">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-sm">
-            DE
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-[#1B263B]/95 text-white backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-8">
+        <a href="#" className="flex items-center gap-2.5 group">
+          <div className="w-9 h-9 bg-[#B8935A] rounded-lg flex items-center justify-center text-[#1B263B] font-bold shadow-sm transition-transform group-hover:scale-105">
+            <FileText className="h-5 w-5 stroke-[2.5]" />
           </div>
-          <div>
-            <span className="font-display text-lg font-bold tracking-tight text-slate-900">
-              Deliverable<span className="text-indigo-600">Engine</span>
+          <div className="flex flex-col">
+            <span className="font-serif-heading text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+              RFP<span className="text-[#B8935A]">Engine</span>
             </span>
-            <span className="hidden sm:inline-block ml-2 text-[10px] font-mono uppercase tracking-wider bg-slate-50 border border-slate-200 px-1.5 py-0.5 rounded text-slate-500">
-              Agent IA de Conseil
+            <span className="text-[10px] text-slate-300 tracking-wider uppercase font-sans -mt-1">
+              Générateur de propale IA
             </span>
           </div>
-        </div>
+        </a>
 
-        <nav className="hidden md:flex items-center gap-6">
-          <a href="#problem" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Le Problème</a>
-          <a href="#cost" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Le Coût</a>
-          <a href="#solution" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">La Solution</a>
-          <a href="#how-it-works" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Fonctionnement</a>
-          <a href="#pricing" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">Tarifs</a>
-          <a href="#faq" className="text-sm font-medium text-slate-600 hover:text-indigo-600 transition-colors">FAQ</a>
+        <nav className="hidden md:flex items-center gap-6 text-xs font-semibold tracking-wide uppercase">
+          <a href="#benefices" className="text-slate-300 hover:text-[#B8935A] transition-colors">Bénéfices</a>
+          <a href="#fonctionnement" className="text-slate-300 hover:text-[#B8935A] transition-colors">Comment ça marche</a>
+          <a href="#pour-qui" className="text-slate-300 hover:text-[#B8935A] transition-colors">Pour qui ?</a>
+          <a href="#tarif" className="text-slate-300 hover:text-[#B8935A] transition-colors">Tarif</a>
+          <a href="#faq" className="text-slate-300 hover:text-[#B8935A] transition-colors">FAQ</a>
         </nav>
 
         <div className="flex items-center gap-3">
+          <div className="hidden lg:flex items-center gap-1.5 text-xs text-slate-300 font-medium">
+            <span className="line-through text-slate-400">29 €</span>
+            <span className="text-[#B8935A] font-bold bg-[#B8935A]/10 px-2 py-0.5 rounded border border-[#B8935A]/30">19 €</span>
+          </div>
           <button
-            onClick={onOpenDemo}
-            className="hidden sm:block text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors cursor-pointer"
+            onClick={onOpenGenerate}
+            className="px-4 py-2.5 bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] font-bold rounded-lg text-xs transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5"
           >
-            Réserver démo
-          </button>
-          <button
-            onClick={onOpenTrial}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition-colors shadow-sm shadow-indigo-200 cursor-pointer"
-          >
-            Essai gratuit 14j
+            <Sparkles className="h-3.5 w-3.5 fill-[#1B263B]" />
+            Générer ma réponse (19 €)
           </button>
         </div>
       </div>
     </header>
   );
 }
+

@@ -4,89 +4,107 @@
  */
 
 import React from 'react';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, Lock, Server } from 'lucide-react';
 
 interface FooterProps {
-  onOpenTrial: () => void;
-  onOpenDemo: () => void;
+  onOpenGenerate: () => void;
 }
 
-export default function Footer({ onOpenTrial, onOpenDemo }: FooterProps) {
+export default function Footer({ onOpenGenerate }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-slate-900 text-white relative overflow-hidden border-t border-slate-800">
-      {/* Background visual detail */}
-      <div className="absolute bottom-0 right-0 -z-10 h-64 w-64 rounded-full bg-indigo-500/5 blur-3xl" />
+    <footer className="bg-[#1B263B] text-white relative overflow-hidden border-t border-slate-800">
+      {/* Background glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -z-0 h-96 w-96 rounded-full bg-[#B8935A]/10 blur-3xl pointer-events-none" />
 
       {/* Final CTA Container */}
-      <div className="mx-auto max-w-5xl px-6 sm:px-8 py-16 lg:py-24 text-center">
+      <div className="mx-auto max-w-5xl px-4 sm:px-8 py-16 lg:py-24 text-center relative z-10">
         
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 text-xs font-semibold text-indigo-400 mb-6">
-          <Sparkles className="h-3.5 w-3.5" />
-          Prenez de l'avance dès aujourd'hui
+        <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/15 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#B8935A] mb-6">
+          <Sparkles className="h-3.5 w-3.5 fill-[#B8935A]" />
+          Devance tes concurrents
         </div>
 
-        <h2 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl max-w-3xl mx-auto leading-tight">
-          Prêt à récupérer <span className="text-indigo-400">10 heures</span> par semaine ?
+        <h2 className="font-serif-heading text-3xl sm:text-4xl md:text-5xl font-extrabold text-white max-w-3xl mx-auto leading-tight">
+          Arrête de perdre des deals faute de temps
         </h2>
 
-        <p className="mt-6 text-sm text-slate-300 max-w-xl mx-auto leading-relaxed">
-          Commencez dès aujourd'hui à automatiser vos propositions commerciales, vos rapports d'audit et vos comptes-rendus de réunion au format Google Docs avec notre double agent IA de confiance.
+        <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed font-sans">
+          Teste sur ton prochain RFP. 19 € seulement, résultat en quelques minutes.
         </p>
 
         {/* CTA Button */}
-        <div className="mt-10 flex flex-col items-center gap-3">
+        <div className="mt-8 flex flex-col items-center gap-3">
           <button
-            onClick={onOpenTrial}
-            className="group inline-flex items-center gap-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 px-8 py-4 text-sm font-bold text-white shadow-sm shadow-indigo-500/20 transition-all active:scale-[0.98] cursor-pointer"
+            onClick={onOpenGenerate}
+            className="group inline-flex items-center gap-2.5 rounded-xl bg-[#B8935A] hover:bg-[#9e7b45] px-8 py-4 text-base font-bold text-[#1B263B] shadow-xl transition-all active:scale-98 cursor-pointer"
           >
-            Démarrer mon essai gratuit (14 jours)
-            <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+            Générer ma réponse →
+            <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </button>
           
-          <div className="flex flex-col items-center gap-2 mt-2">
-            <p className="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Essai gratuit 14 jours — pas de carte requise
-            </p>
-            <button
-              onClick={onOpenDemo}
-              className="text-xs font-bold text-indigo-400 hover:text-indigo-300 underline underline-offset-2 cursor-pointer transition-colors mt-1"
-            >
-              Ou réserver un appel de démo de 15 min en direct
-            </button>
+          <p className="text-xs text-slate-400 font-sans mt-1">
+            Offre de lancement · Livré par email en quelques minutes
+          </p>
+        </div>
+
+        {/* Security & Compliance Badges */}
+        <div className="mt-14 pt-8 border-t border-slate-800/80 max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
+          <div className="flex items-center gap-3 bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+            <Server className="h-5 w-5 text-[#B8935A] shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-white">Hébergement Europe</p>
+              <p className="text-[10px] text-slate-400">Serveurs sécurisés en UE</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+            <ShieldCheck className="h-5 w-5 text-[#B8935A] shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-white">Conforme RGPD / DPA</p>
+
+              <p className="text-[10px] text-slate-400">Respect strict des données</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 bg-slate-900/60 border border-slate-800 p-3.5 rounded-xl">
+            <Lock className="h-5 w-5 text-[#B8935A] shrink-0" />
+            <div>
+              <p className="text-xs font-bold text-white">100% Confidentialité</p>
+              <p className="text-[10px] text-slate-400">Aucun entraînement public</p>
+            </div>
           </div>
         </div>
 
-        <p className="mt-6 text-xs text-slate-400 font-mono">
-          « Pas de slides. Pas de bullshit. Juste votre livrable généré en direct. »
-        </p>
-
       </div>
 
-      {/* Sub Footer with copy details */}
-      <div className="border-t border-slate-800/80 bg-slate-950/60 py-8">
-        <div className="mx-auto max-w-7xl px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-indigo-600 text-white font-bold">
-              D
+      {/* Sub Footer */}
+      <div className="border-t border-slate-800/80 bg-slate-950/80 py-8 relative z-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-sans">
+          
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#B8935A] text-[#1B263B] font-bold font-serif-heading text-sm">
+              R
             </div>
-            <span className="font-display font-bold text-slate-300">
-              Deliverable Engine
+            <span className="font-serif-heading font-bold text-slate-200 text-sm">
+              RFP Engine
             </span>
           </div>
           
-          <p>© {currentYear} Deliverable Engine. Tous droits réservés.</p>
+          <p className="text-slate-400 text-center md:text-left">
+            © {currentYear} RFP Engine. Tous droits réservés.
+          </p>
           
-          <div className="flex items-center gap-4 text-slate-400 font-medium">
-            <span className="text-[10px] font-mono uppercase tracking-wider bg-slate-800 border border-slate-700 px-1.5 py-0.5 rounded text-slate-400">
-              Hebergé en Europe (VPC Sécurisé)
-            </span>
-          </div>
+          {/* Discrete privacy notice */}
+          <p className="text-[11px] text-slate-500 italic text-center md:text-right">
+            Photos d'illustration, noms modifiés pour la confidentialité
+          </p>
+
         </div>
       </div>
 
     </footer>
   );
 }
+
