@@ -109,7 +109,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
     const hasFile = !!formData.rfp_file;
     const hasText = formData.rfp_text.trim().length >= 30;
     if (!hasFile && !hasText) {
-      setStepError("Merci de déposer un fichier RFP ou de coller au moins 30 caractères du cahier des charges.");
+      setStepError("Merci d’uploader un fichier ou de coller au moins 30 caractères.");
       return false;
     }
     setStepError(null);
@@ -614,10 +614,14 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                     <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
                       <div className="flex justify-between border-b border-slate-200 pb-2">
                         <span className="font-bold text-slate-500">Document :</span>
-                        <span className="font-semibold text-[#1B263B] text-right truncate max-w-[240px]">
-                          {formData.rfp_file
-                            ? `Fichier : ${formData.rfp_file.name}`
-                            : `Texte collé (${formData.rfp_text.length} caractères)`}
+                        <span className="font-semibold text-[#1B263B] text-right truncate max-w-[260px]">
+                          {formData.rfp_file ? (
+                            formData.rfp_text.trim().length >= 30
+                              ? `Fichier : ${formData.rfp_file.name} (+ texte collé)`
+                              : `Fichier : ${formData.rfp_file.name}`
+                          ) : (
+                            `Texte collé (${formData.rfp_text.length} car.)`
+                          )}
                         </span>
                       </div>
 
