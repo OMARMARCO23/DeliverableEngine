@@ -1,6 +1,6 @@
 {
-  "name": "Deliverable Engine",
-  "description": "Landing page de Deliverable Engine — Vos livrables de conseil en 10 minutes au lieu de 4 heures.",
+  "name": "RFP Response Generator",
+  "description": "Génère ta réponse à un RFP / appel d'offres en 10 minutes au lieu de 2 jours.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
