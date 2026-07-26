@@ -147,10 +147,10 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
 
     try {
       const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
-      let n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK1_URL || envMeta?.VITE_N8N_WEBHOOK_URL || '';
+      let n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK1_URL || '';
       // If no URL or if configured with localhost (which fails in deployed browsers), fallback to ngrok public tunnel
       if (!n8nWebhookUrl || n8nWebhookUrl.includes('localhost') || n8nWebhookUrl.includes('127.0.0.1')) {
-        n8nWebhookUrl = 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook-test/form-rfp';
+        n8nWebhookUrl = 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
       }
 
       // Helper to convert File to Base64
@@ -195,23 +195,40 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         reference_files: refFilesData
       };
 
-      // 1. Send JSON data to n8n Webhook with ngrok header & 5s timeout guard
+      // 1. Send JSON data to n8n Webhook with CORS & no-cors fallback
       if (n8nWebhookUrl) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        const timeoutId = setTimeout(() => controller.abort(), 6000);
 
-        await fetch(n8nWebhookUrl, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'ngrok-skip-browser-warning': 'true'
-          },
-          body: JSON.stringify(jsonPayload),
-          signal: controller.signal
-        })
-          .then((res) => console.log('n8n Webhook status:', res.status))
-          .catch((err) => console.warn('n8n Webhook POST error:', err))
-          .finally(() => clearTimeout(timeoutId));
+        try {
+          // First try standard fetch with text/plain (avoids OPTIONS preflight)
+          await fetch(n8nWebhookUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'text/plain'
+            },
+            body: JSON.stringify(jsonPayload),
+            signal: controller.signal
+          });
+        } catch (corsErr) {
+          console.warn('Standard fetch CORS blocked, retrying with mode no-cors:', corsErr);
+          try {
+            // Fallback to no-cors mode so browser transmits payload directly to n8n
+            await fetch(n8nWebhookUrl, {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: {
+                'Content-Type': 'text/plain'
+              },
+              body: JSON.stringify(jsonPayload),
+              signal: controller.signal
+            });
+          } catch (noCorsErr) {
+            console.warn('n8n Webhook no-cors attempt failed:', noCorsErr);
+          }
+        } finally {
+          clearTimeout(timeoutId);
+        }
       }
 
       // 2. Redirect to Lemon Squeezy (or fallback payment link)
