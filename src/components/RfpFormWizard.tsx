@@ -36,7 +36,7 @@ export interface RfpFormData {
   other_objective: string;
   differentiation: string;
   reference_files: File[];
-  email: string;
+  email: strIng;
 }
 
 const OBJECTIVE_OPTIONS = [
