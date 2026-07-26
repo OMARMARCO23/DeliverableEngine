@@ -146,53 +146,66 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
     setIsSubmitting(true);
 
     try {
-      // Build FormData payload (ready for n8n / backend endpoint)
+      const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
+      const n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK_URL || 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook-test/form-rfp';
+
+      // Prepare payload: FormData for full file support & JSON fallback
       const payload = new FormData();
       if (formData.rfp_file) {
-        payload.append('rfp_file', formData.rfp_file);
+        payload.append('rfp_file', formData.rfp_file, formData.rfp_file.name);
       }
       payload.append('rfp_text', formData.rfp_text);
       payload.append('client_name', formData.client_name);
       payload.append('positioning', formData.positioning);
       payload.append('objective', formData.objective);
-      if (formData.objective === 'autre') {
-        payload.append('other_objective', formData.other_objective);
-      }
+      payload.append('other_objective', formData.objective === 'autre' ? formData.other_objective : '');
       payload.append('differentiation', formData.differentiation);
-      formData.reference_files.forEach((file, index) => {
-        payload.append(`reference_files[${index}]`, file);
-      });
       payload.append('email', formData.email);
+      payload.append('has_file', formData.rfp_file ? 'true' : 'false');
+      
+      formData.reference_files.forEach((file, index) => {
+        payload.append(`reference_files_${index}`, file, file.name);
+      });
 
-      // Attempt to post to n8n webhook if URL is provided in env or default
-      const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
-      const n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK_URL;
+      // 1. Send data to n8n Webhook with 3s timeout guard so checkout never gets stuck
       if (n8nWebhookUrl) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3500);
+
         await fetch(n8nWebhookUrl, {
           method: 'POST',
-          body: payload
-        }).catch((err) => console.warn('n8n Webhook POST attempt:', err));
+          body: payload,
+          signal: controller.signal
+        })
+          .then((res) => console.log('n8n Webhook response:', res.status))
+          .catch((err) => console.warn('n8n Webhook POST attempt:', err))
+          .finally(() => clearTimeout(timeoutId));
       }
 
-      // Check for Lemon Squeezy or Stripe Link or generic payment link
-      const paymentUrl = envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK || envMeta?.VITE_PAYMENT_LINK || envMeta?.VITE_STRIPE_PAYMENT_LINK;
+      // 2. Redirect to Lemon Squeezy (or fallback payment link)
+      const paymentUrl =
+        envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK ||
+        envMeta?.VITE_PAYMENT_LINK ||
+        envMeta?.VITE_STRIPE_PAYMENT_LINK;
+
       if (paymentUrl) {
         let checkoutRedirect = paymentUrl;
-        // Append prefilled email if lemon squeezy or standard checkout link
-        if (formData.email) {
-          const hasParams = checkoutRedirect.includes('?');
-          const emailParam = checkoutRedirect.includes('lemonsqueezy')
-            ? `checkout[email]=${encodeURIComponent(formData.email)}`
-            : `prefilled_email=${encodeURIComponent(formData.email)}`;
-          checkoutRedirect += `${hasParams ? '&' : '?'}${emailParam}`;
-        }
-        window.location.href = checkoutRedirect;
+        const urlObj = new URL(checkoutRedirect.startsWith('http') ? checkoutRedirect : `https://${checkoutRedirect}`);
+
+        // Add prefilled email
+        urlObj.searchParams.set('checkout[email]', formData.email);
+        
+        // Add custom parameters for Lemon Squeezy tracking if supported
+        urlObj.searchParams.set('checkout[custom][client_name]', formData.client_name);
+        urlObj.searchParams.set('checkout[custom][positioning]', formData.positioning);
+
+        window.location.href = urlObj.toString();
       } else {
-        // Show success confirmation screen
+        // Show success confirmation screen if no payment link configured
         setTimeout(() => {
           setIsSubmitting(false);
           setIsSuccess(true);
-        }, 1200);
+        }, 800);
       }
     } catch (err) {
       console.error(err);
