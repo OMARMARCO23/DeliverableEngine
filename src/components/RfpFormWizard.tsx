@@ -149,36 +149,64 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
       const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
       const n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK_URL || 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook-test/form-rfp';
 
-      // Prepare payload: FormData for full file support & JSON fallback
-      const payload = new FormData();
-      if (formData.rfp_file) {
-        payload.append('rfp_file', formData.rfp_file, formData.rfp_file.name);
-      }
-      payload.append('rfp_text', formData.rfp_text);
-      payload.append('client_name', formData.client_name);
-      payload.append('positioning', formData.positioning);
-      payload.append('objective', formData.objective);
-      payload.append('other_objective', formData.objective === 'autre' ? formData.other_objective : '');
-      payload.append('differentiation', formData.differentiation);
-      payload.append('email', formData.email);
-      payload.append('has_file', formData.rfp_file ? 'true' : 'false');
-      
-      formData.reference_files.forEach((file, index) => {
-        payload.append(`reference_files_${index}`, file, file.name);
-      });
+      // Helper to convert File to Base64
+      const fileToBase64 = (file: File): Promise<string> => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve((reader.result as string) || '');
+          reader.onerror = () => resolve('');
+          reader.readAsDataURL(file);
+        });
+      };
 
-      // 1. Send data to n8n Webhook with 3s timeout guard so checkout never gets stuck
+      // Prepare file data if present
+      const rfpFileBase64 = formData.rfp_file ? await fileToBase64(formData.rfp_file) : null;
+      const refFilesData = await Promise.all(
+        formData.reference_files.map(async (f) => ({
+          name: f.name,
+          size: f.size,
+          type: f.type,
+          data: await fileToBase64(f)
+        }))
+      );
+
+      // Clean JSON payload for n8n Webhook
+      const jsonPayload = {
+        email: formData.email,
+        client_name: formData.client_name,
+        positioning: formData.positioning,
+        objective: formData.objective,
+        other_objective: formData.objective === 'autre' ? formData.other_objective : '',
+        differentiation: formData.differentiation,
+        rfp_text: formData.rfp_text,
+        has_file: !!formData.rfp_file,
+        rfp_file: formData.rfp_file
+          ? {
+              name: formData.rfp_file.name,
+              size: formData.rfp_file.size,
+              type: formData.rfp_file.type,
+              data: rfpFileBase64
+            }
+          : null,
+        reference_files: refFilesData
+      };
+
+      // 1. Send JSON data to n8n Webhook with ngrok header & 5s timeout guard
       if (n8nWebhookUrl) {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 3500);
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
 
         await fetch(n8nWebhookUrl, {
           method: 'POST',
-          body: payload,
+          headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+          },
+          body: JSON.stringify(jsonPayload),
           signal: controller.signal
         })
-          .then((res) => console.log('n8n Webhook response:', res.status))
-          .catch((err) => console.warn('n8n Webhook POST attempt:', err))
+          .then((res) => console.log('n8n Webhook status:', res.status))
+          .catch((err) => console.warn('n8n Webhook POST error:', err))
           .finally(() => clearTimeout(timeoutId));
       }
 
@@ -192,12 +220,10 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         let checkoutRedirect = paymentUrl;
         const urlObj = new URL(checkoutRedirect.startsWith('http') ? checkoutRedirect : `https://${checkoutRedirect}`);
 
-        // Add prefilled email
-        urlObj.searchParams.set('checkout[email]', formData.email);
-        
-        // Add custom parameters for Lemon Squeezy tracking if supported
-        urlObj.searchParams.set('checkout[custom][client_name]', formData.client_name);
-        urlObj.searchParams.set('checkout[custom][positioning]', formData.positioning);
+        // Prefill buyer email safely
+        if (formData.email) {
+          urlObj.searchParams.set('checkout[email]', formData.email);
+        }
 
         window.location.href = urlObj.toString();
       } else {
