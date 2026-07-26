@@ -36,7 +36,7 @@ export interface RfpFormData {
   other_objective: string;
   differentiation: string;
   reference_files: File[];
-  email: strIng;
+  email: string;
 }
 
 const OBJECTIVE_OPTIONS = [
@@ -195,28 +195,28 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         reference_files: refFilesData
       };
 
-      // 1. Send JSON data to n8n Webhook with CORS & no-cors fallback
+      // 1. Send JSON data to n8n Webhook with CORS & fallback handling
       if (n8nWebhookUrl) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 6000);
 
         try {
-          // First try standard fetch with text/plain (avoids OPTIONS preflight)
+          // Try standard JSON fetch
           await fetch(n8nWebhookUrl, {
             method: 'POST',
             headers: {
-              'Content-Type': 'text/plain'
+              'Content-Type': 'application/json',
+              'ngrok-skip-browser-warning': 'true'
             },
             body: JSON.stringify(jsonPayload),
             signal: controller.signal
           });
         } catch (corsErr) {
-          console.warn('Standard fetch CORS blocked, retrying with mode no-cors:', corsErr);
+          console.warn('Standard application/json fetch failed/CORS, retrying with text/plain:', corsErr);
           try {
-            // Fallback to no-cors mode so browser transmits payload directly to n8n
+            // Fallback to text/plain (bypasses CORS preflight check)
             await fetch(n8nWebhookUrl, {
               method: 'POST',
-              mode: 'no-cors',
               headers: {
                 'Content-Type': 'text/plain'
               },
@@ -224,7 +224,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
               signal: controller.signal
             });
           } catch (noCorsErr) {
-            console.warn('n8n Webhook no-cors attempt failed:', noCorsErr);
+            console.warn('n8n Webhook text/plain attempt failed:', noCorsErr);
           }
         } finally {
           clearTimeout(timeoutId);
