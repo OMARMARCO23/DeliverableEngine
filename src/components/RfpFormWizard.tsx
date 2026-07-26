@@ -147,7 +147,11 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
 
     try {
       const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
-      const n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK_URL || 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook-test/form-rfp';
+      let n8nWebhookUrl = envMeta?.VITE_N8N_WEBHOOK1_URL || envMeta?.VITE_N8N_WEBHOOK_URL || '';
+      // If no URL or if configured with localhost (which fails in deployed browsers), fallback to ngrok public tunnel
+      if (!n8nWebhookUrl || n8nWebhookUrl.includes('localhost') || n8nWebhookUrl.includes('127.0.0.1')) {
+        n8nWebhookUrl = 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook-test/form-rfp';
+      }
 
       // Helper to convert File to Base64
       const fileToBase64 = (file: File): Promise<string> => {
