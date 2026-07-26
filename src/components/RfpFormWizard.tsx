@@ -5,6 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { supabase, uploadRFPFile } from '../lib/supabase';
 import {
   X,
   Upload,
@@ -153,6 +154,47 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         n8nWebhookUrl = 'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
       }
 
+      // 1. Upload RFP file to Supabase Storage if present and Supabase is configured
+      let fileInfo: { file_path: string; file_name: string; file_size: number; file_type: string } | null = null;
+      if (formData.rfp_file && supabase) {
+        try {
+          fileInfo = await uploadRFPFile(formData.rfp_file, formData.email);
+        } catch (uploadErr) {
+          console.error('Supabase upload error:', uploadErr);
+        }
+      }
+
+      // 2. Insert pending record into Supabase rfp_pending table
+      let rfpRecord: { id?: string | number; email?: string; has_file?: boolean; file_path?: string | null } | null = null;
+      if (supabase) {
+        try {
+          const { data: rfp, error: dbError } = await supabase
+            .from('rfp_pending')
+            .insert({
+              email: formData.email,
+              client_name: formData.client_name,
+              positioning: formData.positioning,
+              objective: formData.objective === 'autre' ? formData.other_objective : formData.objective,
+              differentiation: formData.differentiation,
+              rfp_text: formData.rfp_text || null,
+              has_file: !!fileInfo,
+              file_path: fileInfo?.file_path || null,
+              file_name: fileInfo?.file_name || null,
+              status: 'pending'
+            })
+            .select()
+            .single();
+
+          if (dbError) {
+            console.error('Supabase rfp_pending insert error:', dbError);
+          } else {
+            rfpRecord = rfp;
+          }
+        } catch (err) {
+          console.error('Supabase insert exception:', err);
+        }
+      }
+
       // Helper to convert File to Base64
       const fileToBase64 = (file: File): Promise<string> => {
         return new Promise((resolve) => {
@@ -163,7 +205,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         });
       };
 
-      // Prepare file data if present
+      // 3. Prepare payload for n8n Webhook
       const rfpFileBase64 = formData.rfp_file ? await fileToBase64(formData.rfp_file) : null;
       const refFilesData = await Promise.all(
         formData.reference_files.map(async (f) => ({
@@ -174,8 +216,18 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         }))
       );
 
-      // Clean JSON payload for n8n Webhook
-      const jsonPayload = {
+      // Clean JSON payload matching user's spec with rfp_id if record created
+      const jsonPayload = rfpRecord ? {
+        rfp_id: rfpRecord.id,
+        email: rfpRecord.email || formData.email,
+        has_file: rfpRecord.has_file ?? !!formData.rfp_file,
+        file_path: rfpRecord.file_path || fileInfo?.file_path || null,
+        client_name: formData.client_name,
+        positioning: formData.positioning,
+        objective: formData.objective === 'autre' ? formData.other_objective : formData.objective,
+        differentiation: formData.differentiation,
+        rfp_text: formData.rfp_text
+      } : {
         email: formData.email,
         client_name: formData.client_name,
         positioning: formData.positioning,
@@ -195,13 +247,12 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         reference_files: refFilesData
       };
 
-      // 1. Send JSON data to n8n Webhook with CORS & fallback handling
+      // 4. Send notification payload to n8n Webhook
       if (n8nWebhookUrl) {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 6000);
 
         try {
-          // Try standard JSON fetch
           await fetch(n8nWebhookUrl, {
             method: 'POST',
             headers: {
@@ -214,7 +265,6 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         } catch (corsErr) {
           console.warn('Standard application/json fetch failed/CORS, retrying with text/plain:', corsErr);
           try {
-            // Fallback to text/plain (bypasses CORS preflight check)
             await fetch(n8nWebhookUrl, {
               method: 'POST',
               headers: {
@@ -231,7 +281,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         }
       }
 
-      // 2. Redirect to Lemon Squeezy (or fallback payment link)
+      // 5. Redirect to Lemon Squeezy with email & custom rfp_id parameter
       const paymentUrl =
         envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK ||
         envMeta?.VITE_PAYMENT_LINK ||
@@ -241,9 +291,11 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
         let checkoutRedirect = paymentUrl;
         const urlObj = new URL(checkoutRedirect.startsWith('http') ? checkoutRedirect : `https://${checkoutRedirect}`);
 
-        // Prefill buyer email safely
         if (formData.email) {
           urlObj.searchParams.set('checkout[email]', formData.email);
+        }
+        if (rfpRecord?.id) {
+          urlObj.searchParams.set('checkout[custom][rfp_id]', String(rfpRecord.id));
         }
 
         window.location.href = urlObj.toString();
