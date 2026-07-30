@@ -6,9 +6,13 @@
 import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import StatsBar from './components/StatsBar';
 import Solution from './components/Solution';
+import PdfPreviewSection from './components/PdfPreviewSection';
 import HowItWorks from './components/HowItWorks';
+import ComparisonTable from './components/ComparisonTable';
 import ForWho from './components/ForWho';
+import Testimonials from './components/Testimonials';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
@@ -57,23 +61,35 @@ export default function App() {
           onOpenVideo={() => setIsVideoOpen(true)}
         />
 
-        {/* 3. Section 2: Bénéfices */}
+        {/* 3. Stats Bar (En chiffres) */}
+        <StatsBar />
+
+        {/* 4. Section: Bénéfices */}
         <Solution />
 
-        {/* 4. Section 3: Comment ça marche */}
+        {/* 5. Section: Aperçu de votre réponse (PDF Mockup) */}
+        <PdfPreviewSection />
+
+        {/* 6. Section: Comment ça marche (3 étapes) */}
         <HowItWorks />
 
-        {/* 5. Section 4: Pour qui ? */}
+        {/* 7. Section: Deliverable Engine vs ChatGPT */}
+        <ComparisonTable />
+
+        {/* 8. Section: Pour qui ? (3 Personas) */}
         <ForWho />
 
-        {/* 6. Section 5: Tarification */}
+        {/* 9. Section: Ils utilisent Deliverable Engine */}
+        <Testimonials />
+
+        {/* 10. Section: Tarification */}
         <Pricing onOpenGenerate={handleOpenGenerate} />
 
-        {/* 7. Section 6: FAQ */}
+        {/* 11. Section: FAQ */}
         <FAQ />
       </main>
 
-      {/* 8. Section 7: Final CTA & Footer */}
+      {/* 12. Final CTA & Footer */}
       <Footer onOpenGenerate={handleOpenGenerate} />
 
       {/* --- Interactive Modals --- */}
