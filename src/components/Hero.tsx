@@ -58,14 +58,13 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="font-serif-heading text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white"
             >
-              Réponds à un RFP en{' '}
+              Répondez à vos appels d'offres en{' '}
               <span className="text-[#B8935A] underline decoration-[#B8935A]/40 underline-offset-8">
                 10 minutes
               </span>{' '}
-              <br className="hidden sm:inline" />
               au lieu de{' '}
               <span className="text-slate-400 line-through decoration-red-400/60 decoration-2">
-                2 jours
+                3 jours
               </span>
             </motion.h1>
 
@@ -76,7 +75,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="mt-6 text-base sm:text-lg leading-relaxed text-slate-300 max-w-2xl font-sans"
             >
-              Upload ton appel d’offres. Notre IA extrait les exigences, structure ta réponse et te livre un document professionnel prêt à envoyer.
+              Uploadez ou collez votre RFP. Notre IA génère une réponse professionnelle, structurée et prête à envoyer. Livraison PDF par email en 5 minutes.
             </motion.p>
 
             {/* CTA Button Block */}
@@ -84,21 +83,37 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="mt-8 flex flex-col items-start gap-3"
+              className="mt-8 flex flex-col items-start gap-4"
             >
               <button
                 onClick={onOpenGenerate}
-                className="group relative inline-flex items-center justify-center gap-3 rounded-xl bg-[#B8935A] hover:bg-[#9e7b45] px-8 py-4 text-base font-bold text-[#1B263B] shadow-xl shadow-[#B8935A]/20 transition-all active:scale-[0.98] cursor-pointer"
+                style={{ backgroundColor: '#B8935A', padding: '18px 36px' }}
+                className="group relative inline-flex items-center justify-center gap-3 rounded-lg text-lg font-bold text-[#1B263B] shadow-2xl shadow-[#B8935A]/25 hover:bg-[#a17e47] hover:-translate-y-0.5 transition-all active:scale-[0.98] cursor-pointer"
               >
-                <span>Générer ma réponse → 19 € <span className="text-xs font-normal opacity-80">(offre de lancement)</span></span>
+                <Zap className="h-5 w-5 fill-[#1B263B]" />
+                <span>Générer ma réponse (19€)</span>
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </button>
 
-              {/* Micro-text */}
-              <p className="text-xs text-slate-400 font-medium flex items-center gap-2 pl-1">
-                <ShieldCheck className="h-4 w-4 text-[#B8935A]" />
-                Sans engagement · Livré par email en quelques minutes
-              </p>
+              {/* Reassurance Badges Row */}
+              <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-slate-300 font-medium">
+                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
+                  <Zap className="h-3.5 w-3.5 text-[#B8935A]" />
+                  <span>Livraison en 5 min</span>
+                </span>
+                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
+                  <ShieldCheck className="h-3.5 w-3.5 text-[#B8935A]" />
+                  <span>Paiement sécurisé Stripe</span>
+                </span>
+                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
+                  <FileText className="h-3.5 w-3.5 text-[#B8935A]" />
+                  <span>Facturation française</span>
+                </span>
+                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                  <span>Satisfait ou regénéré</span>
+                </span>
+              </div>
             </motion.div>
 
             {/* Micro Social Proof / Stats */}
