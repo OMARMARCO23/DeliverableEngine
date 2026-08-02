@@ -40,7 +40,7 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     },
     pdfGenerated: {
       title: 'Proposition Technique & Financière — AMO Transformation SIH & Conformité HDS',
-      pages: '10 pages',
+      pages: '11 pages',
       sectionsCount: 10,
       highlights: [
         'Analyse fine du cadre réglementaire HDS & RGPD Santé',
