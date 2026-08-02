@@ -4,10 +4,10 @@ import { FileText, Zap, Star, Tag } from 'lucide-react';
 
 export default function StatsBar() {
   const stats = [
-    { value: "100+", label: "RFP générés", icon: <FileText className="h-4 w-4 text-[#B8935A]" /> },
-    { value: "5 min", label: "Livraison moyenne", icon: <Zap className="h-4 w-4 text-[#B8935A]" /> },
-    { value: "95%", label: "Satisfaction client", icon: <Star className="h-4 w-4 text-[#B8935A]" /> },
-    { value: "19 €", label: "Prix unique", icon: <Tag className="h-4 w-4 text-[#B8935A]" /> },
+    { value: "10 sections", label: "Plan type consulting", icon: <FileText className="h-4 w-4 text-[#B8935A]" /> },
+    { value: "PDF Pro", label: "Format prêt à finaliser", icon: <Zap className="h-4 w-4 text-[#B8935A]" /> },
+    { value: "100%", label: "Confidentialité des données", icon: <Star className="h-4 w-4 text-[#B8935A]" /> },
+    { value: "19 €", label: "Prix unique sans abonnement", icon: <Tag className="h-4 w-4 text-[#B8935A]" /> },
   ];
 
   return (
