@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { Check, X, ShieldCheck, Zap, Layers } from 'lucide-react';
+import { Check, X, Zap, Layers } from 'lucide-react';
 
 export default function ComparisonTable() {
   const criteria = [
@@ -116,16 +116,7 @@ export default function ComparisonTable() {
             </table>
           </div>
 
-          {/* Table Footer Reassurance */}
-          <div className="bg-slate-100/80 px-6 py-4 border-t border-slate-200 flex flex-wrap items-center justify-between text-xs text-slate-600 font-sans gap-2">
-            <span className="flex items-center gap-1.5 font-medium">
-              <ShieldCheck className="h-4 w-4 text-[#B8935A]" />
-              Garantie satisfait ou ré-analyse offerte sous 14 jours
-            </span>
-            <span className="text-slate-500 font-mono">
-              Deliverable Engine v2.4 • Modèle spécialisé consulting
-            </span>
-          </div>
+
 
         </div>
 
