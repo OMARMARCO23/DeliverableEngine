@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Sparkles, Upload, FileText, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
+import { ArrowRight, Sparkles, Upload, FileText, CheckCircle2, ShieldCheck, Zap, Check } from 'lucide-react';
 
 interface HeroProps {
   onOpenGenerate: () => void;
@@ -58,25 +58,61 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="font-serif-heading text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.15] text-white"
             >
-              Répondez à vos appels d'offres en{' '}
+              Créez une réponse RFP professionnelle{' '}
               <span className="text-[#B8935A] underline decoration-[#B8935A]/40 underline-offset-8">
-                10 minutes
-              </span>{' '}
-              au lieu de{' '}
-              <span className="text-slate-400 line-through decoration-red-400/60 decoration-2">
-                3 jours
+                sans partir de zéro
               </span>
             </motion.h1>
 
-            {/* Subtitle */}
+            {/* Subtitle Tagline */}
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="mt-6 text-base sm:text-lg leading-relaxed text-slate-300 max-w-2xl font-sans"
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="mt-4 text-sm sm:text-base text-[#B8935A] font-semibold tracking-wide font-sans flex flex-wrap items-center gap-x-2 gap-y-1"
             >
-              Uploadez ou collez votre RFP. Notre IA génère une réponse professionnelle, structurée et prête à envoyer. Livraison PDF par email en 5 minutes.
+              <span>Structure générée en 10 minutes</span>
+              <span className="text-slate-500">•</span>
+              <span>Personnalisation en 30 minutes</span>
+              <span className="text-slate-500">•</span>
+              <span>PDF prêt à finaliser</span>
             </motion.p>
+
+            {/* Clear Benefits Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl font-sans"
+            >
+              <div className="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 px-3.5 py-2.5 rounded-xl text-slate-200 text-xs sm:text-sm font-medium">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="h-3.5 w-3.5 stroke-[3]" />
+                </div>
+                <span>Économisez plusieurs heures de rédaction</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 px-3.5 py-2.5 rounded-xl text-slate-200 text-xs sm:text-sm font-medium">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="h-3.5 w-3.5 stroke-[3]" />
+                </div>
+                <span>Personnalisez avec vos données, références et tarifs</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 px-3.5 py-2.5 rounded-xl text-slate-200 text-xs sm:text-sm font-medium">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="h-3.5 w-3.5 stroke-[3]" />
+                </div>
+                <span>Structure pro inspirée des meilleures pratiques RFP</span>
+              </div>
+
+              <div className="flex items-center gap-2.5 bg-slate-800/80 border border-slate-700/80 px-3.5 py-2.5 rounded-xl text-slate-200 text-xs sm:text-sm font-medium">
+                <div className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                  <Check className="h-3.5 w-3.5 stroke-[3]" />
+                </div>
+                <span>Export PDF clair, soigné et prêt à partager</span>
+              </div>
+            </motion.div>
 
             {/* CTA Button Block */}
             <motion.div
@@ -99,37 +135,16 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs sm:text-sm text-slate-300 font-medium">
                 <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
                   <Zap className="h-3.5 w-3.5 text-[#B8935A]" />
-                  <span>Livraison en 5 min</span>
+                  <span>Livraison en quelques minutes</span>
                 </span>
                 <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
                   <ShieldCheck className="h-3.5 w-3.5 text-[#B8935A]" />
-                  <span>Paiement sécurisé Stripe</span>
+                  <span>Paiement sécurisé</span>
                 </span>
                 <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
                   <FileText className="h-3.5 w-3.5 text-[#B8935A]" />
-                  <span>Facturation française</span>
+                  <span>Facture disponible</span>
                 </span>
-                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                  <span>Satisfait ou regénéré</span>
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Micro Social Proof / Stats */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-              className="mt-10 pt-6 border-t border-slate-700/60 flex flex-wrap items-center gap-6 text-xs text-slate-300"
-            >
-              <div className="flex items-center gap-2">
-                <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>+450 réponses générées ce mois</span>
-              </div>
-              <span className="text-slate-600">•</span>
-              <div className="flex items-center gap-1 text-[#B8935A]">
-                ★★★★★ <span className="text-white font-bold ml-1">4.9/5</span> (Consultants & Freelances)
               </div>
             </motion.div>
 
@@ -148,7 +163,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                   <div className="w-3 h-3 rounded-full bg-red-500/80" />
                   <div className="w-3 h-3 rounded-full bg-amber-500/80" />
                   <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
-                  <span className="text-xs font-mono text-slate-400 ml-2">rfp-engine.io / analyse-express</span>
+                  <span className="text-xs font-mono text-slate-400 ml-2">Deliverable Engine / Analyse Express</span>
                 </div>
                 <span className="text-[10px] bg-[#B8935A]/20 text-[#B8935A] border border-[#B8935A]/40 px-2 py-0.5 rounded font-mono">
                   19 €
@@ -180,7 +195,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                         {rfpFileName ? (
                           <span className="text-emerald-400 font-mono">✓ {rfpFileName}</span>
                         ) : (
-                          "Glisse ton RFP ici ou clique pour parcourir"
+                          "Déposez votre RFP ici ou cliquez pour parcourir"
                         )}
                       </p>
                       <p className="text-[10px] text-slate-400 mt-1">Cahier des charges, brief client ou sujet RFP</p>
@@ -189,7 +204,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
 
                   <div>
                     <label className="block text-xs font-bold text-slate-200 mb-1">
-                      Ou colle un extrait de votre RFP :
+                      Ou collez un extrait de votre RFP :
                     </label>
                     <textarea
                       rows={2}
