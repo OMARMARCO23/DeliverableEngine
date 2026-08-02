@@ -59,7 +59,7 @@ const OBJECTIVE_OPTIONS = [
   {
     value: 'autre',
     label: 'Autre',
-    description: 'Précise ton objectif'
+    description: 'Précisez votre objectif'
   }
 ] as const;
 
@@ -124,11 +124,11 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
       return false;
     }
     if (!formData.positioning.trim()) {
-      setStepError("Ton positionnement est obligatoire.");
+      setStepError("Votre positionnement est obligatoire.");
       return false;
     }
     if (formData.objective === 'autre' && !formData.other_objective.trim()) {
-      setStepError("Merci de préciser ton objectif dans le champ 'Autre'.");
+      setStepError("Merci de préciser votre objectif dans le champ 'Autre'.");
       return false;
     }
     setStepError(null);
@@ -436,10 +436,10 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Dépose ton RFP / Appel d’offres
+                        Déposez votre RFP / Appel d’offres
                       </h3>
                       <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Uploade le document original ou colle le texte. Plus le contenu est complet, meilleure sera la réponse.
+                        Uploadez le document original ou collez le texte. Plus le contenu est complet, meilleure sera la réponse.
                       </p>
                     </div>
 
@@ -486,7 +486,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                           <>
                             <Upload className="mx-auto h-8 w-8 text-[#B8935A] mb-2 group-hover:scale-110 transition-transform" />
                             <p className="text-xs font-bold text-[#1B263B]">
-                              Glisse ton fichier ici ou parcourir – PDF, DOC, DOCX – max 15 Mo
+                              Déposez votre fichier ici ou cliquez pour parcourir – PDF, DOC, DOCX – max 15 Mo
                             </p>
                             <p className="text-[11px] text-slate-500 mt-1">
                               Cahier des charges, sujet d'appel d'offres ou brief client
@@ -510,7 +510,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                       <textarea
                         rows={6}
                         name="rfp_text"
-                        placeholder="Colle ici le contenu complet du cahier des charges / appel d’offres…"
+                        placeholder="Collez ici le contenu complet du cahier des charges / appel d’offres…"
                         value={formData.rfp_text}
                         onChange={(e) => {
                           setFormData((prev) => ({ ...prev, rfp_text: e.target.value }));
@@ -555,7 +555,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                     {/* Champ 2: positioning */}
                     <div>
                       <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Ton positionnement <span className="text-red-500">*</span>
+                        Votre positionnement <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -570,7 +570,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                     {/* Champ 3: objective */}
                     <div>
                       <label className="block text-xs font-bold text-[#1B263B] mb-2">
-                        Objectif principal de ta réponse <span className="text-red-500">*</span>
+                        Objectif principal de votre réponse <span className="text-red-500">*</span>
                       </label>
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -611,12 +611,12 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                         className="pt-1"
                       >
                         <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                          Précise ton objectif <span className="text-red-500">*</span>
+                          Précisez votre objectif <span className="text-red-500">*</span>
                         </label>
                         <input
                           type="text"
                           name="other_objective"
-                          placeholder="Décris brièvement ce que tu recherches…"
+                          placeholder="Décrivez brièvement ce que vous recherchez…"
                           value={formData.other_objective}
                           onChange={(e) => setFormData((prev) => ({ ...prev, other_objective: e.target.value }))}
                           className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
@@ -634,10 +634,10 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                         Étape optionnelle
                       </div>
                       <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Tes points de différenciation
+                        Vos points de différenciation
                       </h3>
                       <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Optionnel mais fortement recommandé. Plus tu donnes d’éléments, plus la réponse sera percutante.
+                        Optionnel mais fortement recommandé. Plus vous donnez d’éléments, plus la réponse sera percutante.
                       </p>
                     </div>
 
@@ -727,7 +727,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                         Récapitulatif
                       </h3>
                       <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Vérifie les informations avant de lancer la génération.
+                        Vérifiez les informations avant de lancer la génération.
                       </p>
                     </div>
 
@@ -848,7 +848,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                     Génération en cours !
                   </h3>
                   <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-                    Tes données ont été transmises avec succès. L'agent IA analyse le RFP pour <strong>{formData.client_name}</strong> et rédige ta réponse.
+                    Vos données ont été transmises avec succès. L'agent IA analyse le RFP pour <strong>{formData.client_name}</strong> et rédige votre réponse.
                   </p>
                 </div>
 
