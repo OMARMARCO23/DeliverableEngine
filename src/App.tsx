@@ -12,7 +12,6 @@ import PdfPreviewSection from './components/PdfPreviewSection';
 import HowItWorks from './components/HowItWorks';
 import ComparisonTable from './components/ComparisonTable';
 import ForWho from './components/ForWho';
-import Testimonials from './components/Testimonials';
 import Pricing from './components/Pricing';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
@@ -79,10 +78,7 @@ export default function App() {
         {/* 8. Section: Pour qui ? (3 Personas) */}
         <ForWho />
 
-        {/* 9. Section: Ils utilisent Deliverable Engine */}
-        <Testimonials />
-
-        {/* 10. Section: Tarification */}
+        {/* 9. Section: Tarification */}
         <Pricing onOpenGenerate={handleOpenGenerate} />
 
         {/* 11. Section: FAQ */}
