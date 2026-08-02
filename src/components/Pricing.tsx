@@ -14,11 +14,10 @@ interface PricingProps {
 export default function Pricing({ onOpenGenerate }: PricingProps) {
   const features = [
     "PDF professionnel & structuré",
-    "Livraison en 5 min par email",
+    "PDF envoyé rapidement par email",
     "Format prêt à l'envoi client",
-    "Facturation française avec TVA",
-    "Support dédié par email",
-    "Régénération gratuite si besoin"
+    "Facture disponible",
+    "Support dédié par email"
   ];
 
   return (
@@ -88,7 +87,7 @@ export default function Pricing({ onOpenGenerate }: PricingProps) {
 
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-300 font-medium">
                 <ShieldCheck className="h-4 w-4 text-[#B8935A]" />
-                <span>Paiement sécurisé Stripe · Facture avec TVA</span>
+                <span>Paiement sécurisé · Facture disponible</span>
               </div>
             </div>
 
