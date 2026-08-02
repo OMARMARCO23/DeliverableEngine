@@ -31,7 +31,7 @@ export default function Footer({ onOpenGenerate }: FooterProps) {
         </h2>
 
         <p className="mt-4 text-base sm:text-lg text-slate-300 max-w-xl mx-auto leading-relaxed font-sans">
-          Testez sur votre prochain RFP. 19 € seulement, résultat en 5 minutes.
+          Testez sur votre prochain RFP. 19 € seulement, résultat en quelques minutes.
         </p>
 
         {/* CTA Button */}
@@ -47,7 +47,7 @@ export default function Footer({ onOpenGenerate }: FooterProps) {
           </button>
           
           <p className="text-xs text-slate-400 font-sans mt-1">
-            Livré par email en 5 minutes · Satisfait ou regénéré
+            PDF prêt à l'emploi livré rapidement par email
           </p>
         </div>
 
