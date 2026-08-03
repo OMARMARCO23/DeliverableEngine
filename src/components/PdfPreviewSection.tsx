@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Eye, FileText, FileCheck, X, Sparkles, Building2, Stethoscope, Cpu, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Eye, FileText, FileCheck, X, Sparkles, Building2, Stethoscope, Cpu, CheckCircle2, ArrowRight, ExternalLink, Download } from 'lucide-react';
 
 interface SectorExample {
   id: string;
   sector: string;
   icon: React.ReactNode;
   tagline: string;
+  sourcePdfUrl?: string;
+  generatedPdfUrl?: string;
   rfpSource: {
     title: string;
+    sourcePdfUrl?: string;
+    generatedPdfUrl?: string;
     issuer: string;
     reference: string;
     content: string[];
   };
   pdfGenerated: {
     title: string;
+    sourcePdfUrl?: string;
+    generatedPdfUrl?: string;
     pages: string;
     sectionsCount: number;
     highlights: string[];
@@ -22,17 +28,29 @@ interface SectorExample {
   };
 }
 
+const getValidPdfUrl = (url?: string): string | undefined => {
+  if (!url) return undefined;
+  let clean = url.trim();
+  if (clean.startsWith('public/')) {
+    clean = '/' + clean.replace(/^public\//, '');
+  } else if (!clean.startsWith('/')) {
+    clean = '/' + clean;
+  }
+  return clean;
+};
+
 const SECTOR_EXAMPLES: SectorExample[] = [
   {
     id: 'sante',
     sector: 'Santé',
     icon: <Stethoscope className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Modernisation des systèmes d\'information hospitaliers & conformité HDS',
-    // 👈 Ajoutez vos liens ici :
-    sourcePdfUrl: '/public/docs/AppelDoffreSanteSource.pdf',
-    generatedPdfUrl: '/public/docs/rfp-sante-genere.pdf',
+    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
     rfpSource: {
       title: 'Appel d\'Offres Public : Modernisation du Parcours Patient & HDS',
+      sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+      generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
       issuer: 'Groupement Hospitalier Régional (GHR)',
       reference: 'RFP-2026-SANTE-089',
       content: [
@@ -393,16 +411,54 @@ export default function PdfPreviewSection() {
               </div>
 
               {/* Modal Footer */}
-              <div className="bg-slate-100 p-4 sm:p-5 border-t border-slate-200 flex items-center justify-between shrink-0">
+              <div className="bg-slate-100 p-4 sm:p-5 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
                 <span className="text-xs text-slate-500 italic font-sans">
                   Watermark « EXEMPLE » actif sur cette démonstration
                 </span>
-                <button
-                  onClick={() => setActiveModal(null)}
-                  className="px-5 py-2 bg-[#1B263B] hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
-                >
-                  Fermer l'aperçu
-                </button>
+
+                <div className="flex items-center gap-2">
+                  {(() => {
+                    const sourceUrl = getValidPdfUrl(selectedSector.sourcePdfUrl || selectedSector.rfpSource?.sourcePdfUrl);
+                    const generatedUrl = getValidPdfUrl(selectedSector.generatedPdfUrl || selectedSector.pdfGenerated?.generatedPdfUrl || selectedSector.rfpSource?.generatedPdfUrl);
+
+                    if (activeModal.type === 'source' && sourceUrl) {
+                      return (
+                        <a
+                          href={sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          Ouvrir le document PDF original
+                        </a>
+                      );
+                    }
+
+                    if (activeModal.type === 'pdf' && generatedUrl) {
+                      return (
+                        <a
+                          href={generatedUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="px-4 py-2 bg-[#B8935A] hover:bg-[#a3804b] text-[#1B263B] rounded-xl text-xs font-bold transition-all flex items-center gap-1.5"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          Télécharger le PDF généré
+                        </a>
+                      );
+                    }
+
+                    return null;
+                  })()}
+
+                  <button
+                    onClick={() => setActiveModal(null)}
+                    className="px-5 py-2 bg-[#1B263B] hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all cursor-pointer"
+                  >
+                    Fermer l'aperçu
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
