@@ -81,8 +81,12 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     sector: 'BTP',
     icon: <Building2 className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Assistance à la gestion de projet environnementale & infrastructures',
+    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
     rfpSource: {
       title: 'Consultation d\'Ingénierie BTP : AMO Démarche Environnementale HQE',
+      sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+      generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
       issuer: 'SNCF Réseau / Partenaire Infra BTP',
       reference: 'RFP-2026-BTP-412',
       content: [
@@ -113,8 +117,12 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     sector: 'Transformation digitale',
     icon: <Cpu className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Refonte de plateformes web, migration Cloud & Conduite du changement',
+    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
     rfpSource: {
       title: 'Cahier des Charges RFP : Refonte du Portail Adhérents & Migration AWS',
+      sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+      generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
       issuer: 'Mutuelle Européenne du Travail',
       reference: 'RFP-2026-DIGIT-77',
       content: [
@@ -237,10 +245,10 @@ export default function PdfPreviewSection() {
 
                 <button
                   onClick={() => setActiveModal({ type: 'pdf', sectorId: item.id })}
-                  className="w-full py-2.5 px-3 bg-[#1B263B] hover:bg-slate-800 text-[#B8935A] border border-[#B8935A]/40 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
+                  className="w-full py-2.5 px-3 bg-[#1B263B] hover:bg-slate-800 text-[#B8935A] border border-[#B8935A]/50 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:border-[#B8935A]"
                 >
-                  <FileCheck className="h-3.5 w-3.5 text-[#B8935A]" />
-                  Voir le PDF généré
+                  <Download className="h-4 w-4 text-[#B8935A]" />
+                  Voir & Télécharger le PDF généré
                 </button>
               </div>
             </motion.div>
@@ -351,6 +359,41 @@ export default function PdfPreviewSection() {
                 ) : (
                   /* VIEW: PDF GENERATED */
                   <div className="space-y-6 relative z-10">
+                    {/* Prominent Top Banner to Download PDF */}
+                    {(() => {
+                      const generatedUrl = getValidPdfUrl(selectedSector.generatedPdfUrl || selectedSector.pdfGenerated?.generatedPdfUrl || selectedSector.rfpSource?.generatedPdfUrl);
+                      if (generatedUrl) {
+                        return (
+                          <div className="p-4 bg-gradient-to-r from-[#1B263B] via-slate-900 to-[#1B263B] border-2 border-[#B8935A] rounded-2xl text-white shadow-xl flex flex-col sm:flex-row items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                              <div className="p-3 bg-[#B8935A]/20 border border-[#B8935A]/40 rounded-xl text-[#B8935A] shrink-0">
+                                <Download className="h-6 w-6 text-[#B8935A]" />
+                              </div>
+                              <div>
+                                <p className="font-bold text-sm sm:text-base text-white">
+                                  Télécharger le document PDF généré
+                                </p>
+                                <p className="text-xs text-slate-300">
+                                  Fichier PDF complet ({selectedSector.pdfGenerated.pages}) à ouvrir ou enregistrer
+                                </p>
+                              </div>
+                            </div>
+
+                            <a
+                              href={generatedUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-full sm:w-auto px-6 py-3 bg-[#B8935A] hover:bg-[#a3804b] text-[#1B263B] font-extrabold rounded-xl text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg transition-transform hover:scale-105 shrink-0"
+                            >
+                              <Download className="h-4 w-4" />
+                              Télécharger le PDF (.pdf)
+                            </a>
+                          </div>
+                        );
+                      }
+                      return null;
+                    })()}
+
                     <div className="bg-white p-6 rounded-2xl border-2 border-[#B8935A]/40 shadow-md space-y-6">
                       <div className="flex items-center justify-between pb-4 border-b border-slate-200">
                         <div className="flex items-center gap-2">
