@@ -28,6 +28,9 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     sector: 'Santé',
     icon: <Stethoscope className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Modernisation des systèmes d\'information hospitaliers & conformité HDS',
+    // 👈 Ajoutez vos liens ici :
+    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
     rfpSource: {
       title: 'Appel d\'Offres Public : Modernisation du Parcours Patient & HDS',
       issuer: 'Groupement Hospitalier Régional (GHR)',
