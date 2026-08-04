@@ -82,7 +82,7 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     icon: <Building2 className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Assistance à la gestion de projet environnementale & infrastructures',
     sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
-    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
+    generatedPdfUrl: '/docs/rfp-btp-genere.pdf',
     rfpSource: {
       title: 'Consultation d\'Ingénierie BTP : AMO Démarche Environnementale HQE',
       sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
