@@ -81,12 +81,12 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     sector: 'BTP',
     icon: <Building2 className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Assistance à la gestion de projet environnementale & infrastructures',
-    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+    sourcePdfUrl: '/docs/AppelDoffreBTPSource.pdf',
     generatedPdfUrl: '/docs/rfp-btp-genere.pdf',
     rfpSource: {
       title: 'Consultation d\'Ingénierie BTP : AMO Démarche Environnementale HQE',
-      sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
-      generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
+      sourcePdfUrl: '/docs/AppelDoffreBTPSource.pdf',
+      generatedPdfUrl: '/docs/rfp-btp-genere.pdf',
       issuer: 'SNCF Réseau / Partenaire Infra BTP',
       reference: 'RFP-2026-BTP-412',
       content: [
