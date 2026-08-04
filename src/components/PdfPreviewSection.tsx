@@ -97,8 +97,8 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     },
     pdfGenerated: {
       title: 'Mémoire Technique & Offre d\'Accompagnement — AMO Environnemental & HQE Gare Centrale',
-      pages: '9 pages',
-      sectionsCount: 9,
+      pages: '15 pages',
+      sectionsCount: 10,
       highlights: [
         'Cadre méthodologique conforme aux référentiels BREEAM & HQE',
         'Matrice d\'arbitrage bas-carbone & économie circulaire',
