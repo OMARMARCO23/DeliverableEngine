@@ -81,12 +81,12 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     sector: 'BTP',
     icon: <Building2 className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Assistance à la gestion de projet environnementale & infrastructures',
-    sourcePdfUrl: '/docs/AppelDoffreBTPSource.pdf',
-    generatedPdfUrl: '/docs/rfp-btp-genere.pdf',
+    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
     rfpSource: {
       title: 'Consultation d\'Ingénierie BTP : AMO Démarche Environnementale HQE',
-      sourcePdfUrl: '/docs/AppelDoffreBTPSource.pdf',
-      generatedPdfUrl: '/docs/rfp-btp-genere.pdf',
+      sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
+      generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
       issuer: 'SNCF Réseau / Partenaire Infra BTP',
       reference: 'RFP-2026-BTP-412',
       content: [
@@ -97,8 +97,8 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     },
     pdfGenerated: {
       title: 'Mémoire Technique & Offre d\'Accompagnement — AMO Environnemental & HQE Gare Centrale',
-      pages: '15 pages',
-      sectionsCount: 10,
+      pages: '9 pages',
+      sectionsCount: 9,
       highlights: [
         'Cadre méthodologique conforme aux référentiels BREEAM & HQE',
         'Matrice d\'arbitrage bas-carbone & économie circulaire',
@@ -117,8 +117,8 @@ const SECTOR_EXAMPLES: SectorExample[] = [
     sector: 'Transformation digitale',
     icon: <Cpu className="h-6 w-6 text-[#B8935A]" />,
     tagline: 'Refonte de plateformes web, migration Cloud & Conduite du changement',
-    sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
-    generatedPdfUrl: '/docs/rfp-sante-genere.pdf',
+    sourcePdfUrl: '/docs/AppelDoffreDigitSource.pdf',
+    generatedPdfUrl: '/docs/rfp-digit-genere.pdf',
     rfpSource: {
       title: 'Cahier des Charges RFP : Refonte du Portail Adhérents & Migration AWS',
       sourcePdfUrl: '/docs/AppelDoffreSanteSource.pdf',
