@@ -431,16 +431,27 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
 
             {!isSuccess ? (
               <>
-                {/* ÉTAPE 1: Document RFP */}
+                {/* ÉTAPE 1: RFP Input */}
                 {currentStep === 1 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Déposez votre RFP / Appel d’offres
+                        Déposez votre RFP / Cahier des charges
                       </h3>
                       <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Uploadez le document original ou collez le texte. Plus le contenu est complet, meilleure sera la réponse.
+                        Uploadez le document d'appel d'offres ou collez son texte. Le fichier sera stocké sur Supabase Storage et traité par le workflow n8n.
                       </p>
+                    </div>
+
+                    {/* Information Banner on n8n Workflow */}
+                    <div className="p-3.5 bg-blue-50/80 border border-blue-200/80 rounded-xl text-xs text-blue-900 flex items-start gap-3">
+                      <FileText className="h-4 w-4 text-blue-600 shrink-0 mt-0.5" />
+                      <div>
+                        <strong>Traitement automatisé Supabase & n8n :</strong>
+                        <p className="mt-0.5 text-blue-800">
+                          Votre document d'appel d'offres est transmis en toute sécurité. Le workflow n8n se chargera de lire le fichier, d'extraire automatiquement toutes les métadonnées de l'acheteur (émetteur, budget, planning, exigences) et de déclencher l'analyse Gemini.
+                        </p>
+                      </div>
                     </div>
 
                     {/* Champ 1: File Upload */}
@@ -455,7 +466,8 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                           accept=".pdf,.doc,.docx"
                           onChange={(e) => {
                             if (e.target.files && e.target.files[0]) {
-                              setFormData((prev) => ({ ...prev, rfp_file: e.target.files![0] }));
+                              const uploadedFile = e.target.files[0];
+                              setFormData((prev) => ({ ...prev, rfp_file: uploadedFile }));
                               setStepError(null);
                             }
                           }}
@@ -468,7 +480,7 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                             <div className="text-left">
                               <p className="text-xs font-bold text-slate-900">{formData.rfp_file.name}</p>
                               <p className="text-[10px] text-slate-500 font-mono">
-                                {(formData.rfp_file.size / (1024 * 1024)).toFixed(2)} Mo · Fichier prêt
+                                {(formData.rfp_file.size / (1024 * 1024)).toFixed(2)} Mo · Prêt pour transmission
                               </p>
                             </div>
                             <button
@@ -505,10 +517,10 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                     {/* Champ 2: Textarea */}
                     <div>
                       <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        2. Collage de texte
+                        2. Collage du texte de l'appel d'offres
                       </label>
                       <textarea
-                        rows={6}
+                        rows={5}
                         name="rfp_text"
                         placeholder="Collez ici le contenu complet du cahier des charges / appel d’offres…"
                         value={formData.rfp_text}
@@ -525,42 +537,45 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                   </div>
                 )}
 
-                {/* ÉTAPE 2: Informations essentielles */}
+                {/* ÉTAPE 2: Informations sur VOTRE cabinet */}
                 {currentStep === 2 && (
                   <div className="space-y-6">
                     <div>
                       <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Informations essentielles
+                        Informations sur votre cabinet / répondeur
                       </h3>
                       <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Ces éléments permettent de personnaliser fortement la réponse.
+                        Ces informations concernent <strong>votre structure</strong> (consultant / cabinet qui répond). Les données de l'acheteur seront extraites automatiquement depuis le document par le workflow n8n.
                       </p>
                     </div>
 
-                    {/* Champ 1: client_name */}
+                    {/* Champ 1: client_name (Represents the consulting firm / consultant responding) */}
                     <div>
                       <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Nom du client / entreprise <span className="text-red-500">*</span>
+                        Nom de votre cabinet ou consultant <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         name="client_name"
-                        placeholder="Ex : Groupe Dupont, Mairie de Lyon, TechNova…"
+                        placeholder="Ex : Cabinet CapAdvice, Consult-Tech, Marc Dupont Conseil…"
                         value={formData.client_name}
                         onChange={(e) => setFormData((prev) => ({ ...prev, client_name: e.target.value }))}
                         className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
                       />
+                      <p className="text-[11px] text-slate-500 mt-1">
+                        Nom sous lequel vous présentez votre réponse commerciale.
+                      </p>
                     </div>
 
                     {/* Champ 2: positioning */}
                     <div>
                       <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Votre positionnement <span className="text-red-500">*</span>
+                        Votre positionnement métier <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
                         name="positioning"
-                        placeholder="Ex : Consultant en transformation digitale, Expert cybersécurité, Spécialiste organisation & change…"
+                        placeholder="Ex : Cabinet spécialisé AMO SIH, Expert transformation Cloud, Conseil en conduite du changement…"
                         value={formData.positioning}
                         onChange={(e) => setFormData((prev) => ({ ...prev, positioning: e.target.value }))}
                         className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
@@ -637,14 +652,14 @@ export default function RfpFormWizard({ isOpen, onClose }: RfpFormWizardProps) {
                         Vos points de différenciation
                       </h3>
                       <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Optionnel mais fortement recommandé. Plus vous donnez d’éléments, plus la réponse sera percutante.
+                        Indiquez les arguments propres à votre cabinet (méthodologie, cas clients similaires, certifications) pour enrichir la proposition.
                       </p>
                     </div>
 
                     {/* Champ 1: differentiation */}
                     <div>
                       <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Points forts / différenciation
+                        Points forts / différenciation de votre cabinet
                       </label>
                       <textarea
                         rows={5}
