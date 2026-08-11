@@ -11,9 +11,9 @@ export default function HowItWorks() {
   const steps = [
     {
       num: "Étape 1",
-      title: "Uploadez votre RFP",
-      icon: <UploadCloud className="h-8 w-8 text-[#B8935A]" />,
-      desc: "PDF, Word ou collez le texte de votre appel d'offres"
+      title: "Collez votre RFP",
+      icon: <Sparkles className="h-8 w-8 text-[#B8935A]" />,
+      desc: "Collez le texte de votre appel d'offres ou cahier des charges"
     },
     {
       num: "Étape 2",
