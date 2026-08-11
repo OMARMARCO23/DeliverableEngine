@@ -149,6 +149,11 @@ export const DELIVERABLE_EXAMPLES: DeliverableExample[] = [
     sourceUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/AppelDoffreDigitSource.pdf',
     generatedUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/rfp-digital-genere.pdf',
     contentHtml: ''
+    <p className="mt-10 text-center text-xs text-slate-400 italic">
+  Les noms d'organisations, chiffres et références utilisés dans ces exemples
+  sont entièrement fictifs et créés à des fins de démonstration.
+  Toute ressemblance avec des entités réelles est purement fortuite.
+</p>
   },
   {
     id: 'btp',
