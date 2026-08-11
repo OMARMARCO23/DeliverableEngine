@@ -172,17 +172,19 @@ export default function Pricing({ onOpenGenerate }: PricingProps) {
             className="lg:col-span-2 space-y-4"
           >
             {/* Bloc garantie */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 
-                            p-5">
+            {/* Bloc document personnalisable */}
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
               <div className="flex items-center gap-2 mb-3">
-                <RefreshCw className="h-4 w-4 text-[#B8935A]" />
+                <FileText className="h-4 w-4 text-[#B8935A]" />
                 <span className="text-xs font-bold text-[#1B263B]">
-                  Satisfait ou régénéré
+                  Document de travail
                 </span>
               </div>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Si le document généré ne correspond pas à votre appel d'offres, 
-                nous le régénérons sans frais supplémentaires.
+                Le PDF reçu est une base structurée de 8 à 11 pages. 
+                Copiez le texte dans Word ou Google Docs, 
+                personnalisez avec vos références et tarifs, 
+                puis envoyez à votre client.
               </p>
             </div>
 
