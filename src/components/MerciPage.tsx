@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CheckCircle2,
   Mail,
@@ -12,14 +12,114 @@ import {
   ArrowLeft,
   Sparkles,
   ShieldCheck,
-  HelpCircle
+  HelpCircle,
+  Check,
+  Loader2
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 
 interface MerciPageProps {
   onGoHome: () => void;
 }
 
 export default function MerciPage({ onGoHome }: MerciPageProps) {
+  const [syncStatus, setSyncStatus] = useState<'syncing' | 'success' | 'done'>('syncing');
+  const [userEmail, setUserEmail] = useState<string>('');
+
+  useEffect(() => {
+    async function processOrderConfirmation() {
+      try {
+        const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
+        const urlParams = new URLSearchParams(window.location.search);
+
+        // 1. Get RFP ID from query params or localStorage
+        const rfpId =
+          urlParams.get('rfp_id') ||
+          urlParams.get('custom_rfp_id') ||
+          urlParams.get('checkout[custom][rfp_id]') ||
+          urlParams.get('order_id') ||
+          localStorage.getItem('rfp_latest_id');
+
+        // 2. Get email from query params or localStorage
+        const email =
+          urlParams.get('email') ||
+          urlParams.get('checkout[email]') ||
+          localStorage.getItem('rfp_latest_email') ||
+          '';
+
+        setUserEmail(email);
+
+        // 3. Get RFP form data stored in localStorage
+        let storedData: Record<string, unknown> = {};
+        try {
+          const raw = localStorage.getItem('rfp_latest_data');
+          if (raw) storedData = JSON.parse(raw);
+        } catch (e) {
+          console.warn('LocalStorage parse error:', e);
+        }
+
+        // 4. Update Supabase Database status to 'paid' in both tables
+        if (supabase && rfpId) {
+          const updatePayload = {
+            status: 'paid',
+            paid_at: new Date().toISOString()
+          };
+
+          try {
+            await supabase
+              .from('rfp_requests')
+              .update(updatePayload)
+              .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
+          } catch (err) {
+            console.error('Supabase rfp_requests update error:', err);
+          }
+
+          try {
+            await supabase
+              .from('rfp_pending')
+              .update(updatePayload)
+              .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
+          } catch (err) {
+            console.error('Supabase rfp_pending update error:', err);
+          }
+        }
+
+        // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution)
+        const webhookUrl =
+          envMeta?.VITE_N8N_WEBHOOK_URL ||
+          envMeta?.VITE_N8N_WEBHOOK1_URL;
+
+        if (webhookUrl) {
+          const webhookPayload = {
+            event: 'payment_completed',
+            status: 'paid',
+            rfp_id: rfpId || 'UNKNOWN',
+            email: email || storedData.email,
+            client_name: storedData.client_name,
+            positioning: storedData.positioning,
+            objective: storedData.objective,
+            differentiation: storedData.differentiation,
+            rfp_text: storedData.rfp_text,
+            timestamp: new Date().toISOString()
+          };
+
+          await fetch(webhookUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookPayload)
+          }).catch((err) => console.error('Webhook trigger error:', err));
+        }
+
+        setSyncStatus('success');
+      } catch (err) {
+        console.error('Error during order confirmation processing:', err);
+        setSyncStatus('done');
+      }
+    }
+
+    processOrderConfirmation();
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans flex flex-col justify-between">
       {/* Header Bar */}
@@ -64,6 +164,21 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           Votre paiement a bien été traité. Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.
         </p>
 
+        {/* Live Status Badge */}
+        <div className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold">
+          {syncStatus === 'syncing' ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
+              <span>Validation de la commande & déclenchement du moteur IA...</span>
+            </>
+          ) : (
+            <>
+              <Check className="h-4 w-4 text-emerald-600 font-bold" />
+              <span>Paiement enregistré dans la base & Workflow IA activé avec succès !</span>
+            </>
+          )}
+        </div>
+
         {/* Status Card */}
         <div className="mt-8 w-full bg-white rounded-3xl border border-slate-200 shadow-xl p-6 sm:p-8 space-y-6">
           <div className="flex items-center gap-3 pb-5 border-b border-slate-100">
@@ -75,7 +190,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
                 Livraison directement par e-mail
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Vous allez recevoir votre livrable sur l’adresse renseignée lors de la commande.
+                Vous allez recevoir votre livrable sur l’adresse : {userEmail ? <strong className="text-slate-800 font-mono">{userEmail}</strong> : "renseignée lors de la commande"}.
               </p>
             </div>
           </div>
