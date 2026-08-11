@@ -32,7 +32,7 @@ const SECTORS: SectorExample[] = [
     id: 'sante',
     sector: 'Santé',
     icon: <Stethoscope className="h-5 w-5" />,
-    client: 'CHU de Montpellier',
+    client: 'Centre Hospitalier Universitaire de Valméranr',
     stats: '8 500 agents · 14 mois · 380 000 – 620 000 € HT',
     highlights: [
       'Terminologie santé (agents, SIH, parcours patient)',
