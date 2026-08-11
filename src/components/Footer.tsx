@@ -37,7 +37,7 @@ export default function Footer({ onOpenGenerate }: FooterProps) {
         {/* CTA Button */}
         <div className="mt-8 flex flex-col items-center gap-3">
           <button
-            onClick={onOpenGenerate}
+            onClick={() => onOpenGenerate()}
             style={{ backgroundColor: '#B8935A' }}
             className="group inline-flex items-center gap-2.5 rounded-xl hover:bg-[#9e7b45] px-8 py-4 text-base font-bold text-[#1B263B] shadow-xl transition-all active:scale-98 cursor-pointer"
           >
