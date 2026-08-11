@@ -43,7 +43,7 @@ export default function Header({ onOpenGenerate }: HeaderProps) {
             <span className="text-[#B8935A] font-bold bg-[#B8935A]/10 px-2 py-0.5 rounded border border-[#B8935A]/30">19 €</span>
           </div>
           <button
-            onClick={onOpenGenerate}
+            onClick={() => onOpenGenerate()}
             className="px-5 py-2.5 bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] font-bold rounded-lg text-xs transition-all shadow-md active:scale-95 cursor-pointer flex items-center gap-1.5"
           >
             <Sparkles className="h-3.5 w-3.5 fill-[#1B263B]" />
