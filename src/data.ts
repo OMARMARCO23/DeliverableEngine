@@ -16,7 +16,7 @@ Avec Deliverable Engine, vous obtenez :
 — Vos vrais chiffres injectés automatiquement : budget, dates, effectifs, volume d'activité
 — Un document de 8 à 11 pages en moins de 10 minutes
 
-Avec ChatGPT, vous passez 30 à 60 minutes à structurer, reformuler, corriger les chiffres. Ici, vous personnalisez directement le résultat final.`
+Avec ChatGPT, vous passez 30 à 60 minutes à structurer, reformuler, corriger les chiffres et vérifier la cohérence. Ici, vous recevez un document structuré directement exploitable.`
   },
   {
     id: 'faq-2',
@@ -29,7 +29,7 @@ Avec ChatGPT, vous passez 30 à 60 minutes à structurer, reformuler, corriger l
 — Le chiffre d'affaires ou budget annuel
 — La ville et l'adresse du siège
 
-Ces données sont injectées directement dans le document généré. Aucune saisie manuelle requise.`
+Ces données sont injectées directement dans le document généré. Aucune saisie manuelle de ces informations n'est requise.`
   },
   {
     id: 'faq-3',
@@ -38,25 +38,29 @@ Ces données sont injectées directement dans le document généré. Aucune sais
 
 0. Synthèse (en bref)
 1. Lettre d'accompagnement
-2. Compréhension de vos enjeux
-3. Votre proposition en 3 axes
-4. Approche et planning
+2. Compréhension de vos enjeux (avec tableau de données et impact chiffré)
+3. Proposition en 3 axes
+4. Approche et planning (méthodologie en 6 phases, planning, matrice des risques)
 5. Équipe et gouvernance
 6. Références clients
-7. Tarification (2 options : forfait et régie)
-8. Cadre juridique
-9. Prochaines étapes
+7. Tarification (2 options : forfait global et régie avec plafonnement)
+8. Cadre juridique (contrat, confidentialité, PI, RGPD, réversibilité)
+9. Prochaines étapes (calendrier de la consultation)
 
-Chaque section contient des placeholders clairs [À PERSONNALISER] pour vos données propres : références réelles, noms de consultants, montants définitifs.`
+Les sections contenant vos informations propres (références réelles, noms de consultants, montants définitifs) sont indiquées par des placeholders [À PERSONNALISER].`
   },
   {
     id: 'faq-4',
-    question: "Que se passe-t-il si le document ne correspond pas à mon appel d'offres ?",
-    answer: `Si le document généré ne correspond pas à votre appel d'offres, contactez-nous à support@deliverable-engine.io.
+    question: "Comment personnaliser le document reçu ?",
+    answer: `Le PDF reçu est un document de travail structuré. Pour le personnaliser :
 
-Nous analysons le cas et régénérons le document sans frais supplémentaires.
+1. Copiez le texte du PDF dans Word, Google Docs ou tout éditeur de votre choix
+2. Remplacez les placeholders [À PERSONNALISER] par vos vraies informations
+3. Ajoutez vos références clients, les CV de vos consultants, vos tarifs réels
+4. Adaptez le ton et les formulations selon vos préférences
+5. Appliquez votre charte graphique si souhaité
 
-Pour obtenir le meilleur résultat : collez le texte complet de votre appel d'offres (idéalement 500 caractères minimum). Plus le texte est complet, plus l'extraction est précise.`
+Le document est conçu comme une base de travail complète — pas comme un document finalisé. Vous gagnez plusieurs heures de rédaction et de structuration.`
   },
   {
     id: 'faq-5',
@@ -64,19 +68,19 @@ Pour obtenir le meilleur résultat : collez le texte complet de votre appel d'of
     answer: `Oui. Trois garanties concrètes :
 
 1. Hébergement Europe — vos données sont stockées et traitées en Union Européenne.
-2. Aucun réentraînement — vos documents ne servent jamais à entraîner des modèles publics.
+2. Aucun réentraînement — vos documents ne servent jamais à entraîner des modèles IA.
 3. Transmission chiffrée — toutes les communications sont chiffrées (HTTPS/TLS).
 
-Votre appel d'offres est traité uniquement pour générer votre document, puis n'est pas exploité à d'autres fins.`
+Votre appel d'offres est traité uniquement pour générer votre document.`
   },
   {
     id: 'faq-6',
     question: "Combien de temps faut-il pour recevoir le PDF ?",
     answer: `En général moins de 10 minutes après validation du paiement.
 
-Le document est envoyé directement par email à l'adresse que vous avez renseignée lors de la commande.
+Le document est envoyé directement par email à l'adresse renseignée lors de la commande.
 
-Si vous ne recevez rien dans les 15 minutes, vérifiez vos spams ou contactez support@deliverable-engine.io — nous résolvons sous 24h.`
+Si vous ne recevez rien dans les 15 minutes, vérifiez vos spams ou contactez support@deliverable-engine.io.`
   },
   {
     id: 'faq-7',
@@ -90,21 +94,23 @@ Testé et validé sur :
 — BTP et construction
 — RH, stratégie, finance, comptabilité
 
-Le moteur s'adapte automatiquement au vocabulaire du secteur détecté dans votre appel d'offres.`
+Le moteur s'adapte automatiquement au vocabulaire du secteur détecté dans votre appel d'offres. Vous pouvez consulter des exemples concrets dans la section Aperçu de la page d'accueil.`
   },
   {
     id: 'faq-8',
     question: "Y a-t-il un abonnement ou des frais cachés ?",
     answer: `Non. Le modèle est simple :
 
-— 19 € par génération pendant la période de lancement
+— 19 € par génération (offre de lancement)
 — Aucun abonnement mensuel
+— Aucun engagement
 — Aucun frais caché
-— Facture disponible pour chaque achat (déductible de vos frais professionnels)
+— Facture disponible pour chaque achat
 
 Vous payez uniquement quand vous en avez besoin.`
   }
 ];
+
 
 export const PRICING_DATA: PricingTier[] = [
   {
