@@ -8,7 +8,7 @@ import { motion } from 'motion/react';
 import { ArrowRight, Sparkles, Upload, FileText, CheckCircle2, ShieldCheck, Zap, Check } from 'lucide-react';
 
 interface HeroProps {
-  onOpenGenerate: () => void;
+  onOpenGenerate: (initialData?: { rfp_text?: string; positioning?: string }) => void;
   onOpenVideo?: () => void;
 }
 
@@ -16,16 +16,13 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
   const [rfpFileName, setRfpFileName] = useState<string | null>(null);
   const [pastedText, setPastedText] = useState('');
   const [positioning, setPositioning] = useState('');
-  const [isSimulating, setIsSimulating] = useState(false);
-  const [simComplete, setSimComplete] = useState(false);
 
-  const handleSimulate = (e: React.FormEvent) => {
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSimulating(true);
-    setTimeout(() => {
-      setIsSimulating(false);
-      setSimComplete(true);
-    }, 1800);
+    onOpenGenerate({
+      rfp_text: pastedText,
+      positioning: positioning
+    });
   };
 
   return (
@@ -170,102 +167,45 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                 </span>
               </div>
 
-              {!simComplete ? (
-                <form onSubmit={handleSimulate} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-200 mb-1.5 flex items-center justify-between">
-                      <span>1. Votre Appel d'Offres (RFP)</span>
-                      <span className="text-[10px] text-slate-400">PDF, Word ou Texte brut</span>
-                    </label>
-
-                    {/* Upload box */}
-                    <div className="relative border-2 border-dashed border-slate-700 hover:border-[#B8935A] rounded-xl p-4 text-center transition-colors bg-slate-800/50 group cursor-pointer">
-                      <input
-                        type="file"
-                        accept=".pdf,.doc,.docx,.txt"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            setRfpFileName(e.target.files[0].name);
-                          }
-                        }}
-                        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      />
-                      <Upload className="mx-auto h-7 w-7 text-[#B8935A] mb-1 group-hover:scale-110 transition-transform" />
-                      <p className="text-xs font-semibold text-slate-200">
-                        {rfpFileName ? (
-                          <span className="text-emerald-400 font-mono">✓ {rfpFileName}</span>
-                        ) : (
-                          "Déposez votre RFP ici ou cliquez pour parcourir"
-                        )}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1">Cahier des charges, brief client ou sujet RFP</p>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-200 mb-1">
-                      Ou collez un extrait de votre RFP :
-                    </label>
-                    <textarea
-                      rows={2}
-                      placeholder="Ex: Le prestataire devra réaliser un diagnostic organisationnel en 6 semaines..."
-                      value={pastedText}
-                      onChange={(e) => setPastedText(e.target.value)}
-                      className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-[#B8935A]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-200 mb-1">
-                      2. Vos points forts & positionnement (facultatif)
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="Ex: Expert agile, 10 ans d'exp, méthodologie lean..."
-                      value={positioning}
-                      onChange={(e) => setPositioning(e.target.value)}
-                      className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-[#B8935A]"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={onOpenGenerate}
-                    disabled={isSimulating}
-                    className="w-full py-3 px-4 bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] font-bold text-xs rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
-                  >
-                    {isSimulating ? (
-                      <>
-                        <Zap className="h-4 w-4 animate-spin" />
-                        Analyse du RFP et structuration...
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="h-4 w-4" />
-                        Lancer l'extraction & Générer ma réponse (19 €)
-                      </>
-                    )}
-                  </button>
-                </form>
-              ) : (
-                <div className="py-4 space-y-4 text-center">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-500/30">
-                    <CheckCircle2 className="h-6 w-6" />
-                  </div>
-                  <h3 className="font-serif-heading text-lg font-bold text-white">
-                    Analyse du RFP terminée !
-                  </h3>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Nous avons extrait 12 exigences clés, 3 livrables attendus et 4 critères d'évaluation.
+              <form onSubmit={handleFormSubmit} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-200 mb-1.5 flex items-center justify-between">
+                    <span>1. Votre Appel d'Offres (RFP)</span>
+                    <span className="text-[10px] text-[#B8935A]">Texte brut</span>
+                  </label>
+                  <textarea
+                    rows={5}
+                    placeholder="Collez ici le texte complet de votre cahier des charges, brief client ou sujet d'appel d'offres (ex: Le prestataire devra réaliser un diagnostic organisationnel en 6 semaines...)"
+                    value={pastedText}
+                    onChange={(e) => setPastedText(e.target.value)}
+                    className="w-full text-xs bg-slate-800/90 border border-slate-700 rounded-xl p-3 text-slate-200 placeholder-slate-400 focus:outline-none focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]"
+                  />
+                  <p className="text-[10px] text-slate-400 mt-1">
+                    Analyse automatique : extraction du budget, des dates et des exigences.
                   </p>
-                  <button
-                    onClick={onOpenGenerate}
-                    className="w-full py-3 bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] font-bold text-xs rounded-xl transition-all cursor-pointer"
-                  >
-                    Recevoir ma réponse finale par email (19 €)
-                  </button>
                 </div>
-              )}
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-200 mb-1">
+                    2. Vos points forts & positionnement (facultatif)
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ex: Expert agile, 10 ans d'exp, méthodologie lean..."
+                    value={positioning}
+                    onChange={(e) => setPositioning(e.target.value)}
+                    className="w-full text-xs bg-slate-800 border border-slate-700 rounded-lg p-2.5 text-slate-200 focus:outline-none focus:border-[#B8935A]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full py-3 px-4 bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] font-bold text-xs rounded-xl shadow-lg transition-all active:scale-[0.98] cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  Lancer l'extraction & Générer ma réponse (19 €)
+                </button>
+              </form>
             </motion.div>
           </div>
 
