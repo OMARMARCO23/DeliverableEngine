@@ -77,7 +77,7 @@ export default function Pricing({ onOpenGenerate }: PricingProps) {
             {/* CTA Button */}
             <div className="mt-8 pt-4 border-t border-slate-700/80">
               <button
-                onClick={onOpenGenerate}
+                onClick={() => onOpenGenerate()}
                 style={{ backgroundColor: '#B8935A' }}
                 className="w-full group inline-flex items-center justify-center gap-2.5 rounded-xl hover:bg-[#9e7b45] px-6 py-4 text-base font-bold text-[#1B263B] shadow-xl transition-all cursor-pointer active:scale-98"
               >
