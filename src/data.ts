@@ -7,29 +7,102 @@ import { FaqItem, PricingTier, DeliverableExample } from './types';
 
 export const FAQ_DATA: FaqItem[] = [
   {
-    id: 'why-not-chatgpt',
-    question: "Pourquoi pas simplement utiliser ChatGPT, Claude ou Gemini ?",
-    answer: "ChatGPT et Claude sont des outils généraux. Ils produisent du contenu correct, mais pas VOS contenus. Avec Deliverable Engine, l'IA apprend votre ton de voix, vos structures habituelles et vos grilles de templates métiers — pas un ton générique de consultant McKinsey. Vous ne perdez pas 30 minutes à re-rédiger ce que l'IA a généré. Résultat : un document prêt à envoyer en 10 minutes, pas en 1h30 de corrections. La différence en un chiffre : nos utilisateurs passent en moyenne 8 minutes de relecture finale contre 45 minutes avec ChatGPT."
+    id: 'faq-1',
+    question: "Pourquoi ne pas utiliser ChatGPT ou Gemini directement ?",
+    answer: `ChatGPT et Gemini sont des outils généraux. Ils génèrent du texte — pas une proposition RFP structurée.
+
+Avec Deliverable Engine, vous obtenez :
+— Une structure en 9 sections prête à l'emploi (lettre d'accompagnement, compréhension des enjeux, proposition, planning, équipe, tarification, cadre juridique...)
+— Vos vrais chiffres injectés automatiquement : budget, dates, effectifs, volume d'activité
+— Un document de 8 à 11 pages en moins de 10 minutes
+
+Avec ChatGPT, vous passez 30 à 60 minutes à structurer, reformuler, corriger les chiffres. Ici, vous personnalisez directement le résultat final.`
   },
   {
-    id: 'data-security',
-    question: "Mes données clients sont-elles vraiment sécurisées ?",
-    answer: "Absolument. Trois garanties : 1) Hébergement Europe — vos données ne quittent jamais l'Union Européenne. 2) Aucun entraînement — vos documents ne servent jamais à entraîner des modèles publics. 3) Accès sécurisé — liens Google Docs avec permissions restreintes, logs traçables. Nous sommes en cours de certification RGPD complète et DPA (Data Processing Agreement) pour les cabinets."
+    id: 'faq-2',
+    question: "Comment fonctionne l'extraction automatique des données ?",
+    answer: `Vous collez le texte de votre appel d'offres. Notre moteur analyse automatiquement le document et extrait :
+
+— Le budget (fourchette complète)
+— Les dates clés (remise, auditions, notification, démarrage)
+— L'effectif et le volume d'activité de l'organisation cliente
+— Le chiffre d'affaires ou budget annuel
+— La ville et l'adresse du siège
+
+Ces données sont injectées directement dans le document généré. Aucune saisie manuelle requise.`
   },
   {
-    id: 'custom-templates',
-    question: "Puis-je personnaliser les templates avec ma charte graphique ?",
-    answer: "Oui, et c'est le cœur du produit. Lors de l'onboarding, vous nous fournissez 2-3 exemples de vos livrables existants (propales, rapports, CR). Notre système analyse votre structure, votre vocabulaire, votre ton et vos sections récurrentes. Résultat : chaque document généré respecte votre méthodologie propre. Pas de \"copier-coller générique\". Plan Pro et Entreprise : personnalisation avancée avec variables dynamiques (logo client, charte couleurs, en-têtes personnalisés)."
+    id: 'faq-3',
+    question: "Que contient exactement le document généré ?",
+    answer: `Le document généré contient 9 sections structurées :
+
+0. Synthèse (en bref)
+1. Lettre d'accompagnement
+2. Compréhension de vos enjeux
+3. Votre proposition en 3 axes
+4. Approche et planning
+5. Équipe et gouvernance
+6. Références clients
+7. Tarification (2 options : forfait et régie)
+8. Cadre juridique
+9. Prochaines étapes
+
+Chaque section contient des placeholders clairs [À PERSONNALISER] pour vos données propres : références réelles, noms de consultants, montants définitifs.`
   },
   {
-    id: 'not-satisfied',
-    question: "Que se passe-t-il si le livrable généré ne me convient pas ?",
-    answer: "Deux lignes de défense : 1) Agent superviseur — un second agent IA relit et critique le document avant livraison (structure, cohérence, ton). 2) Garantie 30 jours — si le système ne s'adapte pas à vos templates ou ne vous fait pas gagner de temps dès le premier mois, remboursement intégral. Un simple email suffit. En pratique, nos utilisateurs modifient moins de 10% du contenu généré."
+    id: 'faq-4',
+    question: "Que se passe-t-il si le document ne correspond pas à mon appel d'offres ?",
+    answer: `Si le document généré ne correspond pas à votre appel d'offres, contactez-nous à support@deliverable-engine.io.
+
+Nous analysons le cas et régénérons le document sans frais supplémentaires.
+
+Pour obtenir le meilleur résultat : collez le texte complet de votre appel d'offres (idéalement 500 caractères minimum). Plus le texte est complet, plus l'extraction est précise.`
   },
   {
-    id: 'technical-expertise',
-    question: "Faut-il être expert en IA ou en tech pour l'utiliser ?",
-    answer: "Non. L'interface est un formulaire simple — comme remplir un brief client. Vous saisissez : nom du client, contexte, objectifs, données brutes. L'IA fait le reste. Aucun prompt engineering, aucune connaissance technique requise. Temps moyen d'onboarding : 15 minutes. Premier livrable généré : 10 minutes après."
+    id: 'faq-5',
+    question: "Mes données sont-elles sécurisées ?",
+    answer: `Oui. Trois garanties concrètes :
+
+1. Hébergement Europe — vos données sont stockées et traitées en Union Européenne.
+2. Aucun réentraînement — vos documents ne servent jamais à entraîner des modèles publics.
+3. Transmission chiffrée — toutes les communications sont chiffrées (HTTPS/TLS).
+
+Votre appel d'offres est traité uniquement pour générer votre document, puis n'est pas exploité à d'autres fins.`
+  },
+  {
+    id: 'faq-6',
+    question: "Combien de temps faut-il pour recevoir le PDF ?",
+    answer: `En général moins de 10 minutes après validation du paiement.
+
+Le document est envoyé directement par email à l'adresse que vous avez renseignée lors de la commande.
+
+Si vous ne recevez rien dans les 15 minutes, vérifiez vos spams ou contactez support@deliverable-engine.io — nous résolvons sous 24h.`
+  },
+  {
+    id: 'faq-7',
+    question: "Pour quels secteurs et types de missions est-ce adapté ?",
+    answer: `Deliverable Engine fonctionne sur tous les secteurs d'activité.
+
+Testé et validé sur :
+— Transformation digitale et refonte SI
+— Conseil en organisation et conduite du changement
+— Accompagnement hospitalier et SIH (santé)
+— BTP et construction
+— RH, stratégie, finance, comptabilité
+
+Le moteur s'adapte automatiquement au vocabulaire du secteur détecté dans votre appel d'offres.`
+  },
+  {
+    id: 'faq-8',
+    question: "Y a-t-il un abonnement ou des frais cachés ?",
+    answer: `Non. Le modèle est simple :
+
+— 19 € par génération pendant la période de lancement
+— Aucun abonnement mensuel
+— Aucun frais caché
+— Facture disponible pour chaque achat (déductible de vos frais professionnels)
+
+Vous payez uniquement quand vous en avez besoin.`
   }
 ];
 
