@@ -24,6 +24,7 @@ import MerciPage from './components/MerciPage';
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
+  const [initialHeroData, setInitialHeroData] = useState<{ rfp_text?: string; positioning?: string } | undefined>(undefined);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   useEffect(() => {
@@ -39,7 +40,12 @@ export default function App() {
     setCurrentPath('/');
   };
 
-  const handleOpenGenerate = () => {
+  const handleOpenGenerate = (data?: { rfp_text?: string; positioning?: string }) => {
+    if (data && typeof data === 'object' && !('nativeEvent' in data) && ('rfp_text' in data || 'positioning' in data)) {
+      setInitialHeroData(data);
+    } else {
+      setInitialHeroData(undefined);
+    }
     setIsGenerateModalOpen(true);
   };
 
@@ -91,6 +97,7 @@ export default function App() {
       {/* --- Interactive Modals --- */}
       <RfpFormWizard
         isOpen={isGenerateModalOpen}
+        initialData={initialHeroData}
         onClose={() => setIsGenerateModalOpen(false)}
       />
 
