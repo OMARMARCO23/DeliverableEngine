@@ -112,53 +112,7 @@ Vous payez uniquement quand vous en avez besoin.`
 ];
 
 
-export const PRICING_DATA: PricingTier[] = [
-  {
-    id: 'freelance',
-    name: 'Freelance',
-    priceMonthly: '49',
-    priceYearly: '490',
-    savingsYearly: '-17%',
-    target: 'Consultant indépendant (1 pers.)',
-    features: [
-      '50 livrables/mois',
-      '3 types de documents',
-      'Support e-mail'
-    ],
-    ctaText: 'Choisir l\'offre Freelance',
-    recommended: false
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    priceMonthly: '149',
-    priceYearly: '1490',
-    savingsYearly: '-17%',
-    target: 'Consultant senior / petit cabinet (2-5 pers.)',
-    features: [
-      'Volume de documents illimité',
-      '5 types de documents',
-      'Templates personnalisables',
-      'Support prioritaire'
-    ],
-    ctaText: 'Choisir l\'offre Pro',
-    recommended: true
-  },
-  {
-    id: 'entreprise',
-    name: 'Entreprise',
-    priceMonthly: 'Sur devis',
-    priceYearly: 'Sur devis',
-    target: 'Cabinets 5+ pers.',
-    features: [
-      'SSO, API',
-      'Templates sur-mesure',
-      'Formation équipe',
-      'SLA'
-    ],
-    ctaText: 'Nous contacter',
-    recommended: false
-  }
+export const PRICING_DATA: PricingTier[] = [ 
 ];
 
 export const DELIVERABLE_EXAMPLES: DeliverableExample[] = [
