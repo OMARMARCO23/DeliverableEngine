@@ -154,35 +154,85 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
       const tempOrderId = `TEMP-${Date.now()}`;
       let rfpRecord: { id?: string | number } | null = null;
 
-      // 1. Insert record into Supabase rfp_requests table
+      // 1. Insert record into Supabase (try both rfp_requests and rfp_pending)
+      const payload = {
+        order_id: tempOrderId,
+        email: formData.email,
+        client_name: formData.client_name,
+        positioning: formData.positioning,
+        objective: formData.objective === 'autre' ? formData.other_objective : formData.objective,
+        differentiation: formData.differentiation || null,
+        rfp_text: formData.rfp_text,
+        status: 'pending_payment'
+      };
+
       if (supabase) {
         try {
-          const { data: rfp, error: dbError } = await supabase
+          const { data: rfp1, error: e1 } = await supabase
             .from('rfp_requests')
-            .insert({
-              order_id: tempOrderId,
-              email: formData.email,
-              client_name: formData.client_name,
-              positioning: formData.positioning,
-              objective: formData.objective === 'autre' ? formData.other_objective : formData.objective,
-              differentiation: formData.differentiation || null,
-              rfp_text: formData.rfp_text,
-              status: 'pending_payment'
-            })
+            .insert(payload)
             .select()
             .single();
 
-          if (dbError) {
-            console.error('Supabase rfp_requests insert error:', dbError);
-          } else {
-            rfpRecord = rfp;
+          if (rfp1) {
+            rfpRecord = rfp1;
+          } else if (e1) {
+            console.error('Supabase rfp_requests error:', e1);
+          }
+
+          // Try rfp_pending table as well if it exists
+          const { data: rfp2, error: e2 } = await supabase
+            .from('rfp_pending')
+            .insert(payload)
+            .select()
+            .single();
+
+          if (!rfpRecord && rfp2) {
+            rfpRecord = rfp2;
+          } else if (e2) {
+            console.error('Supabase rfp_pending info:', e2);
           }
         } catch (err) {
           console.error('Supabase insert exception:', err);
         }
       }
 
-      // 2. Redirect to Lemon Squeezy checkout with email and rfp_id
+      const activeRfpId = String(rfpRecord?.id || tempOrderId);
+
+      // Save into localStorage for fallback on /merci page
+      try {
+        localStorage.setItem('rfp_latest_id', activeRfpId);
+        localStorage.setItem('rfp_latest_email', formData.email);
+        localStorage.setItem('rfp_latest_data', JSON.stringify({
+          ...formData,
+          rfp_id: activeRfpId,
+          order_id: tempOrderId,
+          status: 'pending_payment'
+        }));
+      } catch (e) {
+        console.warn('LocalStorage save error:', e);
+      }
+
+      // 2. Trigger n8n Webhook 1 (Form Data Submission) if configured
+      const webhook1 = envMeta?.VITE_N8N_WEBHOOK1_URL;
+      if (webhook1) {
+        try {
+          await fetch(webhook1, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              event: 'form_submitted',
+              rfp_id: activeRfpId,
+              order_id: tempOrderId,
+              ...formData
+            })
+          });
+        } catch (wErr) {
+          console.error('Webhook 1 trigger error:', wErr);
+        }
+      }
+
+      // 3. Redirect to Lemon Squeezy checkout with email and rfp_id
       const paymentUrl =
         envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK ||
         envMeta?.VITE_PAYMENT_LINK ||
@@ -194,10 +244,10 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
 
         if (formData.email) {
           urlObj.searchParams.set('checkout[email]', formData.email);
+          urlObj.searchParams.set('email', formData.email);
         }
-        if (rfpRecord?.id) {
-          urlObj.searchParams.set('checkout[custom][rfp_id]', String(rfpRecord.id));
-        }
+        urlObj.searchParams.set('rfp_id', activeRfpId);
+        urlObj.searchParams.set('custom_rfp_id', activeRfpId);
 
         window.location.href = urlObj.toString();
       } else {
