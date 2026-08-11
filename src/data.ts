@@ -118,10 +118,10 @@ export const PRICING_DATA: PricingTier[] = [
 export const DELIVERABLE_EXAMPLES: DeliverableExample[] = [
   {
     id: 'sante',
-    title: 'Secteur Santé — CHU de Montpellier',
+    title: 'Secteur Santé — CHU de Valméran',
     type: 'rfp-response',
     tag: 'Santé',
-    description: 'Réponse à un appel d\'offres du CHU de Montpellier pour la transformation du parcours patient et l\'optimisation du système d\'information hospitalier.',
+    description: 'Réponse à un appel d\'offres du CHU de Valméran pour la transformation du parcours patient et l\'optimisation du système d\'information hospitalier.',
     timeSaved: '8 500 agents · 14 mois · 380 000 – 620 000 € HT',
     previewLines: [
       'Budget, dates et effectifs extraits automatiquement',
