@@ -13,12 +13,14 @@ import HowItWorks from './components/HowItWorks';
 import ComparisonTable from './components/ComparisonTable';
 import ForWho from './components/ForWho';
 import Pricing from './components/Pricing';
+import AboutAndContact from './components/AboutAndContact';
 import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 
 // Modals & Pages
 import RfpFormWizard from './components/RfpFormWizard';
 import VideoModal from './components/VideoModal';
+import LegalModal, { LegalTab } from './components/LegalModal';
 import MerciPage from './components/MerciPage';
 
 export default function App() {
@@ -26,6 +28,10 @@ export default function App() {
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [initialHeroData, setInitialHeroData] = useState<{ rfp_text?: string; positioning?: string } | undefined>(undefined);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [legalModalState, setLegalModalState] = useState<{ isOpen: boolean; tab: LegalTab }>({
+    isOpen: false,
+    tab: 'cgv'
+  });
 
   useEffect(() => {
     const handlePopState = () => {
@@ -49,6 +55,13 @@ export default function App() {
     setIsGenerateModalOpen(true);
   };
 
+  const handleOpenLegal = (tab: LegalTab = 'cgv') => {
+    setLegalModalState({
+      isOpen: true,
+      tab
+    });
+  };
+
   // Render Merci Page if URL is /merci or #merci
   if (currentPath === '/merci' || currentPath === '/merci/' || window.location.hash === '#merci') {
     return <MerciPage onGoHome={handleGoHome} />;
@@ -66,13 +79,13 @@ export default function App() {
           onOpenVideo={() => setIsVideoOpen(true)}
         />
 
-        {/* 3. Stats Bar (En chiffres) */}
+        {/* 3. Stats Bar (En chiffres & gages de qualité) */}
         <StatsBar />
 
         {/* 4. Section: Bénéfices */}
         <Solution />
 
-        {/* 5. Section: Aperçu de votre réponse (PDF Mockup) */}
+        {/* 5. Section: Aperçu de votre réponse (Modèles SAD & Conseil) */}
         <PdfPreviewSection />
 
         {/* 6. Section: Comment ça marche (3 étapes) */}
@@ -84,28 +97,41 @@ export default function App() {
         {/* 8. Section: Pour qui ? (3 Personas) */}
         <ForWho />
 
-        {/* 9. Section: Tarification */}
+        {/* 9. Section: Tarification (19 €) */}
         <Pricing onOpenGenerate={handleOpenGenerate} />
 
+        {/* 10. Section: À propos du fondateur & Contact */}
+        <AboutAndContact onOpenGenerate={handleOpenGenerate} />
+
+
         {/* 11. Section: FAQ */}
-        <FAQ />
+        <FAQ onOpenGenerate={handleOpenGenerate} />
       </main>
 
       {/* 12. Final CTA & Footer */}
-      <Footer onOpenGenerate={handleOpenGenerate} />
+      <Footer
+        onOpenGenerate={handleOpenGenerate}
+        onOpenLegal={handleOpenLegal}
+      />
 
       {/* --- Interactive Modals --- */}
       <RfpFormWizard
         isOpen={isGenerateModalOpen}
         initialData={initialHeroData}
         onClose={() => setIsGenerateModalOpen(false)}
+        onOpenLegal={handleOpenLegal}
       />
 
       <VideoModal
         isOpen={isVideoOpen}
         onClose={() => setIsVideoOpen(false)}
       />
+
+      <LegalModal
+        isOpen={legalModalState.isOpen}
+        initialTab={legalModalState.tab}
+        onClose={() => setLegalModalState((prev) => ({ ...prev, isOpen: false }))}
+      />
     </div>
   );
 }
-

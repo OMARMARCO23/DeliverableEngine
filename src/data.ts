@@ -3,168 +3,182 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { FaqItem, PricingTier, DeliverableExample } from './types';
+import { FaqItem, PricingTier } from './types';
 
 export const FAQ_DATA: FaqItem[] = [
   {
-    id: 'faq-1',
-    question: "Pourquoi ne pas utiliser ChatGPT ou Gemini directement ?",
-    answer: `ChatGPT et Gemini sont des outils généraux. Ils génèrent du texte — pas une proposition RFP structurée.
-
-Avec Deliverable Engine, vous obtenez :
-— Une structure en 9 sections prête à l'emploi (lettre d'accompagnement, compréhension des enjeux, proposition, planning, équipe, tarification, cadre juridique...)
-— Vos vrais chiffres injectés automatiquement : budget, dates, effectifs, volume d'activité
-— Un document de 8 à 11 pages en moins de 10 minutes
-
-Avec ChatGPT, vous passez 30 à 60 minutes à structurer, reformuler, corriger les chiffres et vérifier la cohérence. Ici, vous recevez un document structuré directement exploitable.`
+    id: 'garantie-victoire',
+    question: "Ce document garantit-il de gagner l'appel d'offres ?",
+    answer: "Non, et nous tenons à être parfaitement clairs et transparents : aucun outil ne peut garantir une victoire. La qualité du mémoire technique est un critère déterminant (souvent 40 à 60% de la note dans la commande publique), mais la décision finale dépend aussi de votre adéquation tarifaire, de la pertinence de vos références et du fit avec le client. Notre promesse concrète : vous faire gagner 4 à 6 heures de travail en générant en 10 minutes une trame solide, ultra-structurée et personnalisée, prête à recevoir vos ajustements finaux."
   },
   {
-    id: 'faq-2',
-    question: "Comment fonctionne l'extraction automatique des données ?",
-    answer: `Vous collez le texte de votre appel d'offres. Notre moteur analyse automatiquement le document et extrait :
-
-— Le budget (fourchette complète)
-— Les dates clés (remise, auditions, notification, démarrage)
-— L'effectif et le volume d'activité de l'organisation cliente
-— Le chiffre d'affaires ou budget annuel
-— La ville et l'adresse du siège
-
-Ces données sont injectées directement dans le document généré. Aucune saisie manuelle de ces informations n'est requise.`
+    id: 'secteur-marche-sad-conseil',
+    question: "Le document est-il vraiment adapté à mon secteur et type de marché (SAD / Conseil) ?",
+    answer: "Oui. Lors de la saisie, vous qualifiez le type de marché : Système d'Acquisition Dynamique (SAD), mission de conseil / prestations intellectuelles, marché public classique ou consultation privée. Notre moteur analyse l'intégralité du cahier des charges, extrait les critères clés et intègre directement vos TJM, votre équipe et vos références pour produire un document ciblé, que ce soit sous le Code de la commande publique en France ou la Loi relative aux marchés publics du 17 juin 2016 en Belgique."
   },
   {
-    id: 'faq-3',
-    question: "Que contient exactement le document généré ?",
-    answer: `Le document généré contient 9 sections structurées :
-
-0. Synthèse (en bref)
-1. Lettre d'accompagnement
-2. Compréhension de vos enjeux (avec tableau de données et impact chiffré)
-3. Proposition en 3 axes
-4. Approche et planning (méthodologie en 6 phases, planning, matrice des risques)
-5. Équipe et gouvernance
-6. Références clients
-7. Tarification (2 options : forfait global et régie avec plafonnement)
-8. Cadre juridique (contrat, confidentialité, PI, RGPD, réversibilité)
-9. Prochaines étapes (calendrier de la consultation)
-
-Les sections contenant vos informations propres (références réelles, noms de consultants, montants définitifs) sont indiquées par des placeholders [À PERSONNALISER].`
+    id: 'document-tel-quel',
+    question: "Puis-je utiliser le document tel quel sans modification ?",
+    answer: "Le document généré est rédigé à 85-90% avec une structure professionnelle complète (synthèse managériale, méthodologie outillée, calendrier, gestion des risques, équipe et proposition financière). Toutefois, nous vous recommandons d'y consacrer 1 à 2 heures pour y apporter votre touche personnelle : anecdotes précises de vos missions passées, ajustements de style et validation de vos chiffres finaux."
   },
   {
-    id: 'faq-4',
-    question: "Comment personnaliser le document reçu ?",
-    answer: `Le PDF reçu est un document de travail structuré. Pour le personnaliser :
-
-1. Copiez le texte du PDF dans Word, Google Docs ou tout éditeur de votre choix
-2. Remplacez les placeholders [À PERSONNALISER] par vos vraies informations
-3. Ajoutez vos références clients, les CV de vos consultants, vos tarifs réels
-4. Adaptez le ton et les formulations selon vos préférences
-5. Appliquez votre charte graphique si souhaité
-
-Le document est conçu comme une base de travail complète — pas comme un document finalisé. Vous gagnez plusieurs heures de rédaction et de structuration.`
+    id: 'garantie-revision-24h',
+    question: "Que se passe-t-il si je ne suis pas satisfait du résultat ?",
+    answer: "Vous bénéficiez de notre Garantie Révision & Sérénité 24h : 1 révision ou régénération gratuite est systématiquement incluse pour chaque génération achetée. Si une section manque de précision ou ne correspond pas à l'esprit de votre consultation, envoyez-nous simplement un email avec vos remarques et nous relançons une adaptation sous 24h ouvrées — sans aucune justification à fournir."
   },
   {
-    id: 'faq-5',
-    question: "Mes données sont-elles sécurisées ?",
-    answer: `Oui. Trois garanties concrètes :
-
-1. Hébergement Europe — vos données sont stockées et traitées en Union Européenne.
-2. Aucun réentraînement — vos documents ne servent jamais à entraîner des modèles IA.
-3. Transmission chiffrée — toutes les communications sont chiffrées (HTTPS/TLS).
-
-Votre appel d'offres est traité uniquement pour générer votre document.`
+    id: 'delais-reels',
+    question: "Quels sont les délais réels de livraison ?",
+    answer: "Votre dossier complet est généré et transmis par email en 10 minutes après confirmation de votre commande. Vous ne perdez plus 2 jours à bloquer votre planning sur une page blanche."
   },
   {
-    id: 'faq-6',
-    question: "Combien de temps faut-il pour recevoir le PDF ?",
-    answer: `En général moins de 10 minutes après validation du paiement.
-
-Le document est envoyé directement par email à l'adresse renseignée lors de la commande.
-
-Si vous ne recevez rien dans les 15 minutes, vérifiez vos spams ou contactez support@deliverable-engine.io.`
+    id: 'confidentialite-rgpd',
+    question: "Comment mes données et le contenu de l'appel d'offres sont-ils protégés (RGPD) ?",
+    answer: "La confidentialité est absolue : vos données de proposition, tarifs et documents clients sont chiffrés de bout en bout (AES-256) et hébergés au sein de l'Union Européenne. Vos données ne sont JAMAIS utilisées pour entraîner des modèles d'intelligence artificielle publics et restent strictement votre propriété."
   },
   {
-    id: 'faq-7',
-    question: "Pour quels secteurs et types de missions est-ce adapté ?",
-    answer: `Deliverable Engine fonctionne sur tous les secteurs d'activité.
-
-Testé et validé sur :
-— Transformation digitale et refonte SI
-— Conseil en organisation et conduite du changement
-— Accompagnement hospitalier et SIH (santé)
-— BTP et construction
-— RH, stratégie, finance, comptabilité
-
-Le moteur s'adapte automatiquement au vocabulaire du secteur détecté dans votre appel d'offres. Vous pouvez consulter des exemples concrets dans la section Aperçu de la page d'accueil.`
-  },
-  {
-    id: 'faq-8',
-    question: "Y a-t-il un abonnement ou des frais cachés ?",
-    answer: `Non. Le modèle est simple :
-
-— 19 € par génération (offre de lancement)
-— Aucun abonnement mensuel
-— Aucun engagement
-— Aucun frais caché
-— Facture disponible pour chaque achat
-
-Vous payez uniquement quand vous en avez besoin.`
+    id: 'difference-chatgpt',
+    question: "Quelle est la différence avec ChatGPT ou Claude ?",
+    answer: "Un modèle de langage grand public ne connaît ni les exigences formelles du Code de la commande publique (ou de la Loi belge 2016), ni les standards de présentation des cabinets de conseil. Deliverable Engine applique un cadre méthodologique éprouvé : matrice RACI, décomposition en phases, plan d'assurance qualité, gestion des risques (AMDEC) et grilles TJM/BPU exportables directement au format PDF professionnel."
   }
 ];
 
-
-export const PRICING_DATA: PricingTier[] = [ 
-];
-
-export const DELIVERABLE_EXAMPLES: DeliverableExample[] = [
+export const PRICING_DATA: PricingTier[] = [
   {
-    id: 'sante',
-    title: 'Secteur Santé — CHU de Valméran',
-    type: 'rfp-response',
-    tag: 'Santé',
-    description: 'Réponse à un appel d\'offres du CHU de Valméran pour la transformation du parcours patient et l\'optimisation du système d\'information hospitalier.',
-    timeSaved: '8 500 agents · 14 mois · 380 000 – 620 000 € HT',
-    previewLines: [
-      'Budget, dates et effectifs extraits automatiquement',
-      'Terminologie santé adaptée (agents, SIH, parcours patient)',
-      '9 sections structurées prêtes à personnaliser',
-      'Planning, risques, gouvernance inclus'
+    id: 'unit',
+    name: 'Génération Unique',
+    price: '19 €',
+    description: 'Tarif unique et transparent — sans abonnement ni engagement',
+    generationsCount: 1,
+    features: [
+      '1 dossier complet généré en 10 minutes',
+      'Format PDF structuré & prêt à finaliser (8 à 12 pages)',
+      'Spécialisé SAD & Missions de conseil',
+      'Conforme marchés France (CCP) & Belgique (Loi 2016)',
+      '1 révision / régénération gratuite sous 24h incluse',
+      'Facture avec TVA téléchargeable automatiquement',
+      'Paiement sécurisé via Lemon Squeezy'
     ],
-    sourceUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/AppelDoffreSanteSource.pdf',
-    generatedUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/rfp-sante-genere.pdf',
-    contentHtml: ''
-  },
-  {
-    id: 'digital',
-    title: 'Secteur Digital — Groupe Meridian',
-    type: 'rfp-response',
-    tag: 'Transformation Digitale',
-    description: 'Réponse à un appel d\'offres du Groupe Meridian pour la transformation digitale et la refonte du système d\'information métier.',
-    timeSaved: '1 200 collaborateurs · 22 mois · 950 000 – 1 600 000 € HT',
-    previewLines: [
-      'Extraction automatique : budget, 9 sites, 4 000 commandes/mois',
-      'Compatibilité SAP intégrée dans la proposition',
-      'Méthodologie en 6 phases avec planning détaillé',
-      'Cadre juridique complet (PI, RGPD, réversibilité)'
-    ],
-    sourceUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/AppelDoffreDigitSource.pdf',
-    generatedUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/rfp-digital-genere.pdf',
-    contentHtml: ''
-  },
-  {
-    id: 'btp',
-    title: 'Secteur BTP — BatiNova',
-    type: 'rfp-response',
-    tag: 'BTP / Construction',
-    description: 'Réponse à un appel d\'offres de BatiNova pour l\'accompagnement à la transformation numérique dans le secteur du BTP.',
-    timeSaved: '680 collaborateurs · 20 mois · 850 000 – 1 400 000 € HT',
-    previewLines: [
-      'Vocabulaire BTP adapté (chantiers, agences régionales)',
-      'Extraction automatique des données du RFP',
-      'Proposition structurée en 3 axes avec planning',
-      'Matrice des risques et gouvernance projet'
-    ],
-    sourceUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/AppelDoffreBTPSource.pdf',
-    generatedUrl: 'https://deliverableengine.omarmarco2023.workers.dev/docs/rfp-btp-genere.pdf',
-    contentHtml: ''
+    ctaText: 'Générer ma réponse (19 €)',
+    recommended: true
   }
 ];
+
+export interface MasterModelData {
+  id: string;
+  type: 'sad' | 'conseil';
+  badge: string;
+  title: string;
+  subtitle: string;
+  targetMarket: string;
+  estimatedPages: string;
+  timeSaved: string;
+  summary: string;
+  highlights: string[];
+  tableOfContents: string[];
+  sampleSections: Array<{
+    number: string;
+    title: string;
+    description: string;
+    keyExcerpt: string;
+  }>;
+  downloadUrl: string;
+}
+
+export const MASTER_MODELS: MasterModelData[] = [
+  {
+    id: 'modele-sad',
+    type: 'sad',
+    badge: 'Système d\'Acquisition Dynamique (SAD)',
+    title: 'Mémoire Technique — Marché Subséquent SAD Numérique & AMO',
+    subtitle: 'Accord-cadre SAD pour la modernisation des Systèmes d\'Information et l\'assistance à maîtrise d\'ouvrage',
+    targetMarket: 'Marché Public (France & Belgique) · Procédure SAD / Accord-cadre',
+    estimatedPages: '12 pages structurées',
+    timeSaved: 'Gain estimé : 4h30 de rédaction',
+    summary: 'Modèle spécialement conçu pour répondre aux marchés spécifiques issus de Systèmes d\'Acquisition Dynamiques (SAD). Il intègre les clauses administratives obligatoires, la qualification des profils consultants, la grille de TJM/BPU et la méthodologie de delivery outillée.',
+    highlights: [
+      'Conformité stricte aux exigences des marchés subséquents SAD',
+      'Décomposition des expertises et niveaux de séniorité (TJM)',
+      'Plan d\'assurance qualité (PAQ) & Dispositif de réversibilité',
+      'Gouvernance tripartite Maîtrise d\'Ouvrage / AMO / Exploitation'
+    ],
+    tableOfContents: [
+      '1. Synthèse exécutive & engagements contractuels',
+      '2. Compréhension du contexte & objectifs de la consultation SAD',
+      '3. Méthodologie d\'intervention & outillage de pilotage',
+      '4. Organisation de l\'équipe dédiée & matrice des compétences',
+      '5. Plan d\'assurance qualité, RSE & Gestion des risques',
+      '6. Grille tarifaire BPU / TJM & calendrier prévisionnel'
+    ],
+    sampleSections: [
+      {
+        number: '01',
+        title: 'Synthèse Exécutive & Engagements',
+        description: 'Positionnement stratégique et engagements formels de délai, de qualité et de respect de l\'accord-cadre SAD.',
+        keyExcerpt: 'Dans le cadre du présent marché subséquent rattaché au Système d\'Acquisition Dynamique (SAD), notre équipe s\'engage sur une mobilisation sous 5 jours ouvrés, une méthodologie certifiée et une transparence totale sur le suivi d\'imputation budgétaire.'
+      },
+      {
+        number: '02',
+        title: 'Méthodologie d\'Intervention & Jalons',
+        description: 'Découpage opérationnel en 4 phases : Cadrage flash, Exécution itérative, Recette technique, et Transfert de compétences.',
+        keyExcerpt: 'L\'approche proposée combine la rigueur du cadre public (livrables documentés, comités de suivi bi-mensuels) avec la souplesse opérationnelle nécessaire aux projets à forte composante technologique.'
+      },
+      {
+        number: '03',
+        title: 'Grille de TJM & Ventilation Budgétaire',
+        description: 'Présentation claire des profils (Directeur de mission, Consultant Senior, Expert technique) avec taux journaliers moyens et unité d\'œuvre.',
+        keyExcerpt: 'Chaque profil d\'intervenant est qualifié selon la grille standard du SAD, garantissant la traçabilité des compétences, le respect des plafonds tarifaires et une prévisibilité budgétaire totale.'
+      }
+    ],
+    downloadUrl: '/docs/rfp-sante-genere.pdf'
+  },
+  {
+    id: 'modele-conseil',
+    type: 'conseil',
+    badge: 'Mission de Conseil & Prestations Intellectuelles',
+    title: 'Proposition d\'Intervention — Conseil en Stratégie & Organisation',
+    subtitle: 'Accompagnement de la Direction Générale : Diagnostic, Co-design organisationnel & Conduite du changement',
+    targetMarket: 'Consultation Privée & Grands Comptes / PME · Prestations Intellectuelles',
+    estimatedPages: '10 pages de proposition',
+    timeSaved: 'Gain estimé : 3h45 de rédaction',
+    summary: 'Modèle haute précision pour les consultants et cabinets indépendants répondant à des appels d\'offres de prestations intellectuelles. Structure élégante inspirée des standards des cabinets de conseil de direction.',
+    highlights: [
+      'Cadrage stratégique à fort impact managérial (Executive Summary)',
+      'Démarche collaborative et ateliers de co-construction',
+      'Matrice d\'évaluation de la maturité et plan de conduite du changement',
+      'Modalités financières au forfait ou au temps passé avec jalons de facturation'
+    ],
+    tableOfContents: [
+      '1. Synthèse managériale (Executive Summary)',
+      '2. Analyse des enjeux stratégiques et diagnostic de situation',
+      '3. Démarche méthodologique en 4 phases d\'intervention',
+      '4. Plan de conduite du changement & engagement des parties prenantes',
+      '5. Équipe d\'intervention, CV synthétiques & Références',
+      '6. Conditions financières, jalons et calendrier d\'exécution'
+    ],
+    sampleSections: [
+      {
+        number: '01',
+        title: 'Synthèse Managériale (Executive Summary)',
+        description: 'Résumé percutant des enjeux business, de la vision cible et des facteurs clés de succès de la transformation.',
+        keyExcerpt: 'Face aux défis d\'alignement organisationnel et d\'accélération des cycles de décision, nous proposons une démarche pragmatique orientée résultats, assurant l\'adhésion des équipes dès les premières semaines d\'intervention.'
+      },
+      {
+        number: '02',
+        title: 'Démarche en 4 Phases d\'Intervention',
+        description: 'Phase 1 : Immersion & Diagnostic | Phase 2 : Co-conception de la cible | Phase 3 : Expérimentation | Phase 4 : Déploiement & Pérennisation.',
+        keyExcerpt: 'Notre méthodologie repose sur une co-construction systématique avec vos équipes dirigeantes et opérationnelles pour garantir l\'appropriation des recommandations et un impact mesurable dès le 2ème mois.'
+      },
+      {
+        number: '03',
+        title: 'Gouvernance, Équipe & Budget Forfaitaire',
+        description: 'Matrice des responsabilités, profils des consultants seniors et échéancier de facturation articulé sur la validation des livrables clés.',
+        keyExcerpt: 'Une gouvernance resserrée (COPIL mensuel, point hebdo d\'avancement) associée à un forfait clair par jalon, évitant tout dépassement budgétaire imprévu.'
+      }
+    ],
+    downloadUrl: '/docs/rfp-sante-genere.pdf'
+  }
+];
+
+export const DELIVERABLE_EXAMPLES = MASTER_MODELS;
+
