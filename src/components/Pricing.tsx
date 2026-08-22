@@ -5,233 +5,152 @@
 
 import React from 'react';
 import { motion } from 'motion/react';
-import { 
-  Check, 
-  Sparkles, 
-  ShieldCheck, 
-  ArrowRight, 
-  Clock,
-  RefreshCw,
-  FileText
-} from 'lucide-react';
+import { Check, Sparkles, ShieldCheck, ArrowRight, Zap, RefreshCw, Globe, Lock, FileText } from 'lucide-react';
+import { PRICING_DATA } from '../data';
 
 interface PricingProps {
   onOpenGenerate: () => void;
+  onOpenLegal?: () => void;
 }
 
-export default function Pricing({ onOpenGenerate }: PricingProps) {
-
-  const features = [
-    {
-      text: "8 à 11 pages structurées — prêtes à personnaliser",
-      detail: "Lettre d'accompagnement, enjeux, proposition, planning, équipe, tarification, cadre juridique"
-    },
-    {
-      text: "Vos vrais chiffres — budget, dates, effectifs extraits automatiquement",
-      detail: "Aucune donnée inventée. Tout vient de votre appel d'offres."
-    },
-    {
-      text: "Livraison PDF par email en moins de 10 minutes",
-      detail: "Format haute qualité, directement exploitable"
-    },
-    {
-      text: "Personnalisable en 30 minutes",
-      detail: "Références, tarifs, équipe — vous complétez ce qui vous appartient"
-    },
-    {
-      text: "Facture disponible",
-      detail: "Déductible de vos frais professionnels"
-    }
-  ];
+export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
+  const tier = PRICING_DATA[0];
 
   return (
-    <section id="tarif" className="py-20 lg:py-28 bg-white border-y border-slate-200">
+    <section id="tarif" className="py-20 lg:py-28 bg-slate-50 border-y border-slate-200">
       <div className="mx-auto max-w-7xl px-4 sm:px-8">
-
-        {/* Header */}
+        
+        {/* Header Section */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 rounded-full 
-                          bg-[#B8935A]/10 border border-[#B8935A]/30 
-                          px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/10 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
             <Sparkles className="h-3.5 w-3.5 text-[#B8935A]" />
-            Tarification transparente
+            Tarif unique & sans abonnement
           </div>
-          <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl 
-                         font-extrabold text-[#1B263B]">
-            Un prix fixe. Zéro abonnement.
+          <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1B263B]">
+            19 € par génération. Tout inclus.
           </h2>
           <p className="mt-4 text-slate-600 text-sm sm:text-base font-sans">
-            Payez uniquement quand vous en avez besoin. 
-            Aucun engagement, aucune surprise.
+            Aucun abonnement mensuel récurrent, aucun engagement. Vous ne payez que lorsque vous avez un appel d'offres à remporter.
           </p>
         </div>
 
-        {/* Card + Aside */}
-        <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8 
-                        items-start">
-
-          {/* Colonne gauche — Carte principale */}
+        {/* Single Transparent Pricing Card */}
+        <div className="max-w-xl mx-auto">
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-3 relative rounded-3xl bg-[#1B263B] 
-                       text-white p-8 sm:p-10 border-2 border-[#B8935A] 
-                       shadow-2xl"
+            transition={{ duration: 0.4 }}
+            className="relative rounded-3xl p-8 sm:p-10 bg-[#1B263B] text-white border-2 border-[#B8935A] shadow-2xl flex flex-col justify-between"
           >
-            {/* Badge offre */}
-            <div className="flex items-center justify-between mb-6">
-              <span className="text-xs font-mono font-bold tracking-widest 
-                               text-[#B8935A] uppercase bg-[#B8935A]/10 
-                               border border-[#B8935A]/30 py-1.5 px-4 
-                               rounded-full">
-                Offre de lancement
-              </span>
-              <span className="text-xs text-slate-400 line-through">29 €</span>
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#B8935A] text-[#1B263B] text-[11px] font-bold uppercase tracking-wider py-1 px-5 rounded-full shadow-md">
+              Offre Transparente · À l'acte
             </div>
 
-            {/* Prix */}
-            <div className="mb-8">
-              <div className="flex items-baseline gap-3">
-                <span className="text-6xl sm:text-7xl font-extrabold 
-                                 font-serif-heading text-[#B8935A]">
-                  19 €
-                </span>
-                <div className="text-left">
-                  <p className="text-xs text-slate-300 font-medium">
-                    par génération
-                  </p>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    sans abonnement
-                  </p>
-                </div>
-              </div>
-
-              {/* Indicateur temps */}
-              <div className="mt-4 inline-flex items-center gap-2 
-                              bg-emerald-500/10 border border-emerald-500/30 
-                              rounded-lg px-3 py-1.5">
-                <Clock className="h-3.5 w-3.5 text-emerald-400" />
-                <span className="text-xs font-semibold text-emerald-300">
-                  Livré par email en moins de 10 minutes
+            <div>
+              <div className="flex items-center justify-between">
+                <h3 className="font-serif-heading text-2xl font-bold text-white">
+                  {tier.name}
+                </h3>
+                <span className="text-xs font-mono font-bold bg-[#B8935A]/20 text-[#B8935A] border border-[#B8935A]/40 px-3 py-1 rounded-full">
+                  1 dossier complet
                 </span>
               </div>
-            </div>
 
-            {/* Features */}
-            <div className="border-t border-slate-700/80 pt-6 space-y-4">
-              {features.map((item, idx) => (
-                <div key={idx} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-[#B8935A]/20 
-                                  flex items-center justify-center shrink-0 mt-0.5">
-                    <Check className="h-3 w-3 text-[#B8935A] stroke-[3]" />
-                  </div>
-                  <div>
-                    <p className="text-xs sm:text-sm font-semibold 
-                                  text-slate-100">
-                      {item.text}
-                    </p>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
-                      {item.detail}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* CTA */}
-            <div className="mt-8 pt-6 border-t border-slate-700/80">
-              <button
-                onClick={() => onOpenGenerate()}
-                className="w-full group inline-flex items-center justify-center 
-                           gap-2.5 rounded-xl bg-[#B8935A] hover:bg-[#9e7b45] 
-                           px-6 py-4 text-base font-bold text-[#1B263B] 
-                           shadow-xl transition-all cursor-pointer 
-                           active:scale-[0.98]"
-              >
-                Générer ma réponse maintenant
-                <ArrowRight className="h-5 w-5 transition-transform 
-                                       group-hover:translate-x-1" />
-              </button>
-
-              <div className="mt-4 flex items-center justify-center gap-2 
-                              text-xs text-slate-400">
-                <ShieldCheck className="h-4 w-4 text-[#B8935A]" />
-                <span>Paiement sécurisé · Facture disponible</span>
-              </div>
-            </div>
-
-          </motion.div>
-
-          {/* Colonne droite — Arguments complémentaires */}
-          <motion.div
-            initial={{ opacity: 0, y: 15 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.15 }}
-            className="lg:col-span-2 space-y-4"
-          >
-            {/* Bloc garantie */}
-            {/* Bloc document personnalisable */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <FileText className="h-4 w-4 text-[#B8935A]" />
-                <span className="text-xs font-bold text-[#1B263B]">
-                  Document de travail
-                </span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Le PDF reçu est une base structurée de 8 à 11 pages. 
-                Copiez le texte dans Word ou Google Docs, 
-                personnalisez avec vos références et tarifs, 
-                puis envoyez à votre client.
+              <p className="text-xs sm:text-sm mt-2 text-slate-300 font-sans">
+                {tier.description}
               </p>
-            </div>
 
-            {/* Bloc pour qui */}
-            <div className="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-              <div className="flex items-center gap-2 mb-3">
-                <FileText className="h-4 w-4 text-[#B8935A]" />
-                <span className="text-xs font-bold text-[#1B263B]">
-                  Conçu pour
-                </span>
+              {/* Price Block */}
+              <div className="my-8 pb-8 border-b border-slate-700/80">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-5xl sm:text-6xl font-extrabold font-serif-heading text-[#B8935A]">
+                    {tier.price}
+                  </span>
+                  <span className="text-slate-400 text-sm font-sans">
+                    TTC / par réponse générée
+                  </span>
+                </div>
+                <p className="text-xs text-slate-400 mt-2 font-sans flex items-center gap-1.5">
+                  <Lock className="h-3.5 w-3.5 text-[#B8935A]" />
+                  Paiement sécurisé via Lemon Squeezy · Facture téléchargeable automatiquement
+                </p>
               </div>
-              <ul className="space-y-2 text-xs text-slate-600">
-                {[
-                  "Consultants indépendants",
-                  "Freelances (stratégie, RH, digital...)",
-                  "Petits cabinets 2 à 15 personnes",
-                  "Tous secteurs : BTP, Santé, IT, RH..."
-                ].map((who, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#B8935A]" />
-                    {who}
+
+              {/* Features List */}
+              <ul className="space-y-3.5 text-xs sm:text-sm font-sans mb-8">
+                {tier.features.map((item, fIdx) => (
+                  <li key={fIdx} className="flex items-start gap-3">
+                    <div className="w-5 h-5 rounded-full bg-[#B8935A]/20 text-[#B8935A] flex items-center justify-center shrink-0 mt-0.5">
+                      <Check className="h-3.5 w-3.5 stroke-[3]" />
+                    </div>
+                    <span className="text-slate-200">{item}</span>
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Bloc calcul ROI */}
-            <div className="rounded-2xl border border-[#B8935A]/30 
-                            bg-[#B8935A]/5 p-5">
-              <p className="text-xs font-bold text-[#1B263B] mb-2">
-                Le calcul est simple
-              </p>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Une réponse RFP prend en moyenne{' '}
-                <strong>6 à 12 heures</strong> à rédiger.
-                À 400 €/jour, c'est{' '}
-                <strong>300 à 600 € de temps</strong>{' '}
-                pour produire une base de travail.
-              </p>
-              <p className="text-xs font-bold text-[#1B263B] mt-3">
-                Deliverable Engine : 19 €.
-              </p>
+            {/* Action CTA */}
+            <div>
+              <button
+                onClick={onOpenGenerate}
+                className="w-full py-4 px-6 rounded-xl text-sm sm:text-base font-bold bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] transition-all shadow-lg active:scale-98 cursor-pointer flex items-center justify-center gap-2"
+              >
+                <span>{tier.ctaText}</span>
+                <ArrowRight className="h-4 w-4" />
+              </button>
+
+              <div className="flex items-center justify-between text-[11px] text-slate-400 mt-4 font-sans px-1">
+                <span>⚡ Livraison sous 10 minutes</span>
+                <span>🛡️ Garantie révision 24h</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* 24h Revision Guarantee Callout */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mt-16 max-w-4xl mx-auto rounded-3xl bg-white border border-[#B8935A]/40 p-8 sm:p-10 shadow-xl relative overflow-hidden"
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
+            <div className="w-14 h-14 rounded-2xl bg-[#B8935A]/15 text-[#B8935A] flex items-center justify-center shrink-0 border border-[#B8935A]/30">
+              <RefreshCw className="h-7 w-7" />
             </div>
 
-          </motion.div>
+            <div className="flex-1">
+              <div className="inline-flex items-center gap-2 text-xs font-bold text-[#B8935A] uppercase tracking-wider font-mono mb-1.5">
+                <ShieldCheck className="h-4 w-4" />
+                Garantie Révision & Sérénité 24h
+              </div>
+              <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
+                « Une section ne correspond pas à votre appel d'offres ? Nous le révisons ou le régénérons gratuitement sous 24h — sans justification à fournir. »
+              </h3>
+              <p className="mt-3 text-slate-600 text-xs sm:text-sm font-sans leading-relaxed">
+                <strong>1 révision ou régénération gratuite</strong> est systématiquement incluse avec votre génération à 19 €. Un simple email avec vos remarques déclenche immédiatement l'ajustement par notre équipe.
+              </p>
+            </div>
+          </div>
 
-        </div>
+          {/* Verified Badges Row */}
+          <div className="mt-6 pt-6 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-medium text-slate-700">
+            <div className="flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4 text-[#B8935A] shrink-0" />
+              <span>Garantie révision 24h incluse</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-[#B8935A] shrink-0" />
+              <span>Paiement sécurisé via Lemon Squeezy</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Globe className="h-4 w-4 text-[#B8935A] shrink-0" />
+              <span>Conforme France & Belgique</span>
+            </div>
+          </div>
+        </motion.div>
+
       </div>
     </section>
   );

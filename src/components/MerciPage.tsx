@@ -58,7 +58,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           console.warn('LocalStorage parse error:', e);
         }
 
-        // 4. Update Supabase Database status to 'paid' in both tables
+        // 4. Update Supabase Database status to 'paid' in rfp_pending
         if (supabase && rfpId) {
           const updatePayload = {
             status: 'paid',
@@ -67,47 +67,48 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
 
           try {
             await supabase
-              .from('rfp_requests')
-              .update(updatePayload)
-              .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
-          } catch (err) {
-            console.error('Supabase rfp_requests update error:', err);
-          }
-
-          try {
-            await supabase
               .from('rfp_pending')
               .update(updatePayload)
               .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
-          } catch (err) {
-            console.error('Supabase rfp_pending update error:', err);
+          } catch (err: unknown) {
+            console.warn('Supabase rfp_pending update notice:', err instanceof Error ? err.message : err);
           }
         }
 
-        // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution)
+        // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
         const webhookUrl =
           envMeta?.VITE_N8N_WEBHOOK_URL ||
           envMeta?.VITE_N8N_WEBHOOK1_URL;
 
-        if (webhookUrl) {
-          const webhookPayload = {
-            event: 'payment_completed',
-            status: 'paid',
-            rfp_id: rfpId || 'UNKNOWN',
-            email: email || storedData.email,
-            client_name: storedData.client_name,
-            positioning: storedData.positioning,
-            objective: storedData.objective,
-            differentiation: storedData.differentiation,
-            rfp_text: storedData.rfp_text,
-            timestamp: new Date().toISOString()
-          };
+        if (
+          webhookUrl &&
+          typeof webhookUrl === 'string' &&
+          (webhookUrl.startsWith('http://') || webhookUrl.startsWith('https://')) &&
+          !webhookUrl.includes('YOUR_') &&
+          !webhookUrl.includes('placeholder')
+        ) {
+          try {
+            const webhookPayload = {
+              event: 'payment_completed',
+              status: 'paid',
+              rfp_id: rfpId || 'UNKNOWN',
+              email: email || storedData.email,
+              client_name: storedData.client_name,
+              positioning: storedData.positioning,
+              objective: storedData.objective,
+              differentiation: storedData.differentiation || storedData.differentiation_full,
+              rfp_text: storedData.rfp_text,
+              timestamp: new Date().toISOString()
+            };
 
-          await fetch(webhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookPayload)
-          }).catch((err) => console.error('Webhook trigger error:', err));
+            await fetch(webhookUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(webhookPayload)
+            }).catch((err) => console.warn('Webhook notification notice:', err?.message || err));
+          } catch (wErr) {
+            console.warn('Webhook trigger notice:', wErr);
+          }
         }
 
         setSyncStatus('success');
@@ -240,6 +241,19 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
             </div>
           </div>
 
+          {/* 24h Free Revision Guarantee Box */}
+          <div className="rounded-2xl p-4 bg-[#B8935A]/10 border border-[#B8935A]/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <div className="flex items-start gap-2.5">
+              <ShieldCheck className="h-5 w-5 text-[#B8935A] shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-[#1B263B]">Garantie révision 24h incluse</p>
+                <p className="text-slate-600 mt-0.5">
+                  Une section ne correspond pas à votre appel d'offres ? Répondez simplement au mail de livraison ou écrivez à <a href="mailto:support@deliverable-engine.io" className="text-[#B8935A] font-bold underline">support@deliverable-engine.io</a> pour déclencher votre révision gratuite sous 24h.
+                </p>
+              </div>
+            </div>
+          </div>
+
           {/* Estimated Time Box */}
           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 flex items-center justify-between text-xs sm:text-sm">
             <div className="flex items-center gap-2.5">
@@ -247,7 +261,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
               <span className="font-medium text-slate-700">Temps estimé de réception :</span>
             </div>
             <span className="font-bold text-[#1B263B] bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full font-mono text-xs">
-              5 à 8 minutes
+              10 minutes
             </span>
           </div>
 
@@ -255,7 +269,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           <div className="text-xs text-slate-500 bg-amber-50/80 border border-amber-200/60 rounded-xl p-3.5 flex items-start gap-2.5">
             <HelpCircle className="h-4 w-4 text-amber-600 shrink-0 mt-0.5" />
             <span>
-              <strong>Note importante :</strong> N’oubliez pas de vérifier votre dossier « Courriers indésirables » ou « Spams » si vous ne voyez rien arriver d’ici 10 minutes.
+              <strong>Note importante :</strong> N’oubliez pas de vérifier votre dossier « Courriers indésirables » ou « Spams » si vous ne voyez rien arriver d’ici 10 à 15 minutes.
             </span>
           </div>
         </div>

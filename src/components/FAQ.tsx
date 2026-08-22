@@ -5,66 +5,60 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { HelpCircle, ChevronDown, Plus, Minus } from 'lucide-react';
+import { HelpCircle, ChevronDown, MessageSquare } from 'lucide-react';
 import { FAQ_DATA } from '../data';
 
 export default function FAQ() {
-  const [openId, setOpenId] = useState<string | null>('faq-1');
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const toggleItem = (id: string) => {
-    setOpenId(openId === id ? null : id);
+  const toggleIndex = (idx: number) => {
+    setOpenIndex(openIndex === idx ? null : idx);
   };
 
   return (
-    <section id="faq" className="py-20 lg:py-28 bg-slate-50/50 border-b border-slate-200/80">
+    <section id="faq" className="py-20 lg:py-28 bg-white border-b border-slate-200">
       <div className="mx-auto max-w-4xl px-4 sm:px-8">
         
-        {/* Header Block */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 rounded-full bg-[#1B263B]/5 border border-[#1B263B]/10 px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/10 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
             <HelpCircle className="h-3.5 w-3.5 text-[#B8935A]" />
-            <span>Foire aux questions</span>
-          </div>
-          <h2 className="font-serif-heading text-3xl sm:text-4xl font-extrabold text-[#1B263B] tracking-tight">
             Questions fréquentes
+          </div>
+          <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1B263B]">
+            Questions Fréquentes
           </h2>
-          <p className="mt-4 text-slate-600 text-sm font-sans leading-relaxed">
-            Tout ce qu'il faut savoir sur notre moteur de réponse aux appels d'offres et la sécurité de vos données.
+          <p className="mt-4 text-slate-600 text-sm sm:text-base font-sans">
+            Transparence totale sur notre fonctionnement, la conformité SAD / conseil et notre engagement de qualité.
           </p>
         </div>
 
-        {/* Clean Executive Accordions List */}
-        <div className="space-y-3">
-          {FAQ_DATA.map((faq, index) => {
-            const isOpen = openId === faq.id;
-            const indexFormatted = String(index + 1).padStart(2, '0');
-
+        {/* Accordion FAQ Items */}
+        <div className="space-y-4">
+          {FAQ_DATA.map((item, idx) => {
+            const isOpen = openIndex === idx;
             return (
-              <div
-                key={faq.id}
-                className={`border rounded-xl transition-all ${
-                  isOpen
-                    ? 'border-[#B8935A]/50 bg-white shadow-xs'
-                    : 'border-slate-200/90 hover:border-slate-300 bg-white'
-                }`}
+              <motion.div
+                key={item.id || idx}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: idx * 0.05 }}
+                className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50/50 hover:border-slate-300 transition-colors"
               >
                 <button
-                  onClick={() => toggleItem(faq.id)}
-                  className="w-full flex items-center justify-between p-5 sm:p-6 text-left font-sans text-base sm:text-lg font-bold text-[#1B263B] cursor-pointer select-none group"
+                  onClick={() => toggleIndex(idx)}
+                  className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 cursor-pointer focus:outline-none"
                 >
-                  <span className="flex items-center gap-4 pr-4">
-                    <span className={`font-mono text-xs font-semibold transition-colors ${isOpen ? 'text-[#B8935A]' : 'text-slate-400'}`}>
-                      {indexFormatted}
-                    </span>
-                    <span className="group-hover:text-[#B8935A] transition-colors leading-snug">
-                      {faq.question}
-                    </span>
+                  <span className="font-serif-heading text-base sm:text-lg font-bold text-[#1B263B]">
+                    {item.question}
                   </span>
-
-                  <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-colors ${
-                    isOpen ? 'bg-[#1B263B] text-white' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200'
-                  }`}>
-                    {isOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-transform ${
+                      isOpen ? 'rotate-180 bg-[#1B263B] text-white' : 'bg-slate-200/80 text-slate-600'
+                    }`}
+                  >
+                    <ChevronDown className="h-4 w-4" />
                   </div>
                 </button>
 
@@ -74,23 +68,35 @@ export default function FAQ() {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
+                      transition={{ duration: 0.25 }}
                     >
-                      <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-600 leading-relaxed font-sans border-t border-slate-100 whitespace-pre-line pl-12 sm:pl-14">
-                        {faq.answer}
+                      <div className="px-5 sm:px-6 pb-6 pt-1 text-slate-600 text-xs sm:text-sm font-sans leading-relaxed border-t border-slate-200/60 bg-white">
+                        {item.answer}
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
-              </div>
+              </motion.div>
             );
           })}
+        </div>
+
+        {/* Contact direct link */}
+        <div className="mt-12 text-center bg-slate-50 border border-slate-200 p-6 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="text-left">
+            <h4 className="text-sm font-bold text-[#1B263B]">Vous avez une question spécifique sur un cahier des charges ?</h4>
+            <p className="text-xs text-slate-500 font-sans mt-0.5">Notre équipe spécialisée marchés publics & SAD vous répond sous 24h ouvrées.</p>
+          </div>
+          <a
+            href="#a-propos"
+            className="py-2.5 px-5 bg-[#1B263B] text-[#B8935A] rounded-xl text-xs font-bold hover:bg-slate-800 transition-all flex items-center gap-2 cursor-pointer shrink-0"
+          >
+            <MessageSquare className="h-3.5 w-3.5" />
+            Poser une question
+          </a>
         </div>
 
       </div>
     </section>
   );
 }
-
-

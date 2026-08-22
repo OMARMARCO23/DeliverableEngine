@@ -12,12 +12,24 @@ import {
   CheckCircle2,
   ArrowRight,
   ArrowLeft,
-  Zap,
-  Check,
   Sparkles,
   Lock,
-  AlertCircle
+  AlertCircle,
+  Plus,
+  Trash2,
+  ChevronDown,
+  ChevronUp,
+  Globe,
+  Building2,
+  Briefcase,
+  Layers,
+  HelpCircle,
+  Check,
+  ShieldCheck,
+  Clock
 } from 'lucide-react';
+import { TeamMember, ClientReference, RfpFormData } from '../types';
+import { LegalTab } from './LegalModal';
 
 interface RfpFormWizardProps {
   isOpen: boolean;
@@ -26,54 +38,123 @@ interface RfpFormWizardProps {
     rfp_text?: string;
     positioning?: string;
   };
-}
-
-export interface RfpFormData {
-  rfp_text: string;
-  client_name: string;
-  positioning: string;
-  objective: 'gagner' | 'positionner' | 'contrainte' | 'autre';
-  other_objective: string;
-  differentiation: string;
-  email: string;
+  onOpenLegal?: (tab?: LegalTab) => void;
 }
 
 const OBJECTIVE_OPTIONS = [
   {
     value: 'gagner',
     label: 'Gagner le deal',
-    description: 'Réponse offensive et convaincante'
+    description: 'Réponse offensive, structurée et différenciante'
   },
   {
     value: 'positionner',
     label: 'Se positionner sérieusement',
-    description: 'Montrer son expertise et sa crédibilité'
+    description: 'Démontrer méthode, rigueur et références'
   },
   {
     value: 'contrainte',
-    label: 'Répondre sous contrainte de temps',
-    description: 'Version solide et rapide'
+    label: 'Contrainte de temps',
+    description: 'Dossier complet, rapide et conforme'
   },
   {
     value: 'autre',
-    label: 'Autre',
-    description: 'Précisez votre objectif'
+    label: 'Autre objectif',
+    description: 'Préciser un besoin sur-mesure'
   }
 ] as const;
 
-export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormWizardProps) {
-  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4>(1);
+const MARKET_TYPES = [
+  {
+    value: 'sad',
+    label: 'Système d\'Acquisition Dynamique (SAD)',
+    badge: 'Marché Public',
+    description: 'Accord-cadre SAD & marchés subséquents IT / Conseil'
+  },
+  {
+    value: 'conseil',
+    label: 'Mission de Conseil & Prestations Intellectuelles',
+    badge: 'Consultation Privée & Public',
+    description: 'Stratégie, audit, cadrage, PMO & transformation'
+  },
+  {
+    value: 'marche_public',
+    label: 'Marché Public Standard (DCE / CCTP)',
+    badge: 'Code Marchés Publics',
+    description: 'Procédure adaptée (MAPA) ou appel d\'offres ouvert'
+  },
+  {
+    value: 'autre',
+    label: 'Autre Consultation / Cahier des charges',
+    badge: 'PME & ETI',
+    description: 'Brief client standard, devis ou proposition commerciale'
+  }
+] as const;
+
+const STEPS = [
+  { step: 1, title: 'Appel d’offres', short: 'Marché' },
+  { step: 2, title: 'Cabinet', short: 'Profil' },
+  { step: 3, title: 'Grille TJM', short: 'Tarifs' },
+  { step: 4, title: 'Équipe', short: 'Équipe' },
+  { step: 5, title: 'Validation', short: '19 €' }
+];
+
+export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: RfpFormWizardProps) {
+  const [currentStep, setCurrentStep] = useState<1 | 2 | 3 | 4 | 5>(1);
   const [stepError, setStepError] = useState<string | null>(null);
+  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [retractionWaiverAccepted, setRetractionWaiverAccepted] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState<RfpFormData>({
+    country: 'FR',
+    marketType: 'sad',
     rfp_text: initialData?.rfp_text || '',
     client_name: '',
+    email: '',
     positioning: initialData?.positioning || '',
     objective: 'gagner',
     other_objective: '',
     differentiation: '',
-    email: ''
+    tjmRates: {
+      missionDirector: '',
+      seniorConsultant: '',
+      functionalConsultant: '',
+      dataExpert: '',
+      cyberExpert: '',
+      changeManagementExpert: ''
+    },
+    teamMembers: [
+      {
+        id: '1',
+        name: '',
+        role: '',
+        experience: '',
+        certifications: ''
+      }
+    ],
+    references: [
+      {
+        id: '1',
+        client: '',
+        object: '',
+        amount: '',
+        duration: ''
+      }
+    ],
+    advancedOptions: {
+      siretOrBce: '',
+      legalForm: '',
+      headquartersAddress: '',
+      annualRevenue: '',
+      totalHeadcount: '',
+      rcProInsurance: '',
+      dpoContact: '',
+      certifications: '',
+      technicalMeans: '',
+      authorizedSignatory: ''
+    },
+    packSelection: 'unit'
   });
 
   // Pre-fill if initialData changes when modal opens
@@ -96,24 +177,55 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
     setTimeout(() => {
       setCurrentStep(1);
       setStepError(null);
+      setShowAdvanced(false);
       setIsSuccess(false);
       setIsSubmitting(false);
+      setRetractionWaiverAccepted(false);
       setFormData({
+        country: 'FR',
+        marketType: 'sad',
         rfp_text: '',
         client_name: '',
+        email: '',
         positioning: '',
         objective: 'gagner',
         other_objective: '',
         differentiation: '',
-        email: ''
+        tjmRates: {
+          missionDirector: '',
+          seniorConsultant: '',
+          functionalConsultant: '',
+          dataExpert: '',
+          cyberExpert: '',
+          changeManagementExpert: ''
+        },
+        teamMembers: [
+          { id: '1', name: '', role: '', experience: '', certifications: '' }
+        ],
+        references: [
+          { id: '1', client: '', object: '', amount: '', duration: '' }
+        ],
+        advancedOptions: {
+          siretOrBce: '',
+          legalForm: '',
+          headquartersAddress: '',
+          annualRevenue: '',
+          totalHeadcount: '',
+          rcProInsurance: '',
+          dpoContact: '',
+          certifications: '',
+          technicalMeans: '',
+          authorizedSignatory: ''
+        },
+        packSelection: 'unit'
       });
     }, 300);
   };
 
-  // Step 1 Validation (minimum 200 characters)
+  // Step 1 Validation (minimum 150 characters)
   const validateStep1 = () => {
-    if (formData.rfp_text.trim().length < 200) {
-      setStepError("Merci de coller le texte de votre appel d’offres (minimum 200 caractères).");
+    if (formData.rfp_text.trim().length < 150) {
+      setStepError("Merci de coller le texte de votre appel d’offres (minimum 150 caractères).");
       return false;
     }
     setStepError(null);
@@ -123,11 +235,15 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
   // Step 2 Validation
   const validateStep2 = () => {
     if (!formData.client_name.trim()) {
-      setStepError("Le nom de votre cabinet / consultant est obligatoire.");
+      setStepError("Le nom de votre cabinet ou structure est obligatoire.");
+      return false;
+    }
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      setStepError("Merci de renseigner une adresse e-mail valide pour la livraison.");
       return false;
     }
     if (!formData.positioning.trim()) {
-      setStepError("Votre positionnement est obligatoire.");
+      setStepError("Votre positionnement métier est obligatoire.");
       return false;
     }
     if (formData.objective === 'autre' && !formData.other_objective.trim()) {
@@ -138,11 +254,69 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
     return true;
   };
 
-  // Step 4 Validation & Submission (3 actions: validate email, insert rfp_requests, redirect Lemon Squeezy)
-  const handleFinalSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Add / Remove Team Member
+  const addTeamMember = () => {
+    setFormData((prev) => ({
+      ...prev,
+      teamMembers: [
+        ...prev.teamMembers,
+        { id: String(Date.now()), name: '', role: '', experience: '', certifications: '' }
+      ]
+    }));
+  };
+
+  const removeTeamMember = (id: string) => {
+    if (formData.teamMembers.length <= 1) return;
+    setFormData((prev) => ({
+      ...prev,
+      teamMembers: prev.teamMembers.filter((m) => m.id !== id)
+    }));
+  };
+
+  const updateTeamMember = (id: string, field: keyof TeamMember, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      teamMembers: prev.teamMembers.map((m) => (m.id === id ? { ...m, [field]: value } : m))
+    }));
+  };
+
+  // Add / Remove Reference
+  const addReference = () => {
+    setFormData((prev) => ({
+      ...prev,
+      references: [
+        ...prev.references,
+        { id: String(Date.now()), client: '', object: '', amount: '', duration: '' }
+      ]
+    }));
+  };
+
+  const removeReference = (id: string) => {
+    if (formData.references.length <= 1) return;
+    setFormData((prev) => ({
+      ...prev,
+      references: prev.references.filter((r) => r.id !== id)
+    }));
+  };
+
+  const updateReference = (id: string, field: keyof ClientReference, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      references: prev.references.map((r) => (r.id === id ? { ...r, [field]: value } : r))
+    }));
+  };
+
+  // Submission
+  const handleFinalSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
     if (!formData.email.trim() || !formData.email.includes('@')) {
       setStepError("Merci de renseigner une adresse e-mail de livraison valide.");
+      return;
+    }
+
+    if (!retractionWaiverAccepted) {
+      setStepError("Veuillez cocher la case d'acceptation de l'exécution immédiate et de renonciation au droit de rétractation pour lancer la génération.");
       return;
     }
 
@@ -154,46 +328,90 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
       const tempOrderId = `TEMP-${Date.now()}`;
       let rfpRecord: { id?: string | number } | null = null;
 
-      // 1. Insert record into Supabase (try both rfp_requests and rfp_pending)
-      const payload = {
+      // Prepare enriched differentiation text with all structured data
+      let enrichedDifferentiation = formData.differentiation || '';
+      const extraMetadata: string[] = [];
+
+      extraMetadata.push(`[Pays du marché: ${formData.country === 'BE' ? 'Belgique (Loi marchés publics 2016)' : 'France (Code commande publique)'}]`);
+      extraMetadata.push(`[Type de marché: ${formData.marketType || 'SAD'}]`);
+      extraMetadata.push(`[Formule: 19 € (Génération unique)]`);
+      extraMetadata.push(`[Renonciation rétractation 14j: Oui (Exécution immédiate)]`);
+
+      // TJM Rates
+      const rates = Object.entries(formData.tjmRates || {}).filter(([_, v]) => typeof v === 'string' && v.trim().length > 0);
+      if (rates.length > 0) {
+        extraMetadata.push(`[Grille TJM: ${rates.map(([k, v]) => `${k}=${v}€/j`).join(', ')}]`);
+      }
+
+      // Team members
+      const members = (formData.teamMembers || []).filter((m) => m.name.trim());
+      if (members.length > 0) {
+        extraMetadata.push(
+          `[Équipe intervenante: ${members
+            .map(
+              (m) =>
+                `${m.name} (${m.role || 'Consultant'}${m.experience ? ` - Exp: ${m.experience}` : ''}${
+                  m.certifications ? ` - Certifs: ${m.certifications}` : ''
+                })`
+            )
+            .join(' | ')}]`
+        );
+      }
+
+      // References
+      const refs = (formData.references || []).filter((r) => r.client.trim());
+      if (refs.length > 0) {
+        extraMetadata.push(
+          `[Références clients: ${refs
+            .map(
+              (r) =>
+                `${r.client} (${r.object || 'Mission'}${r.amount ? ` - ${r.amount}€` : ''}${
+                  r.duration ? ` - ${r.duration}` : ''
+                })`
+            )
+            .join(' | ')}]`
+        );
+      }
+
+      // Advanced options
+      const adv = Object.entries(formData.advancedOptions || {}).filter(([_, v]) => typeof v === 'string' && v.trim().length > 0);
+      if (adv.length > 0) {
+        extraMetadata.push(`[Informations administratives: ${adv.map(([k, v]) => `${k}: ${v}`).join(', ')}]`);
+      }
+
+      if (extraMetadata.length > 0) {
+        enrichedDifferentiation = enrichedDifferentiation
+          ? `${enrichedDifferentiation}\n\n--- DONNÉES COMPLÉMENTAIRES DU DOSSIER ---\n${extraMetadata.join('\n')}`
+          : `--- DONNÉES COMPLÉMENTAIRES DU DOSSIER ---\n${extraMetadata.join('\n')}`;
+      }
+
+      // Standard payload matching Supabase rfp_pending schema
+      const standardPayload = {
         order_id: tempOrderId,
         email: formData.email,
         client_name: formData.client_name,
         positioning: formData.positioning,
         objective: formData.objective === 'autre' ? formData.other_objective : formData.objective,
-        differentiation: formData.differentiation || null,
+        differentiation: enrichedDifferentiation,
         rfp_text: formData.rfp_text,
         status: 'pending_payment'
       };
 
       if (supabase) {
         try {
-          const { data: rfp1, error: e1 } = await supabase
-            .from('rfp_requests')
-            .insert(payload)
-            .select()
-            .single();
-
-          if (rfp1) {
-            rfpRecord = rfp1;
-          } else if (e1) {
-            console.error('Supabase rfp_requests error:', e1);
-          }
-
-          // Try rfp_pending table as well if it exists
-          const { data: rfp2, error: e2 } = await supabase
+          const { data: rfp, error: supaErr } = await supabase
             .from('rfp_pending')
-            .insert(payload)
+            .insert(standardPayload)
             .select()
             .single();
 
-          if (!rfpRecord && rfp2) {
-            rfpRecord = rfp2;
-          } else if (e2) {
-            console.error('Supabase rfp_pending info:', e2);
+          if (rfp) {
+            rfpRecord = rfp;
+          } else if (supaErr) {
+            console.warn('Supabase rfp_pending notice:', supaErr.message || supaErr);
           }
-        } catch (err) {
-          console.error('Supabase insert exception:', err);
+        } catch (err: unknown) {
+          console.warn('Supabase insert notice:', err instanceof Error ? err.message : err);
         }
       }
 
@@ -203,19 +421,29 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
       try {
         localStorage.setItem('rfp_latest_id', activeRfpId);
         localStorage.setItem('rfp_latest_email', formData.email);
-        localStorage.setItem('rfp_latest_data', JSON.stringify({
-          ...formData,
-          rfp_id: activeRfpId,
-          order_id: tempOrderId,
-          status: 'pending_payment'
-        }));
+        localStorage.setItem(
+          'rfp_latest_data',
+          JSON.stringify({
+            ...formData,
+            differentiation_full: enrichedDifferentiation,
+            rfp_id: activeRfpId,
+            order_id: tempOrderId,
+            status: 'pending_payment'
+          })
+        );
       } catch (e) {
-        console.warn('LocalStorage save error:', e);
+        console.warn('LocalStorage save notice:', e);
       }
 
-      // 2. Trigger n8n Webhook 1 (Form Data Submission) if configured
+      // Trigger n8n Webhook 1 if available
       const webhook1 = envMeta?.VITE_N8N_WEBHOOK1_URL;
-      if (webhook1) {
+      if (
+        webhook1 &&
+        typeof webhook1 === 'string' &&
+        (webhook1.startsWith('http://') || webhook1.startsWith('https://')) &&
+        !webhook1.includes('YOUR_') &&
+        !webhook1.includes('placeholder')
+      ) {
         try {
           await fetch(webhook1, {
             method: 'POST',
@@ -224,59 +452,85 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
               event: 'form_submitted',
               rfp_id: activeRfpId,
               order_id: tempOrderId,
-              ...formData
+              ...formData,
+              differentiation_full: enrichedDifferentiation
             })
+          }).catch((wErr) => {
+            console.warn('Webhook 1 background notice:', wErr?.message || wErr);
           });
         } catch (wErr) {
-          console.error('Webhook 1 trigger error:', wErr);
+          console.warn('Webhook 1 background notice:', wErr);
         }
       }
 
-      // 3. Redirect to Lemon Squeezy checkout with email and rfp_id
-      const paymentUrl =
+      // Determine Lemon Squeezy payment link
+      const rawPaymentUrl =
         envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK ||
-        envMeta?.VITE_PAYMENT_LINK ||
-        envMeta?.VITE_STRIPE_PAYMENT_LINK;
+        envMeta?.VITE_PAYMENT_LINK;
 
-      if (paymentUrl) {
-        const checkoutRedirect = paymentUrl.startsWith('http') ? paymentUrl : `https://${paymentUrl}`;
-        const urlObj = new URL(checkoutRedirect);
+      let validCheckoutUrl: string | null = null;
 
-        if (formData.email) {
-          urlObj.searchParams.set('checkout[email]', formData.email);
-          urlObj.searchParams.set('email', formData.email);
+      if (
+        rawPaymentUrl &&
+        typeof rawPaymentUrl === 'string' &&
+        rawPaymentUrl.trim().length > 7 &&
+        !rawPaymentUrl.includes('YOUR_') &&
+        !rawPaymentUrl.includes('placeholder')
+      ) {
+        try {
+          const trimmed = rawPaymentUrl.trim();
+          const targetUrl = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+            ? trimmed
+            : `https://${trimmed}`;
+
+          const urlObj = new URL(targetUrl);
+          if (formData.email) {
+            urlObj.searchParams.set('checkout[email]', formData.email);
+            urlObj.searchParams.set('email', formData.email);
+          }
+          urlObj.searchParams.set('rfp_id', activeRfpId);
+          urlObj.searchParams.set('country', formData.country);
+          urlObj.searchParams.set('market_type', formData.marketType || 'sad');
+          validCheckoutUrl = urlObj.toString();
+        } catch (urlErr) {
+          console.warn('Payment link parse notice:', urlErr);
+          validCheckoutUrl = null;
         }
-        urlObj.searchParams.set('rfp_id', activeRfpId);
-        urlObj.searchParams.set('custom_rfp_id', activeRfpId);
+      }
 
-        window.location.href = urlObj.toString();
+      if (validCheckoutUrl) {
+        window.location.href = validCheckoutUrl;
       } else {
-        // Show success confirmation screen if no payment link configured
         setTimeout(() => {
           setIsSubmitting(false);
           setIsSuccess(true);
-        }, 800);
+        }, 600);
       }
     } catch (err) {
-      console.error(err);
+      console.warn('Submission fallback notice:', err);
       setIsSubmitting(false);
       setIsSuccess(true);
     }
   };
 
   const handleNext = () => {
-    if (currentStep === 1 && !validateStep1()) return;
-    if (currentStep === 2 && !validateStep2()) return;
-    setStepError(null);
-    if (currentStep < 4) {
-      setCurrentStep((prev) => (prev + 1) as 1 | 2 | 3 | 4);
+    if (currentStep === 1) {
+      if (!validateStep1()) return;
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      if (!validateStep2()) return;
+      setCurrentStep(3);
+    } else if (currentStep === 3) {
+      setCurrentStep(4);
+    } else if (currentStep === 4) {
+      setCurrentStep(5);
     }
   };
 
   const handlePrev = () => {
     setStepError(null);
     if (currentStep > 1) {
-      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4);
+      setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5);
     }
   };
 
@@ -285,461 +539,799 @@ export default function RfpFormWizard({ isOpen, onClose, initialData }: RfpFormW
   return (
     <AnimatePresence>
       <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-        {/* Backdrop */}
+        {/* Backdrop with dark blur */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={handleClose}
-          className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"
+          className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity"
         />
 
-        {/* Modal Container */}
+        {/* Modal Window - Executive Dark Slate */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.96, y: 15 }}
+          initial={{ opacity: 0, scale: 0.97, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.96, y: 15 }}
-          className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] my-auto"
+          exit={{ opacity: 0, scale: 0.97, y: 12 }}
+          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+          className="relative w-full max-w-3xl bg-[#0D1522] rounded-3xl shadow-2xl border border-slate-800/90 overflow-hidden z-10 my-auto flex flex-col max-h-[90vh] text-slate-100"
         >
-          {/* Header */}
-          <div className="bg-[#1B263B] text-white p-5 sm:p-6 relative shrink-0">
-            <button
-              onClick={handleClose}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white p-1 rounded-full hover:bg-slate-800 transition-colors cursor-pointer"
-            >
-              <X className="h-5 w-5" />
-            </button>
+          {/* Top hairline accent */}
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#B8935A]/50 to-transparent" />
 
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-[10px] font-bold tracking-widest uppercase bg-[#B8935A] text-[#1B263B] px-2.5 py-0.5 rounded-full">
-                Assistant Réponse RFP
-              </span>
+          {/* Header - Refined Executive Dark */}
+          <div className="px-6 sm:px-8 pt-6 pb-4 border-b border-slate-800/80 bg-[#0D1522] shrink-0">
+            <div className="flex items-center justify-between">
+              {/* Brand Indicator */}
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-[#111A29] border border-slate-700 text-[#D4AF37]">
+                  <span className="font-serif-heading text-xs font-bold">D</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-serif-heading text-base font-bold text-white">
+                      Générateur de Réponse RFP
+                    </span>
+                    <span className="inline-flex items-center rounded-full bg-[#B8935A]/15 border border-[#B8935A]/30 px-2 py-0.5 text-[10px] font-mono font-bold text-[#D4AF37]">
+                      SAD & Conseil
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Close Button */}
+              <button
+                onClick={handleClose}
+                className="h-8 w-8 rounded-full flex items-center justify-center text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+                aria-label="Fermer"
+              >
+                <X className="h-4 w-4" />
+              </button>
             </div>
 
-            <h2 className="font-serif-heading text-lg sm:text-xl font-bold">
-              Générez votre réponse commerciale sur-mesure
-            </h2>
-
-            {/* Stepper Header */}
+            {/* Stepper Indicator - Minimalist Pill Segments */}
             {!isSuccess && (
-              <div className="mt-5 grid grid-cols-4 gap-2">
-                {[
-                  { step: 1, label: 'Appel d’offres' },
-                  { step: 2, label: 'Votre Cabinet' },
-                  { step: 3, label: 'Différenciation' },
-                  { step: 4, label: 'Récapitulatif' }
-                ].map((s) => {
-                  const isActive = currentStep === s.step;
-                  const isDone = currentStep > s.step;
-                  return (
-                    <div key={s.step} className="flex flex-col gap-1">
-                      <div
-                        className={`h-1.5 rounded-full transition-colors ${
-                          isDone
-                            ? 'bg-emerald-500'
-                            : isActive
-                            ? 'bg-[#B8935A]'
-                            : 'bg-slate-700'
-                        }`}
-                      />
-                      <span
-                        className={`text-[10px] font-medium hidden sm:block truncate ${
-                          isActive ? 'text-[#B8935A] font-bold' : 'text-slate-400'
-                        }`}
-                      >
-                        {s.step}. {s.label}
-                      </span>
-                    </div>
-                  );
-                })}
+              <div className="mt-5">
+                <div className="grid grid-cols-5 gap-1.5 sm:gap-2">
+                  {STEPS.map((s) => {
+                    const isActive = currentStep === s.step;
+                    const isDone = currentStep > s.step;
+                    return (
+                      <div key={s.step} className="flex flex-col gap-1.5">
+                        <div
+                          className={`h-1 rounded-full transition-all duration-300 ${
+                            isDone
+                              ? 'bg-slate-600'
+                              : isActive
+                              ? 'bg-[#B8935A]'
+                              : 'bg-slate-800'
+                          }`}
+                        />
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span
+                            className={`font-medium transition-colors hidden sm:block truncate ${
+                              isActive
+                                ? 'text-[#D4AF37] font-bold'
+                                : isDone
+                                ? 'text-slate-400'
+                                : 'text-slate-600'
+                            }`}
+                          >
+                            {s.step}. {s.title}
+                          </span>
+                          <span
+                            className={`font-medium sm:hidden text-[10px] text-center w-full truncate ${
+                              isActive ? 'text-[#D4AF37] font-bold' : 'text-slate-600'
+                            }`}
+                          >
+                            {s.short}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
 
-          {/* Body */}
-          <div className="p-5 sm:p-8 overflow-y-auto flex-1">
+          {/* Body Content */}
+          <div className="p-6 sm:p-8 overflow-y-auto flex-1 font-sans bg-[#0D1522]">
             {stepError && (
-              <div className="mb-6 p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs font-semibold text-red-700 flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-5 p-3.5 bg-red-950/40 border border-red-800/80 rounded-2xl text-xs font-medium text-red-200 flex items-center gap-2.5"
+              >
+                <AlertCircle className="h-4 w-4 text-red-400 shrink-0" />
                 <span>{stepError}</span>
-              </div>
+              </motion.div>
             )}
 
             {!isSuccess ? (
               <>
-                {/* ÉTAPE 1: RFP Text Input */}
+                {/* ============================================================ */}
+                {/* ÉTAPE 1 : Appel d'offres */}
+                {/* ============================================================ */}
                 {currentStep === 1 && (
-                  <div className="space-y-6">
+                  <motion.div
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-6"
+                  >
                     <div>
-                      <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Collez votre appel d’offres
+                      <h3 className="font-serif-heading text-xl font-bold text-white">
+                        Cadre du Marché & Cahier des Charges
                       </h3>
-                      <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Copiez-collez le texte complet de votre cahier des charges. Notre moteur extrait automatiquement toutes les informations clés.
+                      <p className="mt-1 text-xs text-slate-400">
+                        Sélectionnez la juridiction applicable et collez le descriptif du besoin (DCE, CCTP, SAD ou consultation).
                       </p>
                     </div>
 
-                    {/* Banner Gold Zap Extraction */}
-                    <div className="p-3.5 bg-[#B8935A]/10 border border-[#B8935A]/30 rounded-xl text-xs text-[#1B263B] flex items-start gap-3">
-                      <Zap className="h-4 w-4 text-[#B8935A] shrink-0 mt-0.5" />
-                      <div>
-                        <strong className="text-[#1B263B]">Extraction automatique :</strong>
-                        <p className="mt-0.5 text-slate-700">
-                          Budget, dates, effectifs, volume d'activité — tout est extrait automatiquement depuis votre document.
-                        </p>
+                    {/* Cadre Juridique */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-2">
+                        Juridiction du marché <span className="text-[#D4AF37]">*</span>
+                      </label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, country: 'FR' }))}
+                          className={`flex items-center justify-center gap-2.5 p-3 rounded-2xl border text-xs font-semibold transition-all cursor-pointer ${
+                            formData.country === 'FR'
+                              ? 'border-[#B8935A] bg-[#B8935A]/15 text-white shadow-xs'
+                              : 'border-slate-800 bg-[#111A29] text-slate-400 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-base">🇫🇷</span>
+                          <span>France (Code de la commande publique)</span>
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prev) => ({ ...prev, country: 'BE' }))}
+                          className={`flex items-center justify-center gap-2.5 p-3 rounded-2xl border text-xs font-semibold transition-all cursor-pointer ${
+                            formData.country === 'BE'
+                              ? 'border-[#B8935A] bg-[#B8935A]/15 text-white shadow-xs'
+                              : 'border-slate-800 bg-[#111A29] text-slate-400 hover:border-slate-700'
+                          }`}
+                        >
+                          <span className="text-base">🇧🇪</span>
+                          <span>Belgique (Loi marchés publics 2016)</span>
+                        </button>
                       </div>
                     </div>
 
-                    {/* Champ unique: Textarea RFP */}
+                    {/* Nature de la consultation */}
                     <div>
-                      <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Texte de l'appel d'offres <span className="text-red-500">*</span>
+                      <label className="block text-xs font-semibold text-slate-300 mb-2">
+                        Type de procédure
                       </label>
-                      <textarea
-                        rows={10}
-                        name="rfp_text"
-                        placeholder="Collez ici le texte complet du cahier des charges, de l'appel d'offres ou du brief client (minimum 200 caractères)…"
-                        value={formData.rfp_text}
-                        onChange={(e) => {
-                          setFormData((prev) => ({ ...prev, rfp_text: e.target.value }));
-                          setStepError(null);
-                        }}
-                        className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A] bg-slate-50/50"
-                      />
-                      <p className="text-[11px] text-slate-500 mt-1 flex justify-between">
-                        <span>Min. 200 caractères requis</span>
-                        <span className={formData.rfp_text.length >= 200 ? "text-emerald-600 font-bold" : "text-slate-500"}>
-                          {formData.rfp_text.length} caractères saisis
-                        </span>
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* ÉTAPE 2: Informations sur VOTRE cabinet */}
-                {currentStep === 2 && (
-                  <div className="space-y-6">
-                    <div>
-                      <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Informations sur votre cabinet / répondeur
-                      </h3>
-                      <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Ces informations concernent <strong>votre structure</strong> (consultant / cabinet qui répond). Les données de l'acheteur seront extraites automatiquement depuis le document par le workflow n8n.
-                      </p>
-                    </div>
-
-                    {/* Champ 1: client_name (Represents the consulting firm / consultant responding) */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Nom de votre cabinet ou consultant <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="client_name"
-                        placeholder="Ex : Cabinet CapAdvice, Consult-Tech, Marc Dupont Conseil…"
-                        value={formData.client_name}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, client_name: e.target.value }))}
-                        className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
-                      />
-                      <p className="text-[11px] text-slate-500 mt-1">
-                        Nom sous lequel vous présentez votre réponse commerciale.
-                      </p>
-                    </div>
-
-                    {/* Champ 2: positioning */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Votre positionnement métier <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        name="positioning"
-                        placeholder="Ex : Cabinet spécialisé AMO SIH, Expert transformation Cloud, Conseil en conduite du changement…"
-                        value={formData.positioning}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, positioning: e.target.value }))}
-                        className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
-                      />
-                    </div>
-
-                    {/* Champ 3: objective */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#1B263B] mb-2">
-                        Objectif principal de votre réponse <span className="text-red-500">*</span>
-                      </label>
-
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        {OBJECTIVE_OPTIONS.map((opt) => {
-                          const isSelected = formData.objective === opt.value;
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {MARKET_TYPES.map((type) => {
+                          const isSelected = formData.marketType === type.value;
                           return (
-                            <label
-                              key={opt.value}
-                              className={`flex items-start gap-3 p-3.5 rounded-xl border cursor-pointer transition-all ${
+                            <div
+                              key={type.value}
+                              onClick={() => setFormData((prev) => ({ ...prev, marketType: type.value }))}
+                              className={`p-3.5 rounded-2xl border text-left cursor-pointer transition-all ${
                                 isSelected
-                                  ? 'border-[#B8935A] bg-[#B8935A]/10 ring-1 ring-[#B8935A]'
-                                  : 'border-slate-200 hover:border-slate-300 bg-white'
+                                  ? 'border-[#B8935A] bg-[#111A29] text-white shadow-xs ring-1 ring-[#B8935A]/30'
+                                  : 'border-slate-800 bg-[#111A29]/60 text-slate-300 hover:border-slate-700'
                               }`}
                             >
-                              <input
-                                type="radio"
-                                name="objective"
-                                value={opt.value}
-                                checked={isSelected}
-                                onChange={() => setFormData((prev) => ({ ...prev, objective: opt.value as any }))}
-                                className="mt-1 text-[#B8935A] focus:ring-[#B8935A]"
-                              />
-                              <div>
-                                <p className="text-xs font-bold text-[#1B263B]">{opt.label}</p>
-                                <p className="text-[11px] text-slate-500 mt-0.5">{opt.description}</p>
+                              <div className="flex items-center justify-between mb-1">
+                                <span className={`text-[10px] uppercase font-mono font-bold ${isSelected ? 'text-[#D4AF37]' : 'text-slate-500'}`}>
+                                  {type.badge}
+                                </span>
+                                <div className={`h-3.5 w-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#B8935A] bg-[#B8935A]' : 'border-slate-700'}`}>
+                                  {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-[#0D1522]" />}
+                                </div>
                               </div>
-                            </label>
+                              <div className="font-bold text-xs">
+                                {type.label}
+                              </div>
+                              <p className={`text-[11px] mt-0.5 leading-relaxed ${isSelected ? 'text-slate-300' : 'text-slate-400'}`}>
+                                {type.description}
+                              </p>
+                            </div>
                           );
                         })}
                       </div>
                     </div>
 
-                    {/* Champ 4: other_objective */}
-                    {formData.objective === 'autre' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="pt-1"
-                      >
-                        <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                          Précisez votre objectif <span className="text-red-500">*</span>
+                    {/* Textarea */}
+                    <div>
+                      <div className="flex items-center justify-between mb-1.5">
+                        <label className="text-xs font-semibold text-slate-300">
+                          Texte de la consultation ou du cahier des charges <span className="text-[#D4AF37]">*</span>
+                        </label>
+                        <span className={`text-[11px] font-mono ${formData.rfp_text.length < 150 ? 'text-amber-400 font-semibold' : 'text-slate-500'}`}>
+                          {formData.rfp_text.length} / 150 car. min
+                        </span>
+                      </div>
+                      <textarea
+                        rows={7}
+                        placeholder="Collez ici le texte de votre consultation (DCE, CCTP, règlement de consultation, descriptif du besoin SAD ou brief conseil)..."
+                        value={formData.rfp_text}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, rfp_text: e.target.value }))}
+                        className="w-full text-xs font-sans border border-slate-800 rounded-2xl p-4 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none transition-all leading-relaxed"
+                      />
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ============================================================ */}
+                {/* ÉTAPE 2 : Profil Cabinet */}
+                {/* ============================================================ */}
+                {currentStep === 2 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-6"
+                  >
+                    <div>
+                      <h3 className="font-serif-heading text-xl font-bold text-white">
+                        Votre Cabinet & Positionnement
+                      </h3>
+                      <p className="mt-1 text-xs text-slate-400">
+                        Précisez vos coordonnées de livraison et vos axes de différenciation métier.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                          Nom de votre cabinet ou société <span className="text-[#D4AF37]">*</span>
                         </label>
                         <input
                           type="text"
-                          name="other_objective"
-                          placeholder="Décrivez brièvement ce que vous recherchez…"
-                          value={formData.other_objective}
-                          onChange={(e) => setFormData((prev) => ({ ...prev, other_objective: e.target.value }))}
-                          className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
+                          placeholder="Ex: Nexus Conseil & Stratégie"
+                          value={formData.client_name}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, client_name: e.target.value }))}
+                          className="w-full text-xs border border-slate-800 rounded-2xl p-3 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none transition-all"
                         />
-                      </motion.div>
-                    )}
-                  </div>
-                )}
-
-                {/* ÉTAPE 3: Différenciation (optionnelle) */}
-                {currentStep === 3 && (
-                  <div className="space-y-6">
-                    <div>
-                      <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600 mb-2">
-                        Étape optionnelle
                       </div>
-                      <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Vos points de différenciation
-                      </h3>
-                      <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Indiquez les arguments propres à votre cabinet (méthodologie, cas clients similaires, certifications) pour enrichir la proposition.
-                      </p>
+
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                          Email professionnel de livraison <span className="text-[#D4AF37]">*</span>
+                        </label>
+                        <input
+                          type="email"
+                          placeholder="vous@votre-cabinet.com"
+                          value={formData.email}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
+                          className="w-full text-xs border border-slate-800 rounded-2xl p-3 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none transition-all"
+                        />
+                      </div>
                     </div>
 
-                    {/* Champ: differentiation */}
                     <div>
-                      <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Points forts / différenciation de votre cabinet
+                      <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                        Points forts & positionnement métier <span className="text-[#D4AF37]">*</span>
                       </label>
-                      <textarea
-                        rows={6}
-                        name="differentiation"
-                        placeholder="Méthodologie propriétaire, résultats chiffrés, expérience sectorielle, approche spécifique, certifications, cas clients similaires…"
-                        value={formData.differentiation}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, differentiation: e.target.value }))}
-                        className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl p-3.5 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A] bg-slate-50/50"
+                      <input
+                        type="text"
+                        placeholder="Ex: Cabinet spécialisé transformation SI publique, 12 ans d'expérience, certifié ITIL & TOGAF"
+                        value={formData.positioning}
+                        onChange={(e) => setFormData((prev) => ({ ...prev, positioning: e.target.value }))}
+                        className="w-full text-xs border border-slate-800 rounded-2xl p-3 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none transition-all"
                       />
                     </div>
-                  </div>
+
+                    {/* Objectif Stratégique */}
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-300 mb-2">
+                        Objectif stratégique
+                      </label>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                        {OBJECTIVE_OPTIONS.map((opt) => {
+                          const isSelected = formData.objective === opt.value;
+                          return (
+                            <div
+                              key={opt.value}
+                              onClick={() => setFormData((prev) => ({ ...prev, objective: opt.value }))}
+                              className={`p-3 rounded-2xl border text-left cursor-pointer transition-all ${
+                                isSelected
+                                  ? 'border-[#B8935A] bg-[#111A29] text-white shadow-xs ring-1 ring-[#B8935A]/30'
+                                  : 'border-slate-800 bg-[#111A29]/60 text-slate-300 hover:border-slate-700'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-bold text-xs">{opt.label}</span>
+                                <div className={`h-3.5 w-3.5 rounded-full border flex items-center justify-center ${isSelected ? 'border-[#B8935A] bg-[#B8935A]' : 'border-slate-700'}`}>
+                                  {isSelected && <div className="h-1.5 w-1.5 rounded-full bg-[#0D1522]" />}
+                                </div>
+                              </div>
+                              <p className="text-[11px] text-slate-400 mt-0.5 leading-relaxed">{opt.description}</p>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {formData.objective === 'autre' && (
+                      <div>
+                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">
+                          Précisez votre objectif <span className="text-[#D4AF37]">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          placeholder="Décrivez votre objectif particulier..."
+                          value={formData.other_objective}
+                          onChange={(e) => setFormData((prev) => ({ ...prev, other_objective: e.target.value }))}
+                          className="w-full text-xs border border-slate-800 rounded-2xl p-3 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none transition-all"
+                        />
+                      </div>
+                    )}
+                  </motion.div>
                 )}
 
-                {/* ÉTAPE 4: Récapitulatif + Paiement */}
-                {currentStep === 4 && (
-                  <form onSubmit={handleFinalSubmit} className="space-y-6">
+                {/* ============================================================ */}
+                {/* ÉTAPE 3 : Grille TJM */}
+                {/* ============================================================ */}
+                {currentStep === 3 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-6"
+                  >
                     <div>
-                      <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                        Récapitulatif
+                      <h3 className="font-serif-heading text-xl font-bold text-white">
+                        Grille Tarifaire (Taux Journalier Moyen)
                       </h3>
-                      <p className="mt-1 text-xs sm:text-sm text-slate-600">
-                        Vérifiez les informations avant de lancer la génération.
+                      <p className="mt-1 text-xs text-slate-400">
+                        Facultatif · Permet de pré-remplir le Bordereau des Prix Unitaires (BPU) de votre mémoire financier.
                       </p>
                     </div>
 
-                    {/* Zone Récapitulatif */}
-                    <div className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 text-xs">
-                      <div className="flex justify-between border-b border-slate-200 pb-2">
-                        <span className="font-bold text-slate-500">Appel d'offres :</span>
-                        <span className="font-semibold text-[#1B263B]">
-                          {formData.rfp_text.length} caractères analysés
-                        </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                      {[
+                        { key: 'missionDirector', label: 'Directeur de mission / Associé', placeholder: '1 200 €' },
+                        { key: 'seniorConsultant', label: 'Consultant Senior / Manager', placeholder: '950 €' },
+                        { key: 'functionalConsultant', label: 'Consultant Métier / Fonctionnel', placeholder: '750 €' },
+                        { key: 'dataExpert', label: 'Expert Data / IA', placeholder: '1 100 €' },
+                        { key: 'cyberExpert', label: 'Expert Cybersécurité / RSSI', placeholder: '1 150 €' },
+                        { key: 'changeManagementExpert', label: 'Conduite du Changement', placeholder: '850 €' }
+                      ].map((item) => (
+                        <div key={item.key} className="bg-[#111A29] p-3 rounded-2xl border border-slate-800">
+                          <label className="block text-[11px] font-semibold text-slate-300 mb-1.5 truncate">
+                            {item.label}
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="text"
+                              placeholder={`Ex: ${item.placeholder}`}
+                              value={formData.tjmRates[item.key as keyof typeof formData.tjmRates]}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  tjmRates: { ...prev.tjmRates, [item.key]: e.target.value }
+                                }))
+                              }
+                              className="w-full text-xs font-mono border border-slate-800 rounded-xl p-2.5 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none"
+                            />
+                            <span className="absolute right-3 top-2.5 text-[10px] font-mono text-slate-500">
+                              / j HT
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ============================================================ */}
+                {/* ÉTAPE 4 : Équipe */}
+                {/* ============================================================ */}
+                {currentStep === 4 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-6"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-serif-heading text-xl font-bold text-white">
+                          Équipe & Profils Intervenants
+                        </h3>
+                        <p className="mt-1 text-xs text-slate-400">
+                          Facultatif · Valorise vos experts clés et votre organigramme de gouvernance.
+                        </p>
                       </div>
 
-                      <div className="flex justify-between border-b border-slate-200 pb-2">
-                        <span className="font-bold text-slate-500">Votre cabinet :</span>
-                        <span className="font-semibold text-[#1B263B]">{formData.client_name}</span>
+                      <button
+                        type="button"
+                        onClick={addTeamMember}
+                        className="py-1.5 px-3 bg-[#111A29] hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-full text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer shrink-0"
+                      >
+                        <Plus className="h-3.5 w-3.5 text-[#D4AF37]" />
+                        Ajouter
+                      </button>
+                    </div>
+
+                    <div className="space-y-3">
+                      {formData.teamMembers.map((member, idx) => (
+                        <div key={member.id} className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 space-y-2.5">
+                          <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+                            <span>Profil #{idx + 1}</span>
+                            {formData.teamMembers.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeTeamMember(member.id)}
+                                className="text-slate-500 hover:text-red-400 p-1 cursor-pointer"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                            <input
+                              type="text"
+                              placeholder="Nom & Prénom"
+                              value={member.name}
+                              onChange={(e) => updateTeamMember(member.id, 'name', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-xl p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Rôle (ex: Chef de projet)"
+                              value={member.role}
+                              onChange={(e) => updateTeamMember(member.id, 'role', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-xl p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Expérience (ex: 8 ans AMO)"
+                              value={member.experience}
+                              onChange={(e) => updateTeamMember(member.id, 'experience', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-xl p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Certifications (ex: ITIL, PMP)"
+                              value={member.certifications}
+                              onChange={(e) => updateTeamMember(member.id, 'certifications', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-xl p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* ============================================================ */}
+                {/* ÉTAPE 5 : Validation & Références */}
+                {/* ============================================================ */}
+                {currentStep === 5 && (
+                  <motion.div
+                    initial={{ opacity: 0, x: 8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.2 }}
+                    className="space-y-5"
+                  >
+                    <div>
+                      <h3 className="font-serif-heading text-xl font-bold text-white">
+                        Validation & Envoi du Dossier
+                      </h3>
+                      <p className="mt-1 text-xs text-slate-400">
+                        Vérifiez vos paramètres avant de déclencher la génération de votre réponse RFP (19 €).
+                      </p>
+                    </div>
+
+                    {/* Références Clients */}
+                    <div className="space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
+                          <Briefcase className="h-3.5 w-3.5 text-[#D4AF37]" />
+                          <span>Références clients comparables (optionnel)</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={addReference}
+                          className="py-1 px-2.5 bg-[#111A29] hover:bg-slate-800 text-slate-200 border border-slate-700 rounded-full text-[11px] font-semibold transition-all flex items-center gap-1 cursor-pointer"
+                        >
+                          <Plus className="h-3 w-3 text-[#D4AF37]" />
+                          Ajouter
+                        </button>
                       </div>
 
-                      <div className="flex justify-between border-b border-slate-200 pb-2">
-                        <span className="font-bold text-slate-500">Positionnement :</span>
-                        <span className="font-semibold text-[#1B263B]">{formData.positioning}</span>
-                      </div>
+                      {formData.references.map((ref, idx) => (
+                        <div key={ref.id} className="p-3 rounded-2xl bg-[#111A29] border border-slate-800 space-y-2">
+                          <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300">
+                            <span>Référence #{idx + 1}</span>
+                            {formData.references.length > 1 && (
+                              <button
+                                type="button"
+                                onClick={() => removeReference(ref.id)}
+                                className="text-slate-500 hover:text-red-400 p-0.5 cursor-pointer"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            )}
+                          </div>
 
-                      <div className="flex justify-between border-b border-slate-200 pb-2">
-                        <span className="font-bold text-slate-500">Objectif :</span>
-                        <span className="font-semibold text-[#1B263B]">
-                          {OBJECTIVE_OPTIONS.find((o) => o.value === formData.objective)?.label}
-                          {formData.objective === 'autre' && ` (${formData.other_objective})`}
-                        </span>
-                      </div>
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            <input
+                              type="text"
+                              placeholder="Client (ex : Région IDF)"
+                              value={ref.client}
+                              onChange={(e) => updateReference(ref.id, 'client', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-lg p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Objet de la mission"
+                              value={ref.object}
+                              onChange={(e) => updateReference(ref.id, 'object', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-lg p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Montant (€)"
+                              value={ref.amount}
+                              onChange={(e) => updateReference(ref.id, 'amount', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-lg p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                            <input
+                              type="text"
+                              placeholder="Durée (ex: 6 mois)"
+                              value={ref.duration}
+                              onChange={(e) => updateReference(ref.id, 'duration', e.target.value)}
+                              className="w-full text-xs border border-slate-800 rounded-lg p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
 
-                      {formData.differentiation && (
-                        <div className="flex justify-between border-b border-slate-200 pb-2">
-                          <span className="font-bold text-slate-500">Différenciation :</span>
-                          <span className="font-semibold text-[#1B263B] truncate max-w-[220px]">
-                            {formData.differentiation}
+                    {/* Accordéon : Options administratives complémentaires */}
+                    <div className="border border-slate-800 rounded-2xl overflow-hidden bg-[#111A29]">
+                      <button
+                        type="button"
+                        onClick={() => setShowAdvanced(!showAdvanced)}
+                        className="w-full flex items-center justify-between p-3.5 bg-[#111A29] hover:bg-slate-800/80 text-left transition-colors cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2">
+                          <Building2 className="h-3.5 w-3.5 text-[#D4AF37]" />
+                          <span className="text-xs font-semibold text-slate-300">
+                            Mentions administratives complémentaires (SIRET/BCE, RC Pro, CA...)
                           </span>
+                        </div>
+                        {showAdvanced ? (
+                          <ChevronUp className="h-3.5 w-3.5 text-slate-400" />
+                        ) : (
+                          <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+                        )}
+                      </button>
+
+                      {showAdvanced && (
+                        <div className="p-4 bg-[#0D1522] border-t border-slate-800 space-y-3 text-xs">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                                {formData.country === 'BE' ? 'Numéro d\'entreprise (BCE)' : 'Numéro SIRET (14 chiffres)'}
+                              </label>
+                              <input
+                                type="text"
+                                placeholder={formData.country === 'BE' ? 'Ex: 0123.456.789' : 'Ex: 123 456 789 00012'}
+                                value={formData.advancedOptions.siretOrBce}
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    advancedOptions: { ...prev.advancedOptions, siretOrBce: e.target.value }
+                                  }))
+                                }
+                                className="w-full text-xs border border-slate-800 rounded-xl p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                              />
+                            </div>
+
+                            <div>
+                              <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                                Forme juridique
+                              </label>
+                              <input
+                                type="text"
+                                placeholder={formData.country === 'BE' ? 'SRL, SA...' : 'SAS, SARL, SASU, EI...'}
+                                value={formData.advancedOptions.legalForm}
+                                onChange={(e) =>
+                                  setFormData((prev) => ({
+                                    ...prev,
+                                    advancedOptions: { ...prev.advancedOptions, legalForm: e.target.value }
+                                  }))
+                                }
+                                className="w-full text-xs border border-slate-800 rounded-xl p-2 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                              />
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
 
-                    {/* Bloc Prix */}
-                    <div className="p-5 rounded-2xl bg-[#1B263B] text-white border-2 border-[#B8935A] relative">
+                    {/* Executive Order Summary Card */}
+                    <div className="p-5 rounded-2xl bg-[#131F33] text-white border border-slate-700/80 shadow-md space-y-3">
                       <div className="flex items-center justify-between">
                         <div>
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-[#B8935A] bg-[#B8935A]/20 px-2 py-0.5 rounded">
-                            Offre de lancement
-                          </span>
-                          <p className="text-xs text-slate-300 mt-1">Génération immédiate à la demande</p>
+                          <div className="text-[10px] font-mono font-bold text-[#D4AF37] uppercase tracking-wider">
+                            Génération à l'acte · Sans engagement
+                          </div>
+                          <h4 className="font-serif-heading text-base font-bold text-white mt-0.5">
+                            Dossier de Réponse RFP & Mémoire Technique
+                          </h4>
                         </div>
                         <div className="text-right">
-                          <span className="text-sm text-slate-400 line-through mr-2">29 €</span>
-                          <span className="text-3xl font-extrabold text-[#B8935A] font-serif-heading">19 €</span>
+                          <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
+                            19 €
+                          </span>
+                          <span className="text-[10px] text-slate-400 block font-mono">
+                            Paiement unique
+                          </span>
                         </div>
                       </div>
 
-                      <ul className="mt-4 pt-4 border-t border-slate-700 space-y-2 text-xs text-slate-200">
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3.5 w-3.5 text-[#B8935A]" />
-                          <span>Analyse du RFP et extraction des exigences</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3.5 w-3.5 text-[#B8935A]" />
-                          <span>Réponse structurée et professionnelle</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3.5 w-3.5 text-[#B8935A]" />
-                          <span>Document PDF haute qualité + version éditable</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <Check className="h-3.5 w-3.5 text-[#B8935A]" />
-                          <span>Livraison par email en quelques minutes</span>
-                        </li>
-                      </ul>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-300 pt-3 border-t border-slate-700/60">
+                        <div className="flex items-center gap-2">
+                          <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                          <span>Livraison sous 10 min à {formData.email || 'votre email'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                          <span>1 révision / régénération 24h offerte</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                          <span>Conforme marchés {formData.country === 'BE' ? 'Belgique' : 'France'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
+                          <span>Paiement sécurisé Lemon Squeezy</span>
+                        </div>
+                      </div>
                     </div>
 
-                    {/* Champ Email de livraison */}
-                    <div>
-                      <label className="block text-xs font-bold text-[#1B263B] mb-1.5">
-                        Email de livraison <span className="text-red-500">*</span>
+                    {/* Retraction Waiver Box */}
+                    <div className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 text-xs space-y-2.5">
+                      <label className="flex items-start gap-2.5 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={retractionWaiverAccepted}
+                          onChange={(e) => {
+                            setRetractionWaiverAccepted(e.target.checked);
+                            if (e.target.checked) setStepError(null);
+                          }}
+                          className="mt-0.5 h-4 w-4 rounded border-slate-700 bg-slate-900 text-[#B8935A] focus:ring-[#B8935A] shrink-0 cursor-pointer"
+                        />
+                        <span className="text-slate-300 leading-relaxed text-[11px]">
+                          <strong className="text-white font-semibold block mb-0.5">
+                            Exécution immédiate & renonciation au droit de rétractation (art. L.221-28 13°) :
+                          </strong>
+                          « Je demande expressément l'exécution immédiate du service et je renonce à mon droit de rétractation de 14 jours pour recevoir mon dossier dans les 10 minutes. »
+                        </span>
                       </label>
-                      <input
-                        required
-                        type="email"
-                        name="email"
-                        placeholder="prenom@entreprise.com"
-                        value={formData.email}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
-                        className="w-full text-xs sm:text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#B8935A]/30 focus:border-[#B8935A]"
-                      />
+
+                      <div className="pt-2 border-t border-slate-800 flex flex-wrap items-center gap-2 text-[10px] text-slate-400">
+                        <button
+                          type="button"
+                          onClick={() => onOpenLegal && onOpenLegal('cgv')}
+                          className="hover:text-[#D4AF37] underline cursor-pointer"
+                        >
+                          CGV
+                        </button>
+                        <span>·</span>
+                        <button
+                          type="button"
+                          onClick={() => onOpenLegal && onOpenLegal('mentions')}
+                          className="hover:text-[#D4AF37] underline cursor-pointer"
+                        >
+                          Mentions Légales (FR / BE)
+                        </button>
+                        <span>·</span>
+                        <button
+                          type="button"
+                          onClick={() => onOpenLegal && onOpenLegal('confidentialite')}
+                          className="hover:text-[#D4AF37] underline cursor-pointer"
+                        >
+                          Confidentialité (RGPD)
+                        </button>
+                      </div>
                     </div>
-                  </form>
+                  </motion.div>
                 )}
               </>
             ) : (
-              /* Success Confirmation View */
-              <div className="py-8 text-center space-y-6">
-                <div className="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto border-2 border-emerald-300">
-                  <CheckCircle2 className="h-10 w-10" />
+              /* Success View */
+              <div className="py-8 text-center space-y-6 font-sans">
+                <div className="w-14 h-14 rounded-full bg-emerald-950/60 text-emerald-400 flex items-center justify-center mx-auto border border-emerald-700">
+                  <CheckCircle2 className="h-8 w-8" />
                 </div>
 
                 <div>
-                  <h3 className="font-serif-heading text-2xl sm:text-3xl font-extrabold text-[#1B263B]">
-                    Génération en cours !
+                  <h3 className="font-serif-heading text-2xl font-bold text-white">
+                    Génération en cours
                   </h3>
-                  <p className="mt-2 text-xs sm:text-sm text-slate-600 max-w-md mx-auto">
-                    Vos données ont été transmises avec succès. L'agent IA analyse le RFP et rédige votre réponse pour <strong>{formData.client_name}</strong>.
+                  <p className="mt-2 text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                    Votre dossier pour <strong>{formData.client_name}</strong> est en cours de traitement par nos moteurs spécialisés ({formData.country === 'BE' ? 'Marché Belge' : 'Marché Français'}).
                   </p>
                 </div>
 
-                <div className="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-left max-w-md mx-auto space-y-2 text-xs">
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                    <span className="font-bold text-slate-500">Destinataire :</span>
-                    <span className="font-mono text-slate-900">{formData.email}</span>
+                <div className="bg-[#111A29] border border-slate-800 p-4 rounded-2xl text-left max-w-md mx-auto space-y-2 text-xs">
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span className="text-slate-400">Adresse de livraison :</span>
+                    <span className="font-mono text-white font-semibold">{formData.email}</span>
                   </div>
-                  <div className="flex items-center justify-between border-b border-slate-200 pb-2">
-                    <span className="font-bold text-slate-500">Délai estimé :</span>
-                    <span className="font-bold text-emerald-600">5 à 8 minutes</span>
+                  <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                    <span className="text-slate-400">Montant :</span>
+                    <span className="font-bold text-[#D4AF37]">19 € TTC</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-500">Format :</span>
-                    <span className="text-slate-800">PDF + Version éditable</span>
+                    <span className="text-slate-400">Garantie :</span>
+                    <span className="text-emerald-400 font-medium">1 révision gratuite sous 24h</span>
                   </div>
                 </div>
 
                 <button
                   onClick={handleClose}
-                  className="w-full py-3.5 bg-[#1B263B] hover:bg-slate-800 text-white font-bold text-xs sm:text-sm rounded-xl transition-all cursor-pointer"
+                  className="w-full max-w-md py-3 bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] font-bold text-xs rounded-full transition-all cursor-pointer mx-auto block"
                 >
-                  Fermer et retourner au site
+                  Fermer
                 </button>
               </div>
             )}
           </div>
 
-          {/* Footer Controls / Navigation Bar */}
+          {/* Footer Controls */}
           {!isSuccess && (
-            <div className="bg-slate-50 p-4 sm:p-5 border-t border-slate-200 flex items-center justify-between shrink-0">
+            <div className="px-6 sm:px-8 py-4 bg-[#0D1522] border-t border-slate-800/80 flex items-center justify-between shrink-0 font-sans">
               {currentStep > 1 ? (
                 <button
                   type="button"
                   onClick={handlePrev}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full border border-slate-700 bg-[#111A29] text-slate-300 hover:bg-slate-800 text-xs font-semibold transition-all cursor-pointer"
                 >
-                  <ArrowLeft className="h-4 w-4" />
-                  Retour
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                  Précédent
                 </button>
               ) : (
                 <div />
               )}
 
-              {currentStep < 4 ? (
+              {currentStep < 5 ? (
                 <button
                   type="button"
                   onClick={handleNext}
-                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95 cursor-pointer ml-auto"
+                  className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] text-xs font-bold shadow-xs transition-all active:scale-95 cursor-pointer ml-auto"
                 >
-                  Continuer
-                  <ArrowRight className="h-4 w-4" />
+                  <span>Continuer</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               ) : (
-                <div className="flex flex-col sm:flex-row items-end sm:items-center gap-3 w-full sm:w-auto ml-auto">
-                  <div className="text-right text-[11px] text-slate-500 hidden sm:block">
-                    <span>Paiement 100% sécurisé · Aucun abonnement</span>
-                  </div>
+                <div className="flex items-center gap-3 ml-auto">
                   <button
                     type="button"
-                    onClick={handleFinalSubmit}
+                    onClick={() => handleFinalSubmit()}
                     disabled={isSubmitting}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#B8935A] hover:bg-[#9e7b45] text-[#1B263B] text-xs sm:text-sm font-bold shadow-lg transition-all active:scale-95 cursor-pointer"
+                    className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-xs transition-all active:scale-95 cursor-pointer ${
+                      retractionWaiverAccepted
+                        ? 'bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] shadow-sm'
+                        : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
+                    }`}
                   >
                     {isSubmitting ? (
                       <>
-                        <Sparkles className="h-4 w-4 animate-spin" />
+                        <Sparkles className="h-3.5 w-3.5 text-[#0D1522] animate-spin" />
                         Traitement en cours...
                       </>
                     ) : (
                       <>
-                        <Lock className="h-4 w-4" />
-                        Payer 19 € et générer ma réponse
+                        <Lock className="h-3.5 w-3.5" />
+                        <span>Commander mon dossier (19 €)</span>
                       </>
                     )}
                   </button>
