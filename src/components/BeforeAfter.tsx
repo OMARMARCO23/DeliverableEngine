@@ -29,20 +29,20 @@ export default function BeforeAfter() {
 
   const afterPoints = [
     {
-      title: "Libéré en 10 minutes",
-      desc: "Un simple enregistrement vocal ou brief brut, et le document est prêt."
+      title: "Trame générée en 10 minutes",
+      desc: "À partir de vos éléments et du cahier des charges, la première version est prête rapidement."
     },
     {
-      title: "Envoi à chaud au client",
-      desc: "Propale envoyée 1 heure après le rendez-vous d'avant-vente pour clore la vente."
+      title: "Réactivité renforcée",
+      desc: "Moins de délai entre la découverte du besoin et l'envoi de votre proposition."
     },
     {
-      title: "Rigueur méthodologique à 100%",
-      desc: "Structure toujours impeccable, charte respectée et ton de voix professionnel garanti."
+      title: "Structure méthodologique claire",
+      desc: "Rubriques clés organisées, cohérence globale et ton professionnel adapté."
     },
     {
-      title: "Intégrité des données",
-      desc: "Aucune erreur d'inattention, gestion parfaite des variables client."
+      title: "Cohérence des données",
+      desc: "Réduction des erreurs de copier-coller et prise en compte des variables de votre consultation."
     }
   ];
 
@@ -52,15 +52,15 @@ export default function BeforeAfter() {
         
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 border border-indigo-100 px-3 py-1 text-xs font-semibold text-indigo-700 mb-4">
-            <Sparkles className="h-3.5 w-3.5 text-indigo-600 fill-indigo-600" />
-            La méthode moderne
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-700 mb-4">
+            <Sparkles className="h-3.5 w-3.5 text-[#B8935A]" />
+            Comparatif d'organisation
           </div>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
-            La différence est <span className="text-indigo-600">sans appel</span>
+            Optimiser le temps consacré à la rédaction
           </h2>
           <p className="mt-4 text-slate-500">
-            Comparez le quotidien d'un consultant avant et après l'adoption de Deliverable Engine.
+            Comparez le temps de rédaction manuelle et la démarche assistée avec Deliverable Engine.
           </p>
         </div>
 

@@ -41,15 +41,15 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
             <div>
               <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/10 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
                 <Award className="h-3.5 w-3.5 text-[#B8935A]" />
-                Origine & Expertise Fondateur
+                Origine & Approche du service
               </div>
 
               <h2 className="font-serif-heading text-3xl sm:text-4xl font-extrabold text-[#1B263B] tracking-tight leading-tight">
-                Conçu par des praticiens des marchés publics & du conseil
+                Une trame claire pour structurer vos réponses d'appels d'offres
               </h2>
 
               <p className="mt-4 text-slate-600 text-sm sm:text-base font-sans leading-relaxed">
-                Deliverable Engine est né d'un constat simple et récurrent sur le terrain : que ce soit pour remporter un marché subséquent sur un <strong>Système d'Acquisition Dynamique (SAD)</strong> ou une <strong>mission de conseil stratégique</strong>, les consultants passent 60% de leur temps sur la mise en forme et la trame administrative plutôt que sur leur valeur ajoutée.
+                Deliverable Engine est né d'un constat opérationnel récurrent : que ce soit pour répondre à un <strong>Système d'Acquisition Dynamique (SAD)</strong> ou à une <strong>mission de conseil</strong>, les consultants passent un temps considérable sur la mise en page et la structure de base plutôt que sur le contenu métier.
               </p>
 
               <div className="mt-6 space-y-4 font-sans text-xs sm:text-sm text-slate-700">
@@ -58,9 +58,9 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
                     1
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#1B263B]">Maîtrise des cadres réglementaires (France & Belgique)</h4>
+                    <h4 className="font-bold text-[#1B263B]">Prise en compte des contextes France & Belgique</h4>
                     <p className="text-slate-600 text-xs mt-1">
-                      Une modélisation exacte du Code de la commande publique français et de la Loi marchés publics belge du 17 juin 2016 pour éviter tout rejet pour non-conformité formelle.
+                      Une organisation adaptée aux exigences usuelles de la commande publique française et de la réglementation belge pour structurer convenablement chaque section.
                     </p>
                   </div>
                 </div>
@@ -70,9 +70,9 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
                     2
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#1B263B]">Rigueur des standards des grands cabinets</h4>
+                    <h4 className="font-bold text-[#1B263B]">Structure méthodologique complète</h4>
                     <p className="text-slate-600 text-xs mt-1">
-                      Synthèse exécutive percutante, cadrage des enjeux, plan de management des risques (AMDEC), matrice RACI et grilles de TJM/BPU structurées au millimètre.
+                      Synthèse exécutive, compréhension du contexte, démarche par étapes, matrice RACI, calendrier prévisionnel et grilles tarifaires organisées.
                     </p>
                   </div>
                 </div>
@@ -82,9 +82,9 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
                     3
                   </div>
                   <div>
-                    <h4 className="font-bold text-[#1B263B]">Aucun artifice, engagement d'honnêteté</h4>
+                    <h4 className="font-bold text-[#1B263B]">Tarif unique & Sans engagement</h4>
                     <p className="text-slate-600 text-xs mt-1">
-                      Pas de faux témoignages ni de fausse urgence. Vous payez 19 € à l'acte, votre document est livré sous 10 minutes, et vous disposez d'une révision offerte sous 24h sans aucune justification.
+                      19 € par génération à l'acte, sans abonnement. Votre document est transmis sous 10 minutes, et vous disposez d'une révision sous 24h ouvrées si nécessaire.
                     </p>
                   </div>
                 </div>
@@ -93,7 +93,7 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
 
             <div className="pt-4 border-t border-slate-100 flex items-center gap-3 text-xs text-slate-500 font-medium">
               <ShieldCheck className="h-4 w-4 text-[#B8935A]" />
-              <span>Support direct assuré par des spécialistes du domaine sous 24h ouvrées</span>
+              <span>Support direct par e-mail sous 24h ouvrées</span>
             </div>
           </div>
 

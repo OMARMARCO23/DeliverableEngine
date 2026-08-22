@@ -941,7 +941,7 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
                           Équipe & Profils Intervenants
                         </h3>
                         <p className="mt-1 text-xs text-slate-400">
-                          Facultatif · Valorise vos experts clés et votre organigramme de gouvernance.
+                          Facultatif · Permet de présenter les intervenants de l'équipe et leurs compétences.
                         </p>
                       </div>
 

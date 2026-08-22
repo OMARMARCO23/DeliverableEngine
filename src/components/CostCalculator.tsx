@@ -34,15 +34,15 @@ export default function CostCalculator() {
         
         {/* Title Block */}
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-1.5 rounded-full bg-indigo-500/10 border border-indigo-500/20 px-3.5 py-1 text-xs font-semibold text-indigo-400 mb-4">
+          <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/15 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#D4AF37] mb-4">
             <Calculator className="h-3.5 w-3.5" />
-            Calculatrice ROI Interactive
+            Simulation du temps de rédaction
           </div>
           <h2 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl md:text-5xl leading-tight">
-            Combien de temps <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-indigo-300">perdez-vous par semaine ?</span>
+            Estimez le temps consacré à vos propositions
           </h2>
           <p className="mt-4 text-gray-400">
-            Ajustez vos paramètres ci-dessous pour calculer en temps réel l'impact financier de la rédaction manuelle et votre retour sur investissement immédiat avec Deliverable Engine.
+            Ajustez vos paramètres ci-dessous pour visualiser le volume d'heures passées sur la rédaction et le temps que vous pouvez libérer pour vos missions.
           </p>
         </div>
 

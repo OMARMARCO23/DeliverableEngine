@@ -28,11 +28,11 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
   const handlePresetSelect = (type: 'sad' | 'conseil' | 'marche') => {
     setSelectedQuickType(type);
     if (type === 'sad') {
-      setPositioning('Cabinet expert Systèmes d\'Acquisition Dynamiques (SAD) & Marchés subséquents IT');
+      setPositioning('Cabinet spécialisé Systèmes d\'Acquisition Dynamiques (SAD) & Marchés subséquents');
     } else if (type === 'conseil') {
-      setPositioning('Cabinet de conseil en stratégie opérationnelle, cadrage et transformation');
+      setPositioning('Cabinet de conseil en stratégie opérationnelle, cadrage et organisation');
     } else {
-      setPositioning('Cabinet expert marchés publics, MAPA et accords-cadres de prestations intellectuelles');
+      setPositioning('Prestataire en marchés publics, MAPA et accords-cadres de prestations intellectuelles');
     }
   };
 

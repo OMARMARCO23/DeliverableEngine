@@ -31,7 +31,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
           </h2>
 
           <p className="text-slate-300 text-sm sm:text-base font-sans max-w-2xl mx-auto leading-relaxed">
-            Spécialisé SAD & Conseil. Structure irréprochable, conforme France & Belgique, avec 1 révision gratuite sous 24h sans justification.
+            Spécialisé SAD & Conseil. Structure claire et organisée, adaptée aux contextes France & Belgique, avec 1 révision gratuite sous 24h sans justification.
           </p>
 
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">

@@ -11,34 +11,34 @@ export default function ComparisonTable() {
   const criteria = [
     {
       label: "Mise en page & Formatage",
-      chatgpt: { supported: false, text: "Texte brut (à copier-coller)" },
-      deliverable: { supported: true, text: "PDF haute résolution prêt à l'envoi" },
+      chatgpt: { supported: false, text: "Texte brut à mettre en page manuellement" },
+      deliverable: { supported: true, text: "Document PDF structuré et mis en forme" },
     },
     {
       label: "Structure de proposition RFP",
-      chatgpt: { supported: false, text: "Plan standard non adapté" },
-      deliverable: { supported: true, text: "10 sections selon standards consulting" },
+      chatgpt: { supported: false, text: "Génération libre selon prompt" },
+      deliverable: { supported: true, text: "Trame organisée par sections types (SAD / Conseil)" },
     },
     {
-      label: "Personnalisation du profil",
-      chatgpt: { supported: false, text: "Nécessite de soumettre vos prompts à chaque fois" },
-      deliverable: { supported: true, text: "Intégration automatique de votre expertise" },
+      label: "Intégration de vos données",
+      chatgpt: { supported: false, text: "À reformuler manuellement dans le prompt" },
+      deliverable: { supported: true, text: "Intégration guidée (profil, TJM, équipe, pays)" },
     },
     {
-      label: "Vérification & Évaluation IA",
-      chatgpt: { supported: false, text: "Aucune relecture critique" },
-      deliverable: { supported: true, text: "Double validation des exigences du cahier des charges" },
+      label: "Prise en compte du cahier des charges",
+      chatgpt: { supported: false, text: "Variable selon la longueur du prompt" },
+      deliverable: { supported: true, text: "Analyse structurée des exigences transmises" },
     },
     {
-      label: "Temps moyen d'obtention",
-      chatgpt: { supported: false, text: "2 à 3 heures d'échanges et de mise en forme" },
-      deliverable: { supported: true, text: "5 à 10 minutes (livraison automatique par email)" },
+      label: "Temps d'obtention de la trame",
+      chatgpt: { supported: false, text: "Variable (plusieurs allers-retours nécessaires)" },
+      deliverable: { supported: true, text: "Environ 10 minutes (envoi par e-mail)" },
       highlight: true,
     },
     {
-      label: "Export editable & PDF",
-      chatgpt: { supported: false, text: "Non disponible" },
-      deliverable: { supported: true, text: "Inclus dans l'offre à 19 €" },
+      label: "Export PDF & Révision",
+      chatgpt: { supported: false, text: "Non inclus" },
+      deliverable: { supported: true, text: "Inclus (19 € TTC) avec 1 révision sous 24h" },
     },
   ];
 

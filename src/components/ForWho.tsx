@@ -13,25 +13,25 @@ export default function ForWho() {
       role: "Consultant Freelance",
       badge: "Indépendants",
       icon: <Briefcase className="h-5 w-5 text-[#B8935A]" />,
-      pain: "Vous perdez 2 jours sur chaque appel d'offres au lieu de facturer vos clients.",
-      gain: "Générez votre proposition technique complète en 10 minutes, formatée et prête à être expédiée.",
-      tag: "Réactivité x10"
+      pain: "Vous passez des journées entières à rédiger des mémoires techniques au lieu d'avancer sur vos missions.",
+      gain: "Obtenez une première trame complète et structurée en 10 minutes, prête à être enrichie de votre expertise.",
+      tag: "Gain de temps"
     },
     {
       role: "Petit Cabinet (2-15 pers)",
       badge: "Cabinets conseil",
       icon: <Building2 className="h-5 w-5 text-[#B8935A]" />,
-      pain: "Multipliez par 5 vos réponses aux appels d'offres sans embaucher de profil dédié.",
-      gain: "Standardisez l'excellence rédactionnelle et la charte graphique sur l'ensemble du cabinet.",
-      tag: "Capacité démultipliée"
+      pain: "Difficile de répondre à tous les appels d'offres reçus avec une équipe restreinte.",
+      gain: "Harmonisez la méthodologie et la présentation des propositions pour l'ensemble des consultants.",
+      tag: "Organisation simplifiée"
     },
     {
-      role: "Directeur Commercial",
-      badge: "Équipes Sales",
+      role: "Responsable Avant-Vente",
+      badge: "Équipes Commerciales",
       icon: <TrendingUp className="h-5 w-5 text-[#B8935A]" />,
-      pain: "Répondez à 100% des sollicitations RFP sans surcharger vos consultants séniors.",
-      gain: "Déléguez le premier jet ultra-structuré à l'IA et concentrez vos équipes sur la négociation.",
-      tag: "Taux de transformation"
+      pain: "La rédaction des premiers jets mobilise les consultants seniors au détriment du conseil client.",
+      gain: "Accélérez la production du cadre initial et concentrez les relectures sur les points différenciants.",
+      tag: "Efficacité accrue"
     }
   ];
 
