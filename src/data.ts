@@ -95,39 +95,39 @@ export const MASTER_MODELS: MasterModelData[] = [
     targetMarket: 'Marché Public (France & Belgique) · Procédure SAD / Accord-cadre',
     estimatedPages: '12 pages structurées',
     timeSaved: 'Gain estimé : 4h30 de rédaction',
-    summary: 'Modèle spécialement conçu pour répondre aux marchés spécifiques issus de Systèmes d\'Acquisition Dynamiques (SAD). Il intègre les clauses administratives obligatoires, la qualification des profils consultants, la grille de TJM/BPU et la méthodologie de delivery outillée.',
+    summary: 'Modèle adapté pour répondre aux consultations issues de Systèmes d\'Acquisition Dynamiques (SAD). Il intègre les rubriques d\'usage : qualification des profils, grille de TJM/BPU et méthodologie d\'intervention.',
     highlights: [
-      'Conformité stricte aux exigences des marchés subséquents SAD',
-      'Décomposition des expertises et niveaux de séniorité (TJM)',
-      'Plan d\'assurance qualité (PAQ) & Dispositif de réversibilité',
-      'Gouvernance tripartite Maîtrise d\'Ouvrage / AMO / Exploitation'
+      'Structure adaptée aux marchés subséquents SAD',
+      'Décomposition des profils et taux journaliers (TJM)',
+      'Plan qualité & Modalités de suivi de projet',
+      'Organisation de l\'équipe et gouvernance'
     ],
     tableOfContents: [
-      '1. Synthèse exécutive & engagements contractuels',
-      '2. Compréhension du contexte & objectifs de la consultation SAD',
-      '3. Méthodologie d\'intervention & outillage de pilotage',
-      '4. Organisation de l\'équipe dédiée & matrice des compétences',
-      '5. Plan d\'assurance qualité, RSE & Gestion des risques',
+      '1. Synthèse exécutive & engagements',
+      '2. Compréhension du contexte & objectifs de la consultation',
+      '3. Méthodologie d\'intervention & organisation',
+      '4. Équipe dédiée & compétences mobilisées',
+      '5. Suivi qualité & Gestion des risques',
       '6. Grille tarifaire BPU / TJM & calendrier prévisionnel'
     ],
     sampleSections: [
       {
         number: '01',
         title: 'Synthèse Exécutive & Engagements',
-        description: 'Positionnement stratégique et engagements formels de délai, de qualité et de respect de l\'accord-cadre SAD.',
-        keyExcerpt: 'Dans le cadre du présent marché subséquent rattaché au Système d\'Acquisition Dynamique (SAD), notre équipe s\'engage sur une mobilisation sous 5 jours ouvrés, une méthodologie certifiée et une transparence totale sur le suivi d\'imputation budgétaire.'
+        description: 'Positionnement de la réponse et engagements de délai et d\'organisation.',
+        keyExcerpt: 'Dans le cadre de cette consultation rattachée au Système d\'Acquisition Dynamique (SAD), nous détaillons notre calendrier d\'intervention, notre méthodologie de travail et le suivi d\'imputation budgétaire.'
       },
       {
         number: '02',
         title: 'Méthodologie d\'Intervention & Jalons',
-        description: 'Découpage opérationnel en 4 phases : Cadrage flash, Exécution itérative, Recette technique, et Transfert de compétences.',
-        keyExcerpt: 'L\'approche proposée combine la rigueur du cadre public (livrables documentés, comités de suivi bi-mensuels) avec la souplesse opérationnelle nécessaire aux projets à forte composante technologique.'
+        description: 'Découpage opérationnel par phases : Cadrage, Exécution, Validation et Restitution.',
+        keyExcerpt: 'L\'approche proposée combine la clarté du cadre méthodologique avec des comités de suivi réguliers pour sécuriser chaque étape du projet.'
       },
       {
         number: '03',
         title: 'Grille de TJM & Ventilation Budgétaire',
-        description: 'Présentation claire des profils (Directeur de mission, Consultant Senior, Expert technique) avec taux journaliers moyens et unité d\'œuvre.',
-        keyExcerpt: 'Chaque profil d\'intervenant est qualifié selon la grille standard du SAD, garantissant la traçabilité des compétences, le respect des plafonds tarifaires et une prévisibilité budgétaire totale.'
+        description: 'Présentation des profils (Directeur de mission, Consultant, Expert technique) avec taux journaliers moyens et estimation de charge.',
+        keyExcerpt: 'Chaque profil d\'intervenant est présenté avec son niveau d\'expérience, assurant la clarté des compétences mobilisées et une visibilité budgétaire nette.'
       }
     ],
     downloadUrl: '/docs/rfp-sante-genere.pdf'
@@ -137,43 +137,43 @@ export const MASTER_MODELS: MasterModelData[] = [
     type: 'conseil',
     badge: 'Mission de Conseil & Prestations Intellectuelles',
     title: 'Proposition d\'Intervention — Conseil en Stratégie & Organisation',
-    subtitle: 'Accompagnement de la Direction Générale : Diagnostic, Co-design organisationnel & Conduite du changement',
-    targetMarket: 'Consultation Privée & Grands Comptes / PME · Prestations Intellectuelles',
+    subtitle: 'Accompagnement opérationnel : Diagnostic, Cadrage organisationnel & Conduite du changement',
+    targetMarket: 'Consultation Privée & Marchés · Prestations Intellectuelles',
     estimatedPages: '10 pages de proposition',
     timeSaved: 'Gain estimé : 3h45 de rédaction',
-    summary: 'Modèle haute précision pour les consultants et cabinets indépendants répondant à des appels d\'offres de prestations intellectuelles. Structure élégante inspirée des standards des cabinets de conseil de direction.',
+    summary: 'Modèle structuré pour les consultants et cabinets indépendants répondant à des appels d\'offres de prestations intellectuelles et missions de conseil.',
     highlights: [
-      'Cadrage stratégique à fort impact managérial (Executive Summary)',
-      'Démarche collaborative et ateliers de co-construction',
-      'Matrice d\'évaluation de la maturité et plan de conduite du changement',
-      'Modalités financières au forfait ou au temps passé avec jalons de facturation'
+      'Cadrage des enjeux et synthèse exécutive',
+      'Démarche méthodologique par étapes de travail',
+      'Organisation des ateliers et plan de conduite du changement',
+      'Modalités financières au forfait ou régie avec jalons'
     ],
     tableOfContents: [
       '1. Synthèse managériale (Executive Summary)',
-      '2. Analyse des enjeux stratégiques et diagnostic de situation',
-      '3. Démarche méthodologique en 4 phases d\'intervention',
-      '4. Plan de conduite du changement & engagement des parties prenantes',
-      '5. Équipe d\'intervention, CV synthétiques & Références',
-      '6. Conditions financières, jalons et calendrier d\'exécution'
+      '2. Analyse des enjeux et compréhension du besoin',
+      '3. Démarche méthodologique par phases',
+      '4. Plan de conduite du changement et ateliers',
+      '5. Équipe d\'intervention, CV résumés & Références',
+      '6. Conditions financières, jalons et calendrier'
     ],
     sampleSections: [
       {
         number: '01',
         title: 'Synthèse Managériale (Executive Summary)',
-        description: 'Résumé percutant des enjeux business, de la vision cible et des facteurs clés de succès de la transformation.',
-        keyExcerpt: 'Face aux défis d\'alignement organisationnel et d\'accélération des cycles de décision, nous proposons une démarche pragmatique orientée résultats, assurant l\'adhésion des équipes dès les premières semaines d\'intervention.'
+        description: 'Résumé des objectifs du projet, de l\'approche proposée et des résultats attendus.',
+        keyExcerpt: 'Pour répondre aux objectifs d\'alignement organisationnel et de clarté des processus, nous proposons une démarche structurée et pragmatique, associant les équipes dès les premières étapes.'
       },
       {
         number: '02',
         title: 'Démarche en 4 Phases d\'Intervention',
-        description: 'Phase 1 : Immersion & Diagnostic | Phase 2 : Co-conception de la cible | Phase 3 : Expérimentation | Phase 4 : Déploiement & Pérennisation.',
-        keyExcerpt: 'Notre méthodologie repose sur une co-construction systématique avec vos équipes dirigeantes et opérationnelles pour garantir l\'appropriation des recommandations et un impact mesurable dès le 2ème mois.'
+        description: 'Phase 1 : Cadrage & Diagnostic | Phase 2 : Conception de la cible | Phase 3 : Mise en œuvre pilote | Phase 4 : Déploiement.',
+        keyExcerpt: 'Notre méthodologie repose sur des points d\'étape réguliers avec vos référents pour valider les orientations et adapter les livrables au terrain.'
       },
       {
         number: '03',
         title: 'Gouvernance, Équipe & Budget Forfaitaire',
-        description: 'Matrice des responsabilités, profils des consultants seniors et échéancier de facturation articulé sur la validation des livrables clés.',
-        keyExcerpt: 'Une gouvernance resserrée (COPIL mensuel, point hebdo d\'avancement) associée à un forfait clair par jalon, évitant tout dépassement budgétaire imprévu.'
+        description: 'Répartition des rôles, présentation de l\'équipe et calendrier de facturation par livrable.',
+        keyExcerpt: 'Une gouvernance simple (comité de suivi périodique, points de coordination) associée à un découpage clair par jalon budgétaire.'
       }
     ],
     downloadUrl: '/docs/rfp-sante-genere.pdf'
