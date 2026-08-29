@@ -435,31 +435,47 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
         console.warn('LocalStorage save notice:', e);
       }
 
-      // Trigger n8n Webhook 1 if available
-      const webhook1 = envMeta?.VITE_N8N_WEBHOOK1_URL;
+      // Trigger Intake Webhook / Tunnel (n8n, ngrok, etc.) with X-API-KEY security header
+      const webhook1 =
+        envMeta?.VITE_INTAKE_WEBHOOK_URL ||
+        envMeta?.VITE_N8N_WEBHOOK1_URL ||
+        "https://votre-url.ngrok-free.app/webhook/intake-rfp";
+
+      const webhookApiKey =
+        envMeta?.VITE_WEBHOOK_API_KEY ||
+        "rfp_secret_token_987654321_secure";
+
       if (
         webhook1 &&
-        typeof webhook1 === 'string' &&
-        (webhook1.startsWith('http://') || webhook1.startsWith('https://')) &&
-        !webhook1.includes('YOUR_') &&
-        !webhook1.includes('placeholder')
+        typeof webhook1 === "string" &&
+        (webhook1.startsWith("http://") || webhook1.startsWith("https://"))
       ) {
+        const payloadData = {
+          event: "form_submitted",
+          rfp_id: activeRfpId,
+          order_id: tempOrderId,
+          ...formData,
+          differentiation_full: enrichedDifferentiation,
+          submitted_at: new Date().toISOString()
+        };
+
+        const headers: Record<string, string> = {
+          "Content-Type": "application/json"
+        };
+        if (webhookApiKey) {
+          headers["X-API-KEY"] = webhookApiKey;
+        }
+
         try {
           await fetch(webhook1, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              event: 'form_submitted',
-              rfp_id: activeRfpId,
-              order_id: tempOrderId,
-              ...formData,
-              differentiation_full: enrichedDifferentiation
-            })
+            method: "POST",
+            headers,
+            body: JSON.stringify(payloadData)
           }).catch((wErr) => {
-            console.warn('Webhook 1 background notice:', wErr?.message || wErr);
+            console.warn("Intake Webhook tunnel notice:", wErr?.message || wErr);
           });
         } catch (wErr) {
-          console.warn('Webhook 1 background notice:', wErr);
+          console.warn("Intake Webhook tunnel notice:", wErr);
         }
       }
 
