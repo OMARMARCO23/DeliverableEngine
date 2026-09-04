@@ -24,15 +24,15 @@ export default function DeliverablesShowcase({ onViewDoc }: DeliverablesShowcase
             Modèles de livrables
           </div>
           <h2 className="font-serif-heading text-3xl font-extrabold tracking-tight text-[#1B263B] sm:text-4xl">
-            Modèles SAD & Conseil en <span className="text-[#B8935A]">10 minutes</span>
+            Modèles SAD, Conseil & MAPA en <span className="text-[#B8935A]">10 minutes</span>
           </h2>
           <p className="mt-4 text-slate-600 font-sans">
-            Consultez les trames complètes générées pour les marchés publics et consultations de conseil.
+            Consultez les trames complètes générées pour les marchés publics (SAD, MAPA) et consultations de conseil.
           </p>
         </div>
 
-        {/* 2 Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        {/* 3 Cards Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {MASTER_MODELS.map((doc, idx) => (
             <motion.div
               key={doc.id}
