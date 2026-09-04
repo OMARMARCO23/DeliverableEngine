@@ -1,6 +1,6 @@
 {
   "name": "Deliverable Engine - RFP Generator",
-  "description": "Générateur de réponses structurées aux appels d'offres SAD et missions de conseil pour la France et la Belgique.",
+  "description": "Générateur de réponses structurées aux appels d'offres (SAD, Conseil, MAPA) pour la France et la Belgique.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
