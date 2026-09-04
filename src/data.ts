@@ -66,7 +66,7 @@ export const PRICING_DATA: PricingTier[] = [
 
 export interface MasterModelData {
   id: string;
-  type: 'sad' | 'conseil';
+  type: 'sad' | 'conseil' | 'mapa';
   badge: string;
   title: string;
   subtitle: string;
@@ -174,6 +174,52 @@ export const MASTER_MODELS: MasterModelData[] = [
         title: 'Gouvernance, Équipe & Budget Forfaitaire',
         description: 'Répartition des rôles, présentation de l\'équipe et calendrier de facturation par livrable.',
         keyExcerpt: 'Une gouvernance simple (comité de suivi périodique, points de coordination) associée à un découpage clair par jalon budgétaire.'
+      }
+    ],
+    downloadUrl: '/docs/rfp-sante-genere.pdf'
+  },
+  {
+    id: 'modele-mapa',
+    type: 'mapa',
+    badge: 'Marché à Procédure Adaptée (MAPA)',
+    title: 'Mémoire Technique — Marché Public MAPA Services & Prestations',
+    subtitle: 'Réponse proportionnée et structurée aux consultations en procédure adaptée (art. L. 2123-1 du CCP)',
+    targetMarket: 'Marché Public (Collectivités, Ministères, Établissements) · Procédure MAPA',
+    estimatedPages: '10 pages ciblées',
+    timeSaved: 'Gain estimé : 4h00 de rédaction',
+    summary: 'Modèle optimisé pour les Marchés à Procédure Adaptée (MAPA). Il répond aux critères d\'évaluation de l\'acheteur public (valeur technique, organisation, délais d\'exécution, cohérence budgétaire) avec un mémoire clair, direct et sans lourdeur administrative superflue.',
+    highlights: [
+      'Adéquation avec les critères de notation du Règlement de Consultation (RC)',
+      'Méthodologie opérationnelle et calendrier d\'exécution détaillé',
+      'Affectation des compétences et organigramme de l\'équipe',
+      'Décomposition du prix global et forfaitaire (DPGF) ou BPU'
+    ],
+    tableOfContents: [
+      '1. Note de cadrage & synthèse de l\'offre',
+      '2. Compréhension du besoin & contraintes du pouvoir adjudicateur',
+      '3. Méthodologie d\'intervention & phasage opérationnel',
+      '4. Moyens humains dédiés & compétences mobilisées',
+      '5. Démarche environnementale (RSE) & Gestion des risques',
+      '6. Décomposition financière & calendrier d\'exécution'
+    ],
+    sampleSections: [
+      {
+        number: '01',
+        title: 'Note de Cadrage & Engagements de l\'Offre',
+        description: 'Présentation synthétique de l\'offre et respect des exigences du cahier des charges.',
+        keyExcerpt: 'Dans le cadre de cette consultation en procédure adaptée, notre proposition garantit une prise en compte intégrale des contraintes opérationnelles, avec un interlocuteur unique dédié et une réactivité sous 24 heures.'
+      },
+      {
+        number: '02',
+        title: 'Méthodologie Opérationnelle & Phasage',
+        description: 'Déroulement chronologique des prestations, livrables intermédiaires et validation.',
+        keyExcerpt: 'L\'organisation proposée s\'articule autour de jalons précis avec fiches de validation intermédiaires, assurant à l\'acheteur une visibilité continue sur l\'avancement.'
+      },
+      {
+        number: '03',
+        title: 'Moyens Humains & Décomposition Tarifaire',
+        description: 'Affectation des compétences, calendrier d\'intervention et ventilation détaillée des coûts.',
+        keyExcerpt: 'Chaque intervenant mobilisé dispose de l\'expérience requise pour la mission. La décomposition financière détaille la charge par étape pour une parfaite transparence budgétaire.'
       }
     ],
     downloadUrl: '/docs/rfp-sante-genere.pdf'
