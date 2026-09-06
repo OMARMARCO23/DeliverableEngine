@@ -24,13 +24,13 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <div className="inline-flex items-center gap-1.5 rounded-full bg-[#B8935A]/10 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#1B263B] mb-4">
             <Sparkles className="h-3.5 w-3.5 text-[#B8935A]" />
-            Tarif unique & sans abonnement
+            Offre de lancement exclusive
           </div>
           <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-[#1B263B]">
-            19 € par génération. Tout inclus.
+            Juste une offre de lancement
           </h2>
           <p className="mt-4 text-slate-600 text-sm sm:text-base font-sans">
-            Aucun abonnement mensuel récurrent, aucun engagement. Vous ne payez que lorsque vous avez un appel d'offres à remporter.
+            Aucun abonnement mensuel, aucun engagement. Juste une offre de lancement à 19 € pour obtenir votre dossier de réponse complet prêt à déposer.
           </p>
         </div>
 
@@ -44,7 +44,7 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
             className="relative rounded-3xl p-8 sm:p-10 bg-[#1B263B] text-white border-2 border-[#B8935A] shadow-2xl flex flex-col justify-between"
           >
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#B8935A] text-[#1B263B] text-[11px] font-bold uppercase tracking-wider py-1 px-5 rounded-full shadow-md">
-              Offre Transparente · À l'acte
+              Offre de lancement
             </div>
 
             <div>
@@ -68,7 +68,7 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
                     {tier.price}
                   </span>
                   <span className="text-slate-400 text-sm font-sans">
-                    TTC / par réponse générée
+                    TTC · Paiement unique
                   </span>
                 </div>
                 <p className="text-xs text-slate-400 mt-2 font-sans flex items-center gap-1.5">
