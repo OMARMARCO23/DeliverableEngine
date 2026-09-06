@@ -22,7 +22,7 @@ import {
 export default function PdfPreviewSection() {
   const handleDownloadSample = () => {
     const link = document.createElement('a');
-    link.href = '/docs/rfp-sante-genere.pdf';
+    link.href = '/docs/exemple-dossier-deliverable-engine.pdf';
     link.download = 'exemple-dossier-deliverable-engine.pdf';
     link.target = '_blank';
     document.body.appendChild(link);
