@@ -46,20 +46,21 @@ export const FAQ_DATA: FaqItem[] = [
 export const PRICING_DATA: PricingTier[] = [
   {
     id: 'unit',
-    name: 'Génération Unique',
+    name: 'Offre de lancement',
     price: '19 €',
-    description: 'Tarif unique et transparent — sans abonnement ni engagement',
+    description: 'Tarif de lancement exclusif — sans abonnement ni engagement',
     generationsCount: 1,
     features: [
-      '1 dossier complet généré en 10 minutes',
-      'Format PDF structuré & prêt à finaliser (8 à 12 pages)',
-      'Spécialisé SAD & Missions de conseil',
-      'Conforme marchés France (CCP) & Belgique (Loi 2016)',
-      '1 révision / régénération gratuite sous 24h incluse',
+      '1 dossier complet généré en 5 minutes (15 à 18 pages)',
+      'Diagramme de Gantt & Planning prévisionnel phasé inclus',
+      'Offre financière détaillée & Grille TJM au centime près',
+      'Adapté à votre consultation : Marché Public (MAPA), SAD ou Conseil',
+      'Conforme aux exigences des acheteurs publics & privés',
+      '1 révision ou régénération gratuite sous 24h incluse',
       'Facture avec TVA téléchargeable automatiquement',
       'Paiement sécurisé via Lemon Squeezy'
     ],
-    ctaText: 'Générer ma réponse (19 €)',
+    ctaText: "Profiter de l'offre de lancement (19 €)",
     recommended: true
   }
 ];
@@ -130,7 +131,7 @@ export const MASTER_MODELS: MasterModelData[] = [
         keyExcerpt: 'Chaque profil d\'intervenant est présenté avec son niveau d\'expérience, assurant la clarté des compétences mobilisées et une visibilité budgétaire nette.'
       }
     ],
-    downloadUrl: '/docs/rfp-sante-genere.pdf'
+    downloadUrl: '/docs/exemple-dossier-deliverable-engine.pdf'
   },
   {
     id: 'modele-conseil',
@@ -176,7 +177,7 @@ export const MASTER_MODELS: MasterModelData[] = [
         keyExcerpt: 'Une gouvernance simple (comité de suivi périodique, points de coordination) associée à un découpage clair par jalon budgétaire.'
       }
     ],
-    downloadUrl: '/docs/rfp-sante-genere.pdf'
+    downloadUrl: '/docs/exemple-dossier-deliverable-engine.pdf'
   },
   {
     id: 'modele-mapa',
@@ -222,7 +223,7 @@ export const MASTER_MODELS: MasterModelData[] = [
         keyExcerpt: 'Chaque intervenant mobilisé dispose de l\'expérience requise pour la mission. La décomposition financière détaille la charge par étape pour une parfaite transparence budgétaire.'
       }
     ],
-    downloadUrl: '/docs/rfp-sante-genere.pdf'
+    downloadUrl: '/docs/exemple-dossier-deliverable-engine.pdf'
   }
 ];
 
