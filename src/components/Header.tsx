@@ -24,51 +24,44 @@ export default function Header({ onOpenGenerate }: HeaderProps) {
   }, []);
 
   const navLinks = [
-    { label: 'Modèles', href: '#apercu' },
-    { label: 'Méthode', href: '#fonctionnement' },
-    { label: 'vs IA classique', href: '#comparatif' },
-    { label: 'Tarif', href: '#tarif' },
-    { label: 'FAQ', href: '#faq' }
+    { label: 'Livrable', href: '#demo-visuelle' },
+    { label: 'Comment ça marche', href: '#fonctionnement' },
+    { label: 'Tarif', href: '#tarif' }
   ];
 
   return (
     <header className="sticky top-0 z-50 w-full px-3 sm:px-6 pt-2 sm:pt-3 pb-2 transition-all duration-300 pointer-events-none">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-5xl">
         <div
-          className={`pointer-events-auto flex items-center justify-between rounded-full px-4 sm:px-6 py-2.5 transition-all duration-300 ${
+          className={`pointer-events-auto flex items-center justify-between rounded-full px-4 sm:px-6 py-2 transition-all duration-300 ${
             isScrolled
-              ? 'bg-white/85 backdrop-blur-xl shadow-lg shadow-slate-900/5 border border-slate-200/90'
-              : 'bg-white/70 backdrop-blur-md border border-slate-200/60 shadow-xs'
+              ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border border-slate-200/90'
+              : 'bg-white/75 backdrop-blur-md border border-slate-200/60 shadow-xs'
           }`}
         >
           {/* Brand Identity - Minimalist & Refined */}
           <a
             href="#"
-            className="flex items-center gap-3 group focus:outline-none"
+            className="flex items-center gap-2.5 group focus:outline-none"
             aria-label="Accueil Deliverable Engine"
           >
-            <div className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-[#1B263B] text-white shadow-xs transition-transform duration-200 group-hover:scale-105">
-              <span className="font-serif-heading text-sm font-bold tracking-tight text-white">D</span>
-              <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#B8935A] ring-2 ring-white" />
+            <div className="relative flex h-7 w-7 items-center justify-center rounded-lg bg-[#1B263B] text-white shadow-xs transition-transform duration-200 group-hover:scale-105">
+              <span className="font-serif-heading text-xs font-bold tracking-tight text-white">D</span>
+              <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#B8935A]" />
             </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="font-serif-heading text-sm sm:text-base font-bold tracking-tight text-[#1B263B]">
-                Deliverable<span className="text-[#B8935A] ml-1 font-semibold">Engine</span>
-              </span>
-              <span className="hidden lg:inline-flex items-center rounded-full bg-slate-100/90 px-2 py-0.5 text-[10px] font-mono font-medium text-slate-500 border border-slate-200/60">
-                SAD & Conseil
-              </span>
-            </div>
+            <span className="font-serif-heading text-sm sm:text-base font-bold tracking-tight text-[#1B263B]">
+              Deliverable<span className="text-[#B8935A] ml-1 font-semibold">Engine</span>
+            </span>
           </a>
 
-          {/* Desktop Navigation - Clean, sober and airy */}
-          <nav className="hidden md:flex items-center gap-1 text-[13px] font-medium text-slate-600">
+          {/* Desktop Navigation - Clean and ultra-light */}
+          <nav className="hidden md:flex items-center gap-2 text-xs font-medium text-slate-600">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
-                className="px-3.5 py-1.5 rounded-full hover:text-[#1B263B] hover:bg-slate-100/80 transition-all duration-150"
+                className="px-3 py-1.5 rounded-full hover:text-[#1B263B] hover:bg-slate-100/80 transition-all duration-150"
               >
                 {link.label}
               </a>
@@ -77,14 +70,13 @@ export default function Header({ onOpenGenerate }: HeaderProps) {
 
           {/* Action CTA & Mobile Toggle */}
           <div className="flex items-center gap-2">
-            {/* Primary Action Button */}
             <button
               onClick={() => onOpenGenerate()}
-              className="group relative inline-flex items-center gap-2 rounded-full bg-[#1B263B] hover:bg-[#273754] px-4 sm:px-5 py-2 text-xs font-semibold text-white transition-all duration-200 shadow-sm hover:shadow active:scale-95 cursor-pointer"
+              className="group relative inline-flex items-center gap-2 rounded-full bg-[#1B263B] hover:bg-[#273754] px-4 py-1.5 text-xs font-semibold text-white transition-all duration-200 shadow-xs hover:shadow active:scale-95 cursor-pointer"
             >
-              <Sparkles className="h-3.5 w-3.5 text-[#B8935A] transition-transform group-hover:rotate-12" />
-              <span className="tracking-tight">Générer ma réponse</span>
-              <span className="hidden sm:inline-flex rounded-full bg-white/10 px-2 py-0.5 text-[11px] font-medium text-[#B8935A]">
+              <Sparkles className="h-3 w-3 text-[#B8935A]" />
+              <span>Générer</span>
+              <span className="rounded-full bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-[#B8935A]">
                 19 €
               </span>
             </button>
@@ -92,7 +84,7 @@ export default function Header({ onOpenGenerate }: HeaderProps) {
             {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden flex h-9 w-9 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none"
+              className="md:hidden flex h-8 w-8 items-center justify-center rounded-full text-slate-700 hover:bg-slate-100 transition-colors focus:outline-none"
               aria-label="Ouvrir le menu"
             >
               {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
