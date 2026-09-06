@@ -8,6 +8,7 @@ import Header from './components/Header';
 import Hero from './components/Hero';
 import StatsBar from './components/StatsBar';
 import Solution from './components/Solution';
+import DeliverablesShowcase from './components/DeliverablesShowcase';
 import PdfPreviewSection from './components/PdfPreviewSection';
 import HowItWorks from './components/HowItWorks';
 import ComparisonTable from './components/ComparisonTable';
@@ -85,7 +86,10 @@ export default function App() {
         {/* 4. Section: Bénéfices */}
         <Solution />
 
-        {/* 5. Section: Aperçu de votre réponse (Modèles SAD & Conseil) */}
+        {/* 5. Section visuelle: Regardez ce que le moteur génère en 5 minutes */}
+        <DeliverablesShowcase onOpenGenerate={handleOpenGenerate} />
+
+        {/* 6. Section: Aperçu de votre réponse (Modèles SAD & Conseil) */}
         <PdfPreviewSection />
 
         {/* 6. Section: Comment ça marche (3 étapes) */}
