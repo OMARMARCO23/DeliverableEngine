@@ -98,7 +98,10 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
             </h4>
             <ul className="space-y-2 text-xs text-slate-400 font-sans">
               <li>
-                <a href="#apercu" className="hover:text-white transition-colors">Modèles SAD & Conseil</a>
+                <a href="#demo-visuelle" className="hover:text-white transition-colors">Livrable en 5 min</a>
+              </li>
+              <li>
+                <a href="#apercu" className="hover:text-white transition-colors">Modèles & Périmètre</a>
               </li>
               <li>
                 <a href="#fonctionnement" className="hover:text-white transition-colors">Comment ça marche</a>
@@ -110,7 +113,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
                 <a href="#pour-qui" className="hover:text-white transition-colors">Pour qui ?</a>
               </li>
               <li>
-                <a href="#tarif" className="hover:text-white transition-colors">Tarif (19 €)</a>
+                <a href="#tarif" className="hover:text-white transition-colors">Offre de lancement (19 €)</a>
               </li>
               <li>
                 <a href="#a-propos" className="hover:text-white transition-colors">À propos du fondateur</a>
