@@ -56,7 +56,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               className="inline-flex items-center gap-2 self-start rounded-full bg-[#B8935A]/10 border border-[#B8935A]/30 px-3.5 py-1 text-xs font-semibold text-[#D4AF37] mb-6 shadow-xs"
             >
               <Sparkles className="h-3.5 w-3.5" />
-              <span>Génération instantanée · 19 € par réponse · Sans engagement</span>
+              <span>Génération instantanée · 19 € en offre de lancement · Sans engagement</span>
             </motion.div>
 
             {/* Headline */}
