@@ -51,7 +51,7 @@ async function verifierEtPayer() {
       window.location.href = result.checkout_url;
     } else {
       // Fallback : ouvrir le lien Lemon Squeezy par défaut
-      window.location.href = "https://ton-compte.lemonsqueezy.com/checkout/buy/TON-PRODUCT-ID";
+      window.location.href = "https://omarmarco.lemonsqueezy.com/checkout/buy/1246097";
     }
 
   } catch (error) {
