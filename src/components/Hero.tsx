@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { ArrowRight, Sparkles, ShieldCheck, Zap, Check, Globe, FileCode2, Clock, CheckCircle2, FileText } from 'lucide-react';
+import { ArrowRight, Sparkles, ShieldCheck, Zap, Check, Globe, FileCode2, Clock, CheckCircle2, FileText, Lock } from 'lucide-react';
 
 interface HeroProps {
   onOpenGenerate: (initialData?: { rfp_text?: string; positioning?: string }) => void;
@@ -79,7 +79,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               transition={{ duration: 0.45, delay: 0.14 }}
               className="mt-5 text-base sm:text-lg text-slate-300 font-sans leading-relaxed"
             >
-              Conçu spécifiquement pour les <strong>Systèmes d’Acquisition Dynamiques (SAD)</strong> et les <strong>missions de conseil</strong>. Obtenez une trame complète, structurée et conforme au droit des marchés publics (FR & BE).
+              Conçu spécifiquement pour les <strong>Systèmes d’Acquisition Dynamiques (SAD)</strong> et les <strong>missions de conseil</strong>. Obtenez un dossier complet de 15-18 pages, structuré et conforme au droit des marchés publics (FR & BE).
             </motion.p>
 
             {/* Highlights Grid */}
@@ -91,7 +91,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
             >
               <div className="flex items-center gap-2.5 bg-slate-900/80 border border-slate-800 px-3.5 py-2.5 rounded-xl text-slate-300 text-xs sm:text-sm font-medium">
                 <CheckCircle2 className="h-4 w-4 text-[#D4AF37] shrink-0" />
-                <span>Trame complète rédigée sous 10 min</span>
+                <span>Dossier complet de 15-18 pages généré en 10 min</span>
               </div>
 
               <div className="flex items-center gap-2.5 bg-slate-900/80 border border-slate-800 px-3.5 py-2.5 rounded-xl text-slate-300 text-xs sm:text-sm font-medium">
@@ -122,7 +122,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                 className="group inline-flex items-center justify-center gap-3 rounded-full bg-[#B8935A] hover:bg-[#c49f64] px-7 py-3.5 text-sm sm:text-base font-bold text-[#0D1522] shadow-xl shadow-[#B8935A]/20 transition-all duration-200 active:scale-98 cursor-pointer"
               >
                 <Zap className="h-4 w-4 fill-current" />
-                <span>Lancer ma réponse RFP (19 €)</span>
+                <span>Générer mon dossier maintenant — 19 €</span>
                 <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
               </button>
 
@@ -132,8 +132,8 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                   Garantie révision 24h
                 </span>
                 <span className="flex items-center gap-1 bg-slate-900/60 border border-slate-800 px-2.5 py-1 rounded-full">
-                  <Zap className="h-3.5 w-3.5 text-[#D4AF37]" />
-                  Paiement sécurisé Lemon Squeezy
+                  <Lock className="h-3.5 w-3.5 text-[#D4AF37]" />
+                  SSL & Lemon Squeezy sécurisé
                 </span>
                 <span className="flex items-center gap-1 bg-slate-900/60 border border-slate-800 px-2.5 py-1 rounded-full">
                   <Globe className="h-3.5 w-3.5 text-[#D4AF37]" />
@@ -177,22 +177,14 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
               </div>
 
               {/* Preset Selector */}
-              <div className="mb-4">
-                <label className="block text-[11px] font-semibold text-slate-300 mb-1.5 uppercase tracking-wider font-mono">
-                  Type de consultation :
-                </label>
+              <div className="mb-3.5">
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className="block text-[11px] font-semibold text-slate-300 uppercase tracking-wider font-mono">
+                    Consultation éligible :
+                  </label>
+                  <span className="text-[10px] text-emerald-400 font-medium">✅ Périmètre optimisé</span>
+                </div>
                 <div className="grid grid-cols-3 gap-1.5 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => handlePresetSelect('sad')}
-                    className={`py-1.5 px-2 rounded-xl border text-[11px] font-medium transition-all cursor-pointer truncate ${
-                      selectedQuickType === 'sad'
-                        ? 'bg-[#B8935A]/20 border-[#B8935A] text-[#D4AF37] font-bold'
-                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
-                    }`}
-                  >
-                    Accord SAD
-                  </button>
                   <button
                     type="button"
                     onClick={() => handlePresetSelect('conseil')}
@@ -202,7 +194,18 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                         : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    Conseil
+                    AMO & Conseil
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handlePresetSelect('sad')}
+                    className={`py-1.5 px-2 rounded-xl border text-[11px] font-medium transition-all cursor-pointer truncate ${
+                      selectedQuickType === 'sad'
+                        ? 'bg-[#B8935A]/20 border-[#B8935A] text-[#D4AF37] font-bold'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    Candidature SAD
                   </button>
                   <button
                     type="button"
@@ -213,8 +216,12 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                         : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
                     }`}
                   >
-                    Marché public
+                    Conseil privé
                   </button>
+                </div>
+                <div className="mt-1.5 text-[10.5px] text-slate-400 flex items-center justify-between">
+                  <span className="text-slate-400">Prestations intellectuelles exclusives</span>
+                  <span className="text-rose-300/80 font-mono text-[10px]">❌ Hors BTP / fournitures</span>
                 </div>
               </div>
 
@@ -257,7 +264,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                   className="w-full py-3 px-4 rounded-2xl bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] font-bold text-xs shadow-lg transition-all duration-150 active:scale-98 cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Sparkles className="h-3.5 w-3.5 fill-current" />
-                  <span>Compléter & Générer ma réponse (19 €)</span>
+                  <span>Recevoir mon mémoire technique en 10 min — 19 €</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </form>
@@ -268,7 +275,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                   <Clock className="h-3 w-3 text-[#D4AF37]" />
                   Livraison sous 10 min
                 </span>
-                <span>Word (.docx) & PDF</span>
+                <span>PDF professionnel haute qualité (15-18 pages)</span>
               </div>
             </motion.div>
           </div>
