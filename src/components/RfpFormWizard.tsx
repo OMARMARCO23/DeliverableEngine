@@ -350,24 +350,85 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       const typeProcedureInput = document.getElementById('type-procedure') as HTMLInputElement | null;
       const juridictionInput = document.getElementById('juridiction') as HTMLInputElement | null;
 
-      // 1. Appel du Webhook n8n qui analyse l'éligibilité du dossier
-      const response = await fetch('https://limeade-spiffy-uneasily.ngrok-free.app/webhook/intake-rfp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          rfp_text: rfpText,
-          cabinet_nom: cabinetNomInput?.value || formData.client_name || '',
-          cabinet_email: cabinetEmailInput?.value || formData.email || '',
-          type_procedure: typeProcedureInput?.value || formData.marketType || '',
-          juridiction: juridictionInput?.value || formData.country || 'FR',
-          formData: {
-            ...formData,
-            rfp_text: rfpText
-          }
-        })
-      });
+      // 1. Détermination de l'URL du Webhook n8n (avec correction auto de l'extension ngrok .app -> .dev)
+      const configuredUrl =
+        (import.meta as any).env?.VITE_INTAKE_WEBHOOK_URL ||
+        (import.meta as any).env?.VITE_N8N_WEBHOOK1_URL ||
+        'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
 
-      const result = await response.json();
+      // S'assurer que le domaine ngrok gratuit utilise .dev et non .app (qui est hors ligne)
+      const primaryUrl = configuredUrl.replace('.ngrok-free.app', '.ngrok-free.dev');
+      const fallbackUrl = primaryUrl.includes('/webhook/intake-rfp')
+        ? primaryUrl.replace('/webhook/intake-rfp', '/webhook/form-rfp')
+        : primaryUrl.replace('/webhook/form-rfp', '/webhook/intake-rfp');
+
+      const payload = {
+        rfp_text: rfpText,
+        cabinet_nom: cabinetNomInput?.value || formData.client_name || '',
+        cabinet_email: cabinetEmailInput?.value || formData.email || '',
+        type_procedure: typeProcedureInput?.value || formData.marketType || '',
+        juridiction: juridictionInput?.value || formData.country || 'FR',
+        formData: {
+          ...formData,
+          rfp_text: rfpText
+        }
+      };
+
+      let response: Response | null = null;
+      let responseBody = '';
+
+      try {
+        response = await fetch(primaryUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } catch (err) {
+        console.warn(`Tentative échouée sur ${primaryUrl}, tentative sur fallback ${fallbackUrl}:`, err);
+        try {
+          response = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (errFallback) {
+          console.error("Échec sur les deux URLs de webhook:", errFallback);
+          throw errFallback;
+        }
+      }
+
+      // Si le webhook renvoie 404 (non enregistré dans n8n), tenter le second endpoint
+      if (response && response.status === 404 && primaryUrl !== fallbackUrl) {
+        try {
+          const secondAttempt = await fetch(fallbackUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (secondAttempt.ok) {
+            response = secondAttempt;
+          }
+        } catch {
+          // Conserver la première réponse
+        }
+      }
+
+      if (!response.ok) {
+        responseBody = await response.text().catch(() => '');
+        let errorHint = "Le service de vérification est temporairement indisponible.";
+        if (response.status === 404) {
+          errorHint = "Le webhook n8n n'est pas encore actif. Vérifiez que votre workflow est activé dans n8n (bouton 'Active' en haut à droite).";
+        }
+        throw new Error(errorHint);
+      }
+
+      responseBody = await response.text().catch(() => '{}');
+      let result: any = {};
+      try {
+        result = responseBody ? JSON.parse(responseBody) : {};
+      } catch {
+        result = {};
+      }
 
       // 2. SI HORS PÉRIMÈTRE → BLOQUER ET RETOURNER AU FORMULAIRE (ÉTAPE 1)
       const isHorsPerimetre =
@@ -441,17 +502,18 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       // Retour au formulaire
       setCurrentStep(1);
 
-    } catch (error) {
+    } catch (error: any) {
       console.error("Erreur vérification périmètre:", error);
       setIsSubmitting(false);
       if (btnPayer) {
         btnPayer.disabled = false;
         btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
       }
+      const errDetail = error?.message || "Erreur de connexion avec le service de vérification.";
       if (msgZone) {
-        msgZone.innerHTML = `<p style="color:#e94560; font-size:12px; font-weight:600; padding:6px 0;">⚠️ Erreur de connexion avec le service de vérification. Aucun paiement n'a été effectué. Réessayez.</p>`;
+        msgZone.innerHTML = `<p style="color:#e94560; font-size:12px; font-weight:600; padding:6px 0;">⚠️ ${errDetail}</p>`;
       }
-      setStepError("Erreur de connexion au serveur de vérification du périmètre. Aucun débit n'a été effectué.");
+      setStepError(errDetail);
     }
   }
 
