@@ -6,6 +6,7 @@
 import React from 'react';
 import { FileText, ShieldCheck, Mail, Sparkles, Scale, Lock, Globe, Building } from 'lucide-react';
 import { LegalTab } from './LegalModal';
+import { COMPANY_INFO } from '../data';
 
 interface FooterProps {
   onOpenGenerate: () => void;
@@ -40,7 +41,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
               className="w-full sm:w-auto px-8 py-4 bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold rounded-xl text-sm sm:text-base transition-all shadow-xl active:scale-95 cursor-pointer flex items-center justify-center gap-2"
             >
               <Sparkles className="h-4 w-4 fill-[#1B263B]" />
-              Générer ma réponse (19 €)
+              Générer mon dossier maintenant — 19 €
             </button>
             <a
               href="#apercu"
@@ -62,7 +63,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
             </span>
             <span className="flex items-center gap-1.5">
               <Globe className="h-3.5 w-3.5 text-[#B8935A]" />
-              France & Belgique (SIRET & BCE)
+              France & Belgique (Marchés Publics & SAD)
             </span>
           </div>
         </div>
@@ -85,9 +86,9 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
             <p className="text-xs text-slate-400 font-sans leading-relaxed">
               Moteur de génération de réponses aux appels d'offres pour consultants, indépendants et cabinets. Spécialisé Systèmes d'Acquisition Dynamiques (SAD) & Prestations Intellectuelles.
             </p>
-            <div className="text-[11px] text-slate-400 font-mono space-y-1">
-              <p>🇫🇷 SIRET : 987 654 321 00014</p>
-              <p>🇧🇪 BCE : 0789.123.456</p>
+            <div className="text-[11px] text-slate-400 space-y-1">
+              <p>🇫🇷 France & 🇧🇪 Belgique</p>
+              <p className="text-slate-500">Conforme Code de la Commande Publique & Loi marchés 2016</p>
             </div>
           </div>
 
@@ -98,7 +99,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
             </h4>
             <ul className="space-y-2 text-xs text-slate-400 font-sans">
               <li>
-                <a href="#demo-visuelle" className="hover:text-white transition-colors">Livrable en 5 min</a>
+                <a href="#demo-visuelle" className="hover:text-white transition-colors">Livrable en 10 min</a>
               </li>
               <li>
                 <a href="#apercu" className="hover:text-white transition-colors">Modèles & Périmètre</a>
@@ -177,11 +178,12 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
             </p>
             <div className="pt-1">
               <a
-                href="mailto:support@deliverable-engine.io"
-                className="inline-flex items-center gap-2 text-xs font-bold text-[#B8935A] hover:underline"
+                href={`mailto:${COMPANY_INFO.supportEmail}?subject=Contact%20DeliverableEngine`}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs shadow-md transition-all active:scale-[0.98] cursor-pointer"
+                id="footer-contact-button"
               >
                 <Mail className="h-3.5 w-3.5" />
-                support@deliverable-engine.io
+                <span>Contacter le support</span>
               </a>
             </div>
             <p className="text-[11px] text-slate-500 font-sans">
