@@ -105,6 +105,10 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
   const [stepError, setStepError] = useState<string | null>(null);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [retractionWaiverAccepted, setRetractionWaiverAccepted] = useState(false);
+  const [perimeterRejection, setPerimeterRejection] = useState<{
+    raison: string;
+    categoriesAcceptees?: string[];
+  } | null>(null);
 
   // Form State
   const [formData, setFormData] = useState<RfpFormData>({
@@ -308,221 +312,25 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
   };
 
   // ═══════════════════════════════════════════════════
-  // FONCTION : Lancer le paiement Lemon Squeezy
-  // ═══════════════════════════════════════════════════
-  const lancerPaiementLemonSqueezy = async () => {
-    setIsSubmitting(true);
-
-    try {
-      const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
-      const tempOrderId = `TEMP-${Date.now()}`;
-      let rfpRecord: { id?: string | number } | null = null;
-
-      // Prepare enriched differentiation text with all structured data
-      let enrichedDifferentiation = formData.differentiation || '';
-      const extraMetadata: string[] = [];
-
-      extraMetadata.push(`[Pays du marché: ${formData.country === 'BE' ? 'Belgique (Loi marchés publics 2016)' : 'France (Code commande publique)'}]`);
-      extraMetadata.push(`[Type de marché: ${formData.marketType || 'SAD'}]`);
-      extraMetadata.push(`[Formule: 19 € (Génération unique)]`);
-      extraMetadata.push(`[Renonciation rétractation 14j: Oui (Exécution immédiate)]`);
-
-      // TJM Rates
-      const rates = Object.entries(formData.tjmRates || {}).filter(([_, v]) => typeof v === 'string' && v.trim().length > 0);
-      if (rates.length > 0) {
-        extraMetadata.push(`[Grille TJM: ${rates.map(([k, v]) => `${k}=${v}€/j`).join(', ')}]`);
-      }
-
-      // Team members
-      const members = (formData.teamMembers || []).filter((m) => m.name.trim());
-      if (members.length > 0) {
-        extraMetadata.push(
-          `[Équipe intervenante: ${members
-            .map(
-              (m) =>
-                `${m.name} (${m.role || 'Consultant'}${m.experience ? ` - Exp: ${m.experience}` : ''}${
-                  m.certifications ? ` - Certifs: ${m.certifications}` : ''
-                })`
-            )
-            .join(' | ')}]`
-        );
-      }
-
-      // References
-      const refs = (formData.references || []).filter((r) => r.client.trim());
-      if (refs.length > 0) {
-        extraMetadata.push(
-          `[Références clients: ${refs
-            .map(
-              (r) =>
-                `${r.client} (${r.object || 'Mission'}${r.amount ? ` - ${r.amount}€` : ''}${
-                  r.duration ? ` - ${r.duration}` : ''
-                })`
-            )
-            .join(' | ')}]`
-        );
-      }
-
-      // Advanced options
-      const adv = Object.entries(formData.advancedOptions || {}).filter(([_, v]) => typeof v === 'string' && v.trim().length > 0);
-      if (adv.length > 0) {
-        extraMetadata.push(`[Informations administratives: ${adv.map(([k, v]) => `${k}: ${v}`).join(', ')}]`);
-      }
-
-      if (extraMetadata.length > 0) {
-        enrichedDifferentiation = enrichedDifferentiation
-          ? `${enrichedDifferentiation}\n\n--- DONNÉES COMPLÉMENTAIRES DU DOSSIER ---\n${extraMetadata.join('\n')}`
-          : `--- DONNÉES COMPLÉMENTAIRES DU DOSSIER ---\n${extraMetadata.join('\n')}`;
-      }
-
-      // Standard payload matching Supabase rfp_pending schema
-      const standardPayload = {
-        order_id: tempOrderId,
-        email: formData.email,
-        client_name: formData.client_name,
-        positioning: formData.positioning,
-        objective: formData.objective === 'autre' ? formData.other_objective : formData.objective,
-        differentiation: enrichedDifferentiation,
-        rfp_text: formData.rfp_text,
-        status: 'pending_payment'
-      };
-
-      if (supabase) {
-        try {
-          const { data: rfp, error: supaErr } = await supabase
-            .from('rfp_pending')
-            .insert(standardPayload)
-            .select()
-            .single();
-
-          if (rfp) {
-            rfpRecord = rfp;
-          } else if (supaErr) {
-            console.warn('Supabase rfp_pending notice:', supaErr.message || supaErr);
-          }
-        } catch (err: unknown) {
-          console.warn('Supabase insert notice:', err instanceof Error ? err.message : err);
-        }
-      }
-
-      const activeRfpId = String(rfpRecord?.id || tempOrderId);
-
-      // Save into localStorage for fallback on /merci page
-      try {
-        localStorage.setItem('rfp_latest_id', activeRfpId);
-        localStorage.setItem('rfp_latest_email', formData.email);
-        localStorage.setItem(
-          'rfp_latest_data',
-          JSON.stringify({
-            ...formData,
-            differentiation_full: enrichedDifferentiation,
-            rfp_id: activeRfpId,
-            order_id: tempOrderId,
-            status: 'pending_payment'
-          })
-        );
-      } catch (e) {
-        console.warn('LocalStorage save notice:', e);
-      }
-
-      // Trigger Intake Webhook / Tunnel (n8n, ngrok, etc.) with X-API-KEY security header
-      const webhook1 =
-        envMeta?.VITE_INTAKE_WEBHOOK_URL ||
-        envMeta?.VITE_N8N_WEBHOOK1_URL ||
-        "https://limeade-spiffy-uneasily.ngrok-free.app/webhook/intake-rfp";
-
-      const webhookApiKey =
-        envMeta?.VITE_WEBHOOK_API_KEY ||
-        "rfp_secret_token_987654321_secure";
-
-      if (
-        webhook1 &&
-        typeof webhook1 === "string" &&
-        (webhook1.startsWith("http://") || webhook1.startsWith("https://"))
-      ) {
-        const payloadData = {
-          event: "form_submitted",
-          rfp_id: activeRfpId,
-          order_id: tempOrderId,
-          ...formData,
-          differentiation_full: enrichedDifferentiation,
-          submitted_at: new Date().toISOString()
-        };
-
-        const headers: Record<string, string> = {
-          "Content-Type": "application/json"
-        };
-        if (webhookApiKey) {
-          headers["X-API-KEY"] = webhookApiKey;
-        }
-
-        try {
-          await fetch(webhook1, {
-            method: "POST",
-            headers,
-            body: JSON.stringify(payloadData)
-          }).catch((wErr) => {
-            console.warn("Intake Webhook tunnel notice:", wErr?.message || wErr);
-          });
-        } catch (wErr) {
-          console.warn("Intake Webhook tunnel notice:", wErr);
-        }
-      }
-
-      // Determine Lemon Squeezy payment link
-      const rawPaymentUrl =
-        envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK ||
-        envMeta?.VITE_PAYMENT_LINK;
-
-      let validCheckoutUrl: string | null = null;
-
-      if (
-        rawPaymentUrl &&
-        typeof rawPaymentUrl === "string" &&
-        rawPaymentUrl.trim().length > 7 &&
-        !rawPaymentUrl.includes("YOUR_") &&
-        !rawPaymentUrl.includes("placeholder")
-      ) {
-        try {
-          const trimmed = rawPaymentUrl.trim();
-          const targetUrl = trimmed.startsWith("http://") || trimmed.startsWith("https://")
-            ? trimmed
-            : `https://${trimmed}`;
-
-          const urlObj = new URL(targetUrl);
-          if (formData.email) {
-            urlObj.searchParams.set("checkout[email]", formData.email);
-            urlObj.searchParams.set("email", formData.email);
-          }
-          urlObj.searchParams.set("rfp_id", activeRfpId);
-          urlObj.searchParams.set("country", formData.country);
-          urlObj.searchParams.set("market_type", formData.marketType || "sad");
-          validCheckoutUrl = urlObj.toString();
-        } catch (urlErr) {
-          console.warn("Payment link parse notice:", urlErr);
-          validCheckoutUrl = null;
-        }
-      }
-
-      if (validCheckoutUrl) {
-        window.location.href = validCheckoutUrl;
-      } else {
-        setTimeout(() => {
-          setIsSubmitting(false);
-          setIsSuccess(true);
-        }, 600);
-      }
-    } catch (err) {
-      console.warn("Submission fallback notice:", err);
-      setIsSubmitting(false);
-      setIsSuccess(true);
-    }
-  };
-
-  // ═══════════════════════════════════════════════════
-  // FONCTION : Vérifier le périmètre avant paiement
+  // FONCTION : Vérifier le périmètre via n8n avant paiement Lemon Squeezy
+  // RÈGLE : Le bouton ne doit JAMAIS ouvrir Lemon Squeezy directement.
+  // C'est le workflow n8n qui renvoie checkout_url si et seulement si OK.
+  // Si HORS_PERIMETRE → Bloquer et retourner au formulaire (Étape 1).
   // ═══════════════════════════════════════════════════
   async function verifierEtPayer() {
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      setStepError("Veuillez renseigner une adresse email valide pour recevoir votre dossier.");
+      return;
+    }
+
+    if (!retractionWaiverAccepted) {
+      setStepError("Veuillez cocher la renonciation au droit de rétractation pour autoriser l'exécution immédiate de la commande.");
+      return;
+    }
+
+    setStepError(null);
+    setIsSubmitting(true);
+
     const rfpTextElement = document.getElementById('rfp-text') as HTMLTextAreaElement | null;
     const rfpText = rfpTextElement?.value || formData.rfp_text || '';
     const btnPayer = document.getElementById('btn-payer') as HTMLButtonElement | null;
@@ -530,20 +338,20 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
     if (btnPayer) {
       btnPayer.disabled = true;
-      btnPayer.textContent = "Vérification en cours...";
+      btnPayer.textContent = "Vérification du périmètre en cours...";
     }
     if (msgZone) {
       msgZone.innerHTML = "";
     }
 
     try {
-      // 1. POST au webhook n8n (qui fait le check périmètre)
       const cabinetNomInput = document.getElementById('cabinet-nom') as HTMLInputElement | null;
       const cabinetEmailInput = document.getElementById('cabinet-email') as HTMLInputElement | null;
       const typeProcedureInput = document.getElementById('type-procedure') as HTMLInputElement | null;
       const juridictionInput = document.getElementById('juridiction') as HTMLInputElement | null;
 
-      const response = await fetch('https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp', {
+      // 1. Appel du Webhook n8n qui analyse l'éligibilité du dossier
+      const response = await fetch('https://limeade-spiffy-uneasily.ngrok-free.app/webhook/intake-rfp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -551,57 +359,99 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
           cabinet_nom: cabinetNomInput?.value || formData.client_name || '',
           cabinet_email: cabinetEmailInput?.value || formData.email || '',
           type_procedure: typeProcedureInput?.value || formData.marketType || '',
-          juridiction: juridictionInput?.value || formData.country || 'FR'
+          juridiction: juridictionInput?.value || formData.country || 'FR',
+          formData: {
+            ...formData,
+            rfp_text: rfpText
+          }
         })
       });
 
       const result = await response.json();
 
-      // 2. Si HORS PÉRIMÈTRE → BLOQUER
-      if (result.status === "HORS_PERIMETRE") {
+      // 2. SI HORS PÉRIMÈTRE → BLOQUER ET RETOURNER AU FORMULAIRE (ÉTAPE 1)
+      const isHorsPerimetre =
+        result.status === "HORS_PERIMETRE" ||
+        result.status === "REJET" ||
+        result.eligible === false;
+
+      if (isHorsPerimetre) {
+        setIsSubmitting(false);
         if (btnPayer) {
           btnPayer.disabled = false;
-          btnPayer.textContent = "Payer 19 € et générer mon dossier";
+          btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
         }
-        if (msgZone) {
-          msgZone.innerHTML = `
-        <div style="background:#FFF5F5; border:2px solid #e94560; border-radius:8px; padding:20px; margin:15px 0;">
-          <strong style="color:#e94560; font-size:16px;">⚠️ Appel d'offres hors périmètre</strong>
-          <p style="color:#C53030; margin:10px 0;">${result.raison || result.message}</p>
-          <p style="color:#4A5568; font-size:13px;">
-            Notre moteur traite exclusivement :<br>
-            ✅ AMO & Conseil stratégique<br>
-            ✅ Candidatures SAD (référencement)<br>
-            ✅ Propositions conseil privé
-          </p>
-          <p style="color:#718096; font-size:12px; margin-top:10px;">
-            Aucun paiement n'a été effectué.
-          </p>
-        </div>
-      `;
-        }
-        return; // ← ON BLOQUE TOUT ICI
+
+        const motif = result.raison || result.message || "Cet appel d'offres ne relève pas de notre périmètre pris en charge (AMO, SAD, Conseil).";
+        
+        // Stockage du motif d'exclusion pour affichage sur l'étape 1
+        setPerimeterRejection({
+          raison: motif,
+          categoriesAcceptees: result.perimetre_accepte || [
+            "AMO & Conseil stratégique",
+            "Candidatures SAD (référencement)",
+            "Propositions conseil privé"
+          ]
+        });
+
+        setStepError(`⚠️ Consultation hors périmètre : ${motif}`);
+
+        // RETOUR IMMÉDIAT VERS LE FORMULAIRE (Étape 1)
+        setCurrentStep(1);
+
+        // Faire défiler l'écran vers le champ de texte
+        setTimeout(() => {
+          const textarea = document.getElementById('rfp-text');
+          if (textarea) {
+            textarea.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            textarea.focus();
+          }
+        }, 120);
+
+        return; // ← AUCUNE REDIRECTION VERS LEMON SQUEEZY
       }
 
-      // 3. Si OK → Le workflow n8n a déjà fait l'INSERT Supabase
-      //    On ouvre MAINTENANT Lemon Squeezy
+      // 3. SI OK ET CHECKOUT_URL FOURNIE PAR n8n → REDIRIGER VERS LEMON SQUEEZY
       if (result.status === "OK" && result.checkout_url) {
+        if (btnPayer) {
+          btnPayer.textContent = "Périmètre validé ! Redirection Lemon Squeezy...";
+        }
+        // Redirection EXCLUSIVE vers l'URL fournie par le workflow n8n
         window.location.href = result.checkout_url;
-      } else {
-        // Fallback : ouvrir le lien Lemon Squeezy par défaut
-        const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
-        const defaultCheckout = envMeta?.VITE_LEMON_SQUEEZY_PAYMENT_LINK || "https://omarmarco.lemonsqueezy.com/checkout/buy/1246097";
-        window.location.href = defaultCheckout;
+        return;
       }
 
-    } catch (error) {
+      // 4. Cas où le statut n'est pas OK ou l'URL n'a pas été générée par n8n
+      setIsSubmitting(false);
       if (btnPayer) {
         btnPayer.disabled = false;
-        btnPayer.textContent = "Payer 19 € et générer mon dossier";
+        btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
+      }
+
+      const messageErreur = result.message || "Le service n'a pas validé ce dossier ou n'a pas fourni de lien de paiement.";
+      setPerimeterRejection({
+        raison: messageErreur,
+        categoriesAcceptees: [
+          "AMO & Conseil stratégique",
+          "Candidatures SAD (référencement)",
+          "Propositions conseil privé"
+        ]
+      });
+      setStepError(`⚠️ ${messageErreur}`);
+      // Retour au formulaire
+      setCurrentStep(1);
+
+    } catch (error) {
+      console.error("Erreur vérification périmètre:", error);
+      setIsSubmitting(false);
+      if (btnPayer) {
+        btnPayer.disabled = false;
+        btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
       }
       if (msgZone) {
-        msgZone.innerHTML = `<p style="color:#e94560;">Erreur de connexion. Réessayez.</p>`;
+        msgZone.innerHTML = `<p style="color:#e94560; font-size:12px; font-weight:600; padding:6px 0;">⚠️ Erreur de connexion avec le service de vérification. Aucun paiement n'a été effectué. Réessayez.</p>`;
       }
+      setStepError("Erreur de connexion au serveur de vérification du périmètre. Aucun débit n'a été effectué.");
     }
   }
 
@@ -923,6 +773,61 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                       </div>
                     </div>
 
+                    {/* Alerte retour vers formulaire si hors périmètre */}
+                    {perimeterRejection && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.98 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="p-4 rounded-2xl bg-[#1d1016] border-2 border-[#e94560] shadow-xl space-y-3"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 rounded-xl bg-[#e94560]/20 text-[#e94560] shrink-0 mt-0.5">
+                            <AlertTriangle className="h-5 w-5 stroke-[2.5]" />
+                          </div>
+                          <div className="space-y-2 flex-1">
+                            <div className="flex items-center justify-between">
+                              <h4 className="font-bold text-xs sm:text-sm text-[#e94560] uppercase tracking-wide">
+                                ⚠️ Consultation non éligible — Retour au formulaire
+                              </h4>
+                              <button
+                                type="button"
+                                onClick={() => setPerimeterRejection(null)}
+                                className="text-slate-400 hover:text-white text-xs cursor-pointer px-1.5 py-0.5"
+                                title="Fermer ce message"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                            <p className="text-xs text-rose-200 font-medium leading-relaxed">
+                              {perimeterRejection.raison}
+                            </p>
+                            <div className="p-3 rounded-xl bg-[#0B101B]/90 border border-rose-900/40 text-[11px] text-slate-300 space-y-1.5">
+                              <p className="font-semibold text-white">
+                                Rappel du périmètre exclusif de notre moteur :
+                              </p>
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 pt-0.5 text-slate-200">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-emerald-400">✅</span>
+                                  <span>AMO & Conseil stratégique</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-emerald-400">✅</span>
+                                  <span>Candidatures SAD</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-emerald-400">✅</span>
+                                  <span>Propositions conseil privé</span>
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-[11px] text-slate-400">
+                              🔒 <strong>Aucun paiement n'a été prélevé</strong>. Veuillez modifier ou remplacer le texte de votre consultation ci-dessous pour relancer l'analyse.
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+
                     {/* Textarea */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
@@ -938,8 +843,15 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                         rows={7}
                         placeholder="Collez ici le texte de votre consultation (DCE, CCTP, règlement de consultation, descriptif du besoin SAD ou brief conseil)..."
                         value={formData.rfp_text}
-                        onChange={(e) => setFormData((prev) => ({ ...prev, rfp_text: e.target.value }))}
-                        className="w-full text-xs font-sans border border-slate-800 rounded-2xl p-4 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40 focus:outline-none transition-all leading-relaxed"
+                        onChange={(e) => {
+                          setFormData((prev) => ({ ...prev, rfp_text: e.target.value }));
+                          if (stepError) setStepError(null);
+                        }}
+                        className={`w-full text-xs font-sans border rounded-2xl p-4 bg-[#0B101B] text-slate-100 placeholder-slate-500 focus:outline-none transition-all leading-relaxed ${
+                          perimeterRejection
+                            ? 'border-[#e94560] focus:border-[#e94560] focus:ring-1 focus:ring-[#e94560]/40 ring-1 ring-[#e94560]/30'
+                            : 'border-slate-800 focus:border-[#B8935A] focus:ring-1 focus:ring-[#B8935A]/40'
+                        }`}
                       />
                     </div>
                   </motion.div>
@@ -1536,4 +1448,3 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
 export default RfpFormWizard;
 
-    
