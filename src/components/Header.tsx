@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { Sparkles, Menu, X, ArrowUpRight, Layers, FileCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import PerimeterBanner from './PerimeterBanner';
 
 interface HeaderProps {
   onOpenGenerate: () => void;
@@ -30,15 +31,19 @@ export default function Header({ onOpenGenerate }: HeaderProps) {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full px-3 sm:px-6 pt-2 sm:pt-3 pb-2 transition-all duration-300 pointer-events-none">
-      <div className="mx-auto max-w-5xl">
-        <div
-          className={`pointer-events-auto flex items-center justify-between rounded-full px-4 sm:px-6 py-2 transition-all duration-300 ${
-            isScrolled
-              ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border border-slate-200/90'
-              : 'bg-white/75 backdrop-blur-md border border-slate-200/60 shadow-xs'
-          }`}
-        >
+    <div className="sticky top-0 z-50 w-full">
+      {/* ═══ BANDEAU PÉRIMÈTRE ═══ */}
+      <PerimeterBanner onOpenGenerate={onOpenGenerate} />
+
+      <header className="w-full px-3 sm:px-6 pt-2 sm:pt-3 pb-2 transition-all duration-300 pointer-events-none">
+        <div className="mx-auto max-w-5xl">
+          <div
+            className={`pointer-events-auto flex items-center justify-between rounded-full px-4 sm:px-6 py-2 transition-all duration-300 ${
+              isScrolled
+                ? 'bg-white/90 backdrop-blur-xl shadow-lg shadow-slate-900/5 border border-slate-200/90'
+                : 'bg-white/75 backdrop-blur-md border border-slate-200/60 shadow-xs'
+            }`}
+          >
           {/* Brand Identity - Minimalist & Refined */}
           <a
             href="#"
@@ -126,12 +131,13 @@ export default function Header({ onOpenGenerate }: HeaderProps) {
                 className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#1B263B] py-3 text-xs font-bold text-white shadow-sm"
               >
                 <Sparkles className="h-3.5 w-3.5 text-[#B8935A]" />
-                Lancer ma réponse RFP (19 €)
+                Générer mon dossier maintenant — 19 €
               </button>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
     </header>
+  </div>
   );
 }
