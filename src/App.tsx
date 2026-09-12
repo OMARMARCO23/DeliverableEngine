@@ -19,7 +19,7 @@ import FAQ from './components/FAQ';
 import Footer from './components/Footer';
 
 // Modals & Pages
-import RfpFormWizard from './components/RfpFormWizard';
+import { RfpFormWizard } from './components/RfpFormWizard';
 import VideoModal from './components/VideoModal';
 import LegalModal, { LegalTab } from './components/LegalModal';
 import MerciPage from './components/MerciPage';
