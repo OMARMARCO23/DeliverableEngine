@@ -27,7 +27,11 @@ export default function PdfPreviewSection() {
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    if (typeof link.remove === 'function') {
+      link.remove();
+    } else if (link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
   };
 
   const consultationTypes = [
@@ -278,16 +282,16 @@ export default function PdfPreviewSection() {
                   Format & livraison
                 </div>
                 <h3 className="font-serif-heading text-xl sm:text-2xl font-bold text-[#1B263B]">
-                  Livrable prêt à l'emploi en moins de 5 minutes
+                  Livrable complet prêt à l'emploi en 10 minutes
                 </h3>
                 <ul className="space-y-2 text-xs sm:text-sm text-slate-600 font-sans">
                   <li className="flex items-start gap-2">
                     <FileText className="h-4 w-4 text-[#B8935A] shrink-0 mt-0.5" />
-                    <span>PDF professionnel de 15 à 18 pages, prêt à compléter avec vos éléments administratifs (Kbis, attestations, CV)</span>
+                    <span>PDF professionnel haute qualité de 15 à 18 pages, prêt à compléter avec vos éléments administratifs (Kbis, attestations, CV)</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Clock className="h-4 w-4 text-[#B8935A] shrink-0 mt-0.5" />
-                    <span>Livraison par email en moins de 5 minutes après paiement</span>
+                    <span>Livraison par email sous 10 minutes après confirmation</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Calculator className="h-4 w-4 text-[#B8935A] shrink-0 mt-0.5" />
