@@ -8,7 +8,11 @@ import { motion, AnimatePresence } from 'motion/react';
 import { HelpCircle, ChevronDown, MessageSquare } from 'lucide-react';
 import { FAQ_DATA } from '../data';
 
-export default function FAQ() {
+interface FAQProps {
+  onOpenGenerate?: (data?: { rfp_text?: string; positioning?: string }) => void;
+}
+
+export default function FAQ({ onOpenGenerate }: FAQProps = {}) {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggleIndex = (idx: number) => {
