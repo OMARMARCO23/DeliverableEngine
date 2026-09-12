@@ -5,11 +5,29 @@
 
 import { FaqItem, PricingTier } from './types';
 
+export const COMPANY_INFO = {
+  name: "Deliverable Engine",
+  supportEmail: "deliverable.engine@gmail.com",
+  serviceDescription: "Plateforme d'assistance à la rédaction de réponses aux appels d'offres et marchés publics (France & Belgique)",
+  territories: "France & Belgique",
+  guaranteeHours: 24
+};
+
 export const FAQ_DATA: FaqItem[] = [
+  {
+    id: 'perimetre-consultations-eligibles',
+    question: "Quelles sont les consultations acceptées et celles qui sont rejetées d'office ?",
+    answer: "Notre moteur est ultra-spécialisé dans les prestations intellectuelles. Sont acceptées : 1) Les missions d'Assistance à Maîtrise d'Ouvrage (AMO) et de conseil stratégique / cadrage, 2) Les candidatures aux Systèmes d'Acquisition Dynamiques (SAD : référencement et marchés subséquents), 3) Les propositions et devis de conseil privé. En revanche, sont strictement rejetées : les enquêtes / sondages / panels, les travaux BTP et gros œuvre, les marchés de fournitures / matériel, ainsi que les prestations de services opérationnels physiques (gardiennage, nettoyage, transport...)."
+  },
   {
     id: 'garantie-victoire',
     question: "Ce document garantit-il de gagner l'appel d'offres ?",
-    answer: "Non, et nous tenons à être parfaitement clairs et transparents : aucun outil ne peut garantir une victoire. La qualité du mémoire technique est un critère déterminant (souvent 40 à 60% de la note dans la commande publique), mais la décision finale dépend aussi de votre adéquation tarifaire, de la pertinence de vos références et du fit avec le client. Notre promesse concrète : vous faire gagner 4 à 6 heures de travail en générant en 10 minutes une trame solide, ultra-structurée et personnalisée, prête à recevoir vos ajustements finaux."
+    answer: "Non, et nous tenons à être parfaitement clairs et transparents : aucun outil ne peut garantir une victoire. La qualité du mémoire technique est un critère déterminant (souvent 40 à 60% de la note dans la commande publique), mais la décision finale dépend aussi de votre adéquation tarifaire, de la pertinence de vos références et du fit avec le client. Notre promesse concrète : vous faire gagner 4 à 6 heures de travail en générant en 10 minutes un dossier complet solide, ultra-structuré et personnalisé, prêt à recevoir vos ajustements finaux."
+  },
+  {
+    id: 'format-word-docx',
+    question: "Le format Word (.docx) est-il disponible ?",
+    answer: "Le format Word n'est pas disponible actuellement. Le document est généré en PDF professionnel haute qualité (15-18 pages). Le PDF généré est entièrement modifiable via Adobe Acrobat ou tout éditeur PDF pour vos ajustements finaux."
   },
   {
     id: 'secteur-marche-sad-conseil',
@@ -51,7 +69,7 @@ export const PRICING_DATA: PricingTier[] = [
     description: 'Tarif de lancement exclusif — sans abonnement ni engagement',
     generationsCount: 1,
     features: [
-      '1 dossier complet généré en 5 minutes (15 à 18 pages)',
+      '1 dossier complet de 15-18 pages généré en 10 min',
       'Diagramme de Gantt & Planning prévisionnel phasé inclus',
       'Offre financière détaillée & Grille TJM au centime près',
       'Adapté à votre consultation : Marché Public (MAPA), SAD ou Conseil',
@@ -60,7 +78,7 @@ export const PRICING_DATA: PricingTier[] = [
       'Facture avec TVA téléchargeable automatiquement',
       'Paiement sécurisé via Lemon Squeezy'
     ],
-    ctaText: "Profiter de l'offre de lancement (19 €)",
+    ctaText: "Répondre à mon appel d'offres maintenant (19 €)",
     recommended: true
   }
 ];
