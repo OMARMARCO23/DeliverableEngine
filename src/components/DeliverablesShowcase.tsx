@@ -32,7 +32,11 @@ export default function DeliverablesShowcase({ onOpenGenerate }: DeliverablesSho
     link.target = '_blank';
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    if (typeof link.remove === 'function') {
+      link.remove();
+    } else if (link.parentNode) {
+      link.parentNode.removeChild(link);
+    }
   };
 
   return (
@@ -51,7 +55,7 @@ export default function DeliverablesShowcase({ onOpenGenerate }: DeliverablesSho
           </div>
 
           <h2 className="font-serif-heading text-3xl sm:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
-            Regardez ce que le moteur génère en <span className="text-[#B8935A]">5 minutes</span>
+            Regardez ce que le moteur génère en <span className="text-[#B8935A]">10 minutes</span>
           </h2>
 
           <p className="mt-4 text-slate-300 text-sm sm:text-base font-sans leading-relaxed">
@@ -502,7 +506,7 @@ export default function DeliverablesShowcase({ onOpenGenerate }: DeliverablesSho
                 Besoin de répondre à un appel d'offres maintenant ?
               </h4>
               <p className="text-xs text-slate-400 font-sans">
-                Générez votre propre dossier complet au format PDF en moins de 5 minutes.
+                Générez votre propre dossier complet au format PDF en 10 minutes.
               </p>
             </div>
           </div>
@@ -513,7 +517,7 @@ export default function DeliverablesShowcase({ onOpenGenerate }: DeliverablesSho
                 onClick={onOpenGenerate}
                 className="w-full sm:w-auto py-2.5 px-5 bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] text-xs font-bold rounded-xl transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>Profiter de l'offre de lancement (19 €)</span>
+                <span>Répondre à mon appel d'offres maintenant (19 €)</span>
                 <ArrowRight className="h-3.5 w-3.5" />
               </button>
             )}
