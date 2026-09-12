@@ -16,6 +16,69 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
+  // Perimeter check endpoint (Vérification du périmètre)
+  app.post("/api/check-perimeter", (req, res) => {
+    const { rfp_text } = req.body || {};
+    const text = String(rfp_text || "").toLowerCase();
+
+    const perimetre_accepte = [
+      "AMO & Conseil stratégique",
+      "Candidatures SAD (référencement)",
+      "Propositions conseil privé"
+    ];
+
+    // Mots-clés discriminants hors périmètre (BTP, Fournitures, Services ops, Enquêtes)
+    const btpKeywords = [
+      "travaux btp", "gros oeuvre", "gros œuvre", "terrassement", "maçonnerie",
+      "échafaudage", "charpente", "couverture", "menuiserie", "enrobé",
+      "voirie et réseaux", "vrd", "démolition", "ravalement de façade",
+      "chantier de construction", "travaux de réfection de toiture"
+    ];
+
+    const fournituresKeywords = [
+      "fournitures scolaires", "fournitures de bureau", "achat de denrées",
+      "livraison de matériel", "achat d'équipements", "quincaillerie",
+      "consommables médicaux", "pièces détachées", "achat de véhicules"
+    ];
+
+    const servicesOpsKeywords = [
+      "gardiennage", "nettoyage des locaux", "surveillance humaine",
+      "propreté des bâtiments", "agents de sécurité physique",
+      "collecte des déchets", "dératisation", "désinfection",
+      "espaces verts", "tonte de pelouse", "déneigement"
+    ];
+
+    const enquetesKeywords = [
+      "sondage d'opinion", "panel de consommateurs", "panels de consommateurs",
+      "sondage téléphonique", "administration de questionnaires en porte-à-porte"
+    ];
+
+    let foundCategory: string | null = null;
+
+    if (btpKeywords.some((kw) => text.includes(kw))) {
+      foundCategory = "Travaux BTP & Gros œuvre";
+    } else if (fournituresKeywords.some((kw) => text.includes(kw))) {
+      foundCategory = "Fournitures & Matériel physique";
+    } else if (servicesOpsKeywords.some((kw) => text.includes(kw))) {
+      foundCategory = "Services opérationnels (nettoyage, gardiennage...)";
+    } else if (enquetesKeywords.some((kw) => text.includes(kw))) {
+      foundCategory = "Enquêtes, sondages d'opinion & panels";
+    }
+
+    if (foundCategory) {
+      return res.json({
+        status: "HORS_PERIMETRE",
+        raison: `Ce dossier relève de la catégorie "${foundCategory}", qui ne fait pas partie des prestations intellectuelles et du conseil pris en charge par le moteur.`,
+        perimetre_accepte
+      });
+    }
+
+    return res.json({
+      status: "OK",
+      perimetre_accepte
+    });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
