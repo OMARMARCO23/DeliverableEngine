@@ -6,6 +6,7 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { MessageSquare, Mail, ShieldCheck, CheckCircle2, Award, FileCheck, Send, Sparkles, HelpCircle } from 'lucide-react';
+import { COMPANY_INFO } from '../data';
 
 interface AboutAndContactProps {
   onOpenGenerate: () => void;
@@ -21,8 +22,8 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
     e.preventDefault();
     if (!contactEmail || !contactMessage) return;
 
-    // Direct mailto fallback or simulated direct contact
-    const mailtoUrl = `mailto:support@deliverable-engine.io?subject=${encodeURIComponent(
+    // Direct mailto fallback or direct contact
+    const mailtoUrl = `mailto:${COMPANY_INFO.supportEmail}?subject=${encodeURIComponent(
       contactSubject
     )}&body=${encodeURIComponent(`De: ${contactEmail}\n\nMessage:\n${contactMessage}`)}`;
 
@@ -45,7 +46,7 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
               </div>
 
               <h2 className="font-serif-heading text-3xl sm:text-4xl font-extrabold text-[#1B263B] tracking-tight leading-tight">
-                Une trame claire pour structurer vos réponses d'appels d'offres
+                Un moteur de génération de dossiers complets pour vos appels d'offres
               </h2>
 
               <p className="mt-4 text-slate-600 text-sm sm:text-base font-sans leading-relaxed">
@@ -179,7 +180,7 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
                     </div>
                     <h4 className="text-sm font-bold text-white">Message bien préparé !</h4>
                     <p className="text-xs text-slate-300">
-                      Votre messagerie a été ouverte avec vos éléments. Vous pouvez également nous contacter directement sur <strong>support@deliverable-engine.io</strong>.
+                      Votre application de messagerie a été ouverte avec vos éléments pré-remplis. Notre équipe vous répond sous 24h ouvrées.
                     </p>
                     <button
                       onClick={() => setIsSent(false)}
@@ -198,7 +199,7 @@ export default function AboutAndContact({ onOpenGenerate }: AboutAndContactProps
                     onClick={onOpenGenerate}
                     className="text-[#B8935A] font-bold underline hover:text-[#d3a968] cursor-pointer ml-1"
                   >
-                    Générer ma réponse (19 €)
+                    Générer mon dossier maintenant — 19 €
                   </button>
                 </p>
               </div>
