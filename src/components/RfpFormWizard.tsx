@@ -175,6 +175,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [verificationStatusMessage, setVerificationStatusMessage] = useState<string | null>(null);
 
   // Reset form
   const handleClose = () => {
@@ -182,6 +183,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     setTimeout(() => {
       setCurrentStep(1);
       setStepError(null);
+      setVerificationStatusMessage(null);
       setShowAdvanced(false);
       setIsSuccess(false);
       setIsSubmitting(false);
@@ -329,27 +331,12 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     }
 
     setStepError(null);
+    setVerificationStatusMessage("⏳ Vérification de l'éligibilité du dossier par le service d'analyse...");
     setIsSubmitting(true);
 
-    const rfpTextElement = document.getElementById('rfp-text') as HTMLTextAreaElement | null;
-    const rfpText = rfpTextElement?.value || formData.rfp_text || '';
-    const btnPayer = document.getElementById('btn-payer') as HTMLButtonElement | null;
-    const msgZone = document.getElementById('msg-perimetre') as HTMLDivElement | null;
-
-    if (btnPayer) {
-      btnPayer.disabled = true;
-      btnPayer.textContent = "Vérification du périmètre en cours...";
-    }
-    if (msgZone) {
-      msgZone.innerHTML = "";
-    }
+    const rfpText = formData.rfp_text?.trim() || '';
 
     try {
-      const cabinetNomInput = document.getElementById('cabinet-nom') as HTMLInputElement | null;
-      const cabinetEmailInput = document.getElementById('cabinet-email') as HTMLInputElement | null;
-      const typeProcedureInput = document.getElementById('type-procedure') as HTMLInputElement | null;
-      const juridictionInput = document.getElementById('juridiction') as HTMLInputElement | null;
-
       // 1. Détermination de l'URL du Webhook n8n (avec correction auto de l'extension ngrok .app -> .dev)
       const configuredUrl =
         (import.meta as any).env?.VITE_INTAKE_WEBHOOK_URL ||
@@ -364,10 +351,10 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
       const payload = {
         rfp_text: rfpText,
-        cabinet_nom: cabinetNomInput?.value || formData.client_name || '',
-        cabinet_email: cabinetEmailInput?.value || formData.email || '',
-        type_procedure: typeProcedureInput?.value || formData.marketType || '',
-        juridiction: juridictionInput?.value || formData.country || 'FR',
+        cabinet_nom: formData.client_name || '',
+        cabinet_email: formData.email || '',
+        type_procedure: formData.marketType || '',
+        juridiction: formData.country || 'FR',
         formData: {
           ...formData,
           rfp_text: rfpText
@@ -438,10 +425,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
       if (isHorsPerimetre) {
         setIsSubmitting(false);
-        if (btnPayer) {
-          btnPayer.disabled = false;
-          btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
-        }
+        setVerificationStatusMessage(null);
 
         const motif = result.raison || result.message || "Cet appel d'offres ne relève pas de notre périmètre pris en charge (AMO, SAD, Conseil).";
         
@@ -474,9 +458,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
       // 3. SI OK ET CHECKOUT_URL FOURNIE PAR n8n → REDIRIGER VERS LEMON SQUEEZY
       if (result.status === "OK" && result.checkout_url) {
-        if (btnPayer) {
-          btnPayer.textContent = "Périmètre validé ! Redirection Lemon Squeezy...";
-        }
+        setVerificationStatusMessage("✅ Périmètre validé ! Redirection vers le paiement sécurisé...");
         // Redirection EXCLUSIVE vers l'URL fournie par le workflow n8n
         window.location.href = result.checkout_url;
         return;
@@ -484,10 +466,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
       // 4. Cas où le statut n'est pas OK ou l'URL n'a pas été générée par n8n
       setIsSubmitting(false);
-      if (btnPayer) {
-        btnPayer.disabled = false;
-        btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
-      }
+      setVerificationStatusMessage(null);
 
       const messageErreur = result.message || "Le service n'a pas validé ce dossier ou n'a pas fourni de lien de paiement.";
       setPerimeterRejection({
@@ -505,14 +484,8 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     } catch (error: any) {
       console.error("Erreur vérification périmètre:", error);
       setIsSubmitting(false);
-      if (btnPayer) {
-        btnPayer.disabled = false;
-        btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
-      }
+      setVerificationStatusMessage(null);
       const errDetail = error?.message || "Erreur de connexion avec le service de vérification.";
-      if (msgZone) {
-        msgZone.innerHTML = `<p style="color:#e94560; font-size:12px; font-weight:600; padding:6px 0;">⚠️ ${errDetail}</p>`;
-      }
       setStepError(errDetail);
     }
   }
@@ -533,43 +506,41 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
   const handlePrev = () => {
     setStepError(null);
-    const btnPayer = document.getElementById('btn-payer');
-    if (btnPayer) {
-      btnPayer.style.display = '';
-      btnPayer.removeAttribute('disabled');
-      btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
-    }
-    const msgZone = document.getElementById('msg-perimetre');
-    if (msgZone) {
-      msgZone.innerHTML = '';
-    }
+    setVerificationStatusMessage(null);
     if (currentStep > 1) {
       setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5);
     }
   };
 
-  if (!isOpen) return null;
-
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto">
-        {/* Backdrop with dark blur */}
+      {isOpen && (
         <motion.div
+          key="rfp-wizard-container"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={handleClose}
-          className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity"
-        />
-
-        {/* Modal Window - Executive Dark Slate */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.97, y: 12 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.97, y: 12 }}
-          transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-3xl bg-[#0D1522] rounded-3xl shadow-2xl border border-slate-800/90 overflow-hidden z-10 my-auto flex flex-col max-h-[90vh] text-slate-100"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto"
         >
+          {/* Backdrop with dark blur */}
+          <motion.div
+            key="rfp-wizard-backdrop"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={handleClose}
+            className="fixed inset-0 bg-black/75 backdrop-blur-md transition-opacity"
+          />
+
+          {/* Modal Window - Executive Dark Slate */}
+          <motion.div
+            key="rfp-wizard-modal"
+            initial={{ opacity: 0, scale: 0.97, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.97, y: 12 }}
+            transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
+            className="relative w-full max-w-3xl bg-[#0D1522] rounded-3xl shadow-2xl border border-slate-800/90 overflow-hidden z-10 my-auto flex flex-col max-h-[90vh] text-slate-100"
+          >
           {/* Top hairline accent */}
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#B8935A]/50 to-transparent" />
 
@@ -661,46 +632,6 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                 <span>{stepError}</span>
               </motion.div>
             )}
-
-            {/* Persistent DOM inputs ensuring document.getElementById always finds values across all steps */}
-            <div className="sr-only" aria-hidden="true">
-              {currentStep !== 1 && (
-                <input
-                  type="hidden"
-                  id="rfp-text"
-                  value={formData.rfp_text}
-                  readOnly
-                />
-              )}
-              {currentStep !== 2 && (
-                <>
-                  <input
-                    type="hidden"
-                    id="cabinet-nom"
-                    value={formData.client_name}
-                    readOnly
-                  />
-                  <input
-                    type="hidden"
-                    id="cabinet-email"
-                    value={formData.email}
-                    readOnly
-                  />
-                </>
-              )}
-              <input
-                type="hidden"
-                id="type-procedure"
-                value={formData.marketType || 'sad'}
-                readOnly
-              />
-              <input
-                type="hidden"
-                id="juridiction"
-                value={formData.country || 'FR'}
-                readOnly
-              />
-            </div>
 
             {!isSuccess ? (
               <>
@@ -1355,8 +1286,13 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                       </div>
                     </div>
 
-                    {/* Zone de message périmètre (Cloudflare / API filter) */}
-                    <div id="msg-perimetre"></div>
+                    {/* Zone de message périmètre et statut */}
+                    {verificationStatusMessage && (
+                      <div className="p-3 bg-amber-950/40 border border-amber-700/60 rounded-xl text-xs font-semibold text-amber-300 flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 animate-spin text-amber-400 shrink-0" />
+                        <span>{verificationStatusMessage}</span>
+                      </div>
+                    )}
 
                     {/* Retraction Waiver Box */}
                     <div className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 text-xs space-y-2.5">
@@ -1503,7 +1439,8 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
             </div>
           )}
         </motion.div>
-      </div>
+        </motion.div>
+      )}
     </AnimatePresence>
   );
 }
