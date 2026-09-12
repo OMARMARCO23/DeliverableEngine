@@ -69,6 +69,7 @@ export default function FAQ({ onOpenGenerate }: FAQProps = {}) {
                 <AnimatePresence initial={false}>
                   {isOpen && (
                     <motion.div
+                      key={`faq-answer-${idx}`}
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
