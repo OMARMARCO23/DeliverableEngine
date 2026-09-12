@@ -15,6 +15,7 @@ import {
   Sparkles,
   Lock,
   AlertCircle,
+  AlertTriangle,
   Plus,
   Trash2,
   ChevronDown,
@@ -306,21 +307,10 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
     }));
   };
 
-  // Submission
-  const handleFinalSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-
-    if (!formData.email.trim() || !formData.email.includes('@')) {
-      setStepError("Merci de renseigner une adresse e-mail de livraison valide.");
-      return;
-    }
-
-    if (!retractionWaiverAccepted) {
-      setStepError("Veuillez cocher la case d'acceptation de l'exécution immédiate et de renonciation au droit de rétractation pour lancer la génération.");
-      return;
-    }
-
-    setStepError(null);
+  // ═══════════════════════════════════════════════════
+  // FONCTION : Lancer le paiement Lemon Squeezy
+  // ═══════════════════════════════════════════════════
+  const lancerPaiementLemonSqueezy = async () => {
     setIsSubmitting(true);
 
     try {
@@ -488,28 +478,28 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
 
       if (
         rawPaymentUrl &&
-        typeof rawPaymentUrl === 'string' &&
+        typeof rawPaymentUrl === "string" &&
         rawPaymentUrl.trim().length > 7 &&
-        !rawPaymentUrl.includes('YOUR_') &&
-        !rawPaymentUrl.includes('placeholder')
+        !rawPaymentUrl.includes("YOUR_") &&
+        !rawPaymentUrl.includes("placeholder")
       ) {
         try {
           const trimmed = rawPaymentUrl.trim();
-          const targetUrl = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+          const targetUrl = trimmed.startsWith("http://") || trimmed.startsWith("https://")
             ? trimmed
             : `https://${trimmed}`;
 
           const urlObj = new URL(targetUrl);
           if (formData.email) {
-            urlObj.searchParams.set('checkout[email]', formData.email);
-            urlObj.searchParams.set('email', formData.email);
+            urlObj.searchParams.set("checkout[email]", formData.email);
+            urlObj.searchParams.set("email", formData.email);
           }
-          urlObj.searchParams.set('rfp_id', activeRfpId);
-          urlObj.searchParams.set('country', formData.country);
-          urlObj.searchParams.set('market_type', formData.marketType || 'sad');
+          urlObj.searchParams.set("rfp_id", activeRfpId);
+          urlObj.searchParams.set("country", formData.country);
+          urlObj.searchParams.set("market_type", formData.marketType || "sad");
           validCheckoutUrl = urlObj.toString();
         } catch (urlErr) {
-          console.warn('Payment link parse notice:', urlErr);
+          console.warn("Payment link parse notice:", urlErr);
           validCheckoutUrl = null;
         }
       }
@@ -523,11 +513,98 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
         }, 600);
       }
     } catch (err) {
-      console.warn('Submission fallback notice:', err);
+      console.warn("Submission fallback notice:", err);
       setIsSubmitting(false);
       setIsSuccess(true);
     }
   };
+
+  // ═══════════════════════════════════════════════════
+  // FONCTION : Vérifier le périmètre avant paiement
+  // ═══════════════════════════════════════════════════
+  async function verifierEtPayer() {
+    if (!formData.email.trim() || !formData.email.includes('@')) {
+      setStepError("Merci de renseigner une adresse e-mail de livraison valide.");
+      return;
+    }
+
+    if (!retractionWaiverAccepted) {
+      setStepError("Veuillez cocher la case d'acceptation de l'exécution immédiate et de renonciation au droit de rétractation pour lancer la génération.");
+      return;
+    }
+
+    setStepError(null);
+
+    const rfpTextElement = document.getElementById('rfp-text') as HTMLTextAreaElement | null;
+    const rfpText = rfpTextElement?.value || formData.rfp_text || '';
+    const btnPayer = document.getElementById('btn-payer');
+    const msgZone = document.getElementById('msg-perimetre');
+
+    // 1. Désactiver le bouton pendant la vérification
+    if (btnPayer) {
+      btnPayer.setAttribute('disabled', 'true');
+      btnPayer.textContent = "Vérification en cours...";
+    }
+    if (msgZone) {
+      msgZone.innerHTML = "";
+    }
+
+    try {
+      // 2. Appeler notre endpoint Cloudflare / backend
+      const response = await fetch('/api/check-perimeter', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rfp_text: rfpText })
+      });
+
+      const result = await response.json();
+
+      // 3. Si HORS PÉRIMÈTRE → Bloquer et afficher le message
+      if (result.status === "HORS_PERIMETRE") {
+        if (btnPayer) {
+          (btnPayer as HTMLElement).style.display = 'none';
+        }
+        if (msgZone) {
+          const perimetreAccepteList = (result.perimetre_accepte || [
+            "AMO & Conseil stratégique",
+            "Candidatures SAD (référencement)",
+            "Propositions conseil privé"
+          ]).join('<br>✅ ');
+
+          msgZone.innerHTML = `
+            <div style="background:#FFF5F5; border:2px solid #e94560; border-radius:8px; padding:20px; margin:15px 0;">
+              <strong style="color:#e94560; font-size:16px;">⚠️ Appel d'offres hors périmètre</strong>
+              <p style="color:#C53030; margin:10px 0;">${result.raison || "Cette consultation ne relève pas des prestations de conseil ou d'AMO."}</p>
+              <p style="color:#4A5568; font-size:13px;">
+                Notre moteur traite exclusivement :<br>
+                ✅ ${perimetreAccepteList}
+              </p>
+              <p style="color:#718096; font-size:12px; margin-top:10px;">
+                Aucun paiement n'a été effectué. Modifiez votre texte ou soumettez une autre consultation.
+              </p>
+            </div>
+          `;
+          msgZone.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        return; // On bloque tout, pas de paiement
+      }
+
+      // 4. Si OK → Lancer le paiement Lemon Squeezy
+      if (btnPayer) {
+        btnPayer.textContent = "Redirection vers le paiement...";
+      }
+      lancerPaiementLemonSqueezy(); // Ta fonction existante
+
+    } catch (error) {
+      // En cas d'erreur réseau, on laisse passer le paiement
+      // (le filtre n8n rattrapera si besoin)
+      if (btnPayer) {
+        btnPayer.removeAttribute('disabled');
+        btnPayer.textContent = "Payer 19 € et générer mon dossier";
+      }
+      lancerPaiementLemonSqueezy();
+    }
+  }
 
   const handleNext = () => {
     if (currentStep === 1) {
@@ -545,6 +622,16 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
 
   const handlePrev = () => {
     setStepError(null);
+    const btnPayer = document.getElementById('btn-payer');
+    if (btnPayer) {
+      btnPayer.style.display = '';
+      btnPayer.removeAttribute('disabled');
+      btnPayer.textContent = "Recevoir mon mémoire technique en 10 min — 19 €";
+    }
+    const msgZone = document.getElementById('msg-perimetre');
+    if (msgZone) {
+      msgZone.innerHTML = '';
+    }
     if (currentStep > 1) {
       setCurrentStep((prev) => (prev - 1) as 1 | 2 | 3 | 4 | 5);
     }
@@ -757,6 +844,46 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
                       </div>
                     </div>
 
+                    {/* ═══ CONTRÔLE DU PÉRIMÈTRE D'ÉLIGIBILITÉ (ACCEPTÉ / REJETÉ) ═══ */}
+                    <div className="p-4 rounded-2xl bg-gradient-to-br from-[#111A29] to-[#162133] border-2 border-[#E94560]/80 shadow-lg space-y-2.5">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-5 w-5 items-center justify-center rounded-md bg-[#E94560]/20 text-[#E94560]">
+                          <AlertTriangle className="h-3.5 w-3.5 stroke-[2.5]" />
+                        </div>
+                        <span className="text-xs font-bold text-[#E94560] tracking-wide uppercase font-serif-heading">
+                          Périmètre obligatoire du moteur
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 leading-relaxed">
+                        Notre moteur traite <strong className="text-white">exclusivement</strong> les prestations intellectuelles et le conseil. Vérifiez impérativement que votre dossier correspond aux catégories acceptées :
+                      </p>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+                        <div className="p-2.5 rounded-xl bg-blue-950/40 border border-blue-700/40 text-blue-200 space-y-1">
+                          <p className="font-bold text-[#90CDF4] flex items-center gap-1.5">
+                            <span>✅</span> Consultations acceptées :
+                          </p>
+                          <ul className="space-y-0.5 text-slate-300 pl-4 list-disc text-[10.5px]">
+                            <li>AMO & Conseil stratégique</li>
+                            <li>Candidatures SAD (référencement)</li>
+                            <li>Propositions de conseil privé</li>
+                          </ul>
+                        </div>
+
+                        <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-700/40 text-rose-200 space-y-1">
+                          <p className="font-bold text-rose-300 flex items-center gap-1.5">
+                            <span>❌</span> Consultations rejetées d'office :
+                          </p>
+                          <ul className="space-y-0.5 text-slate-300 pl-4 list-disc text-[10.5px]">
+                            <li>Enquêtes, sondages & panels</li>
+                            <li>Travaux BTP & gros œuvre</li>
+                            <li>Fournitures & matériel</li>
+                            <li>Services opérationnels (nettoyage, gardiennage…)</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* Textarea */}
                     <div>
                       <div className="flex items-center justify-between mb-1.5">
@@ -768,6 +895,7 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
                         </span>
                       </div>
                       <textarea
+                        id="rfp-text"
                         rows={7}
                         placeholder="Collez ici le texte de votre consultation (DCE, CCTP, règlement de consultation, descriptif du besoin SAD ou brief conseil)..."
                         value={formData.rfp_text}
@@ -1212,6 +1340,9 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
                       </div>
                     </div>
 
+                    {/* Zone de message périmètre (Cloudflare / API filter) */}
+                    <div id="msg-perimetre"></div>
+
                     {/* Retraction Waiver Box */}
                     <div className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 text-xs space-y-2.5">
                       <label className="flex items-start gap-2.5 cursor-pointer select-none">
@@ -1330,8 +1461,9 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
               ) : (
                 <div className="flex items-center gap-3 ml-auto">
                   <button
+                    id="btn-payer"
                     type="button"
-                    onClick={() => handleFinalSubmit()}
+                    onClick={() => verifierEtPayer()}
                     disabled={isSubmitting}
                     className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-xs transition-all active:scale-95 cursor-pointer ${
                       retractionWaiverAccepted
@@ -1347,7 +1479,7 @@ export default function RfpFormWizard({ isOpen, onClose, initialData, onOpenLega
                     ) : (
                       <>
                         <Lock className="h-3.5 w-3.5" />
-                        <span>Commander mon dossier (19 €)</span>
+                        <span>Recevoir mon mémoire technique en 10 min — 19 €</span>
                       </>
                     )}
                   </button>
