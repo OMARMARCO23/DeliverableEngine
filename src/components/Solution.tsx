@@ -27,7 +27,7 @@ export default function Solution() {
     {
       icon: <FileCheck className="h-6 w-6 text-[#B8935A]" />,
       title: "Document prêt à envoyer",
-      desc: "PDF haute qualité + version éditable. Tu n’as plus qu’à relire et ajuster."
+      desc: "PDF haute qualité, structuré et prêt à l'emploi. Tu n’as plus qu’à relire, signer et joindre tes pièces annexes."
     }
   ];
 
