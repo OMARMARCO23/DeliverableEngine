@@ -1,7 +1,34 @@
-import React, { StrictMode, Component, type ReactNode, type ErrorInfo } from 'react';
+import React, { StrictMode, type ReactNode, type ErrorInfo } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+
+// Safeguard against browser extensions (Google Translate, Grammarly, auto-translators, etc.)
+// mutating DOM text nodes or elements directly, which causes React reconciliation to crash with:
+// "Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node."
+if (typeof window !== 'undefined' && typeof Node === 'function' && Node.prototype) {
+  const originalRemoveChild = Node.prototype.removeChild;
+  Node.prototype.removeChild = function <T extends Node>(child: T): T {
+    if (child && child.parentNode !== this) {
+      if (console && typeof console.warn === 'function') {
+        console.warn('DOM safeguard: Prevented removeChild on non-child node:', child);
+      }
+      return child;
+    }
+    return originalRemoveChild.call(this, child) as T;
+  };
+
+  const originalInsertBefore = Node.prototype.insertBefore;
+  Node.prototype.insertBefore = function <T extends Node>(newNode: T, referenceNode: Node | null): T {
+    if (referenceNode && referenceNode.parentNode !== this) {
+      if (console && typeof console.warn === 'function') {
+        console.warn('DOM safeguard: Prevented insertBefore on non-child reference node:', referenceNode);
+      }
+      return newNode;
+    }
+    return originalInsertBefore.call(this, newNode, referenceNode) as T;
+  };
+}
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -20,11 +47,16 @@ class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBound
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    console.error('Deliverable Engine runtime error:', error, errorInfo);
+    console.error('Deliverable Engine runtime error caught by boundary:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
+      const isDomMutationError =
+        this.state.error?.message?.includes('removeChild') ||
+        this.state.error?.message?.includes('not a child of this node') ||
+        this.state.error?.message?.includes('insertBefore');
+
       return (
         <div style={{
           minHeight: '100vh',
@@ -49,7 +81,9 @@ class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBound
               Deliverable Engine
             </h1>
             <p style={{ fontSize: '14px', color: '#94a3b8', marginBottom: '20px', lineHeight: 1.6 }}>
-              Une erreur inattendue est survenue lors du chargement de l'application.
+              {isDomMutationError
+                ? "Une extension de traduction automatique (comme Google Traduction) a modifié le contenu de la page. Cliquez ci-dessous pour recharger."
+                : "Une erreur inattendue est survenue lors du chargement de l'application."}
             </p>
             {this.state.error && (
               <pre style={{
@@ -88,14 +122,13 @@ class GlobalErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBound
   }
 }
 
+let hasMounted = false;
 function mountApp() {
-  let rootElement = document.getElementById('root');
-  if (!rootElement) {
-    rootElement = document.createElement('div');
-    rootElement.id = 'root';
-    document.body.appendChild(rootElement);
-  }
+  if (hasMounted) return;
+  const rootElement = document.getElementById('root');
+  if (!rootElement) return;
 
+  hasMounted = true;
   createRoot(rootElement).render(
     <StrictMode>
       <GlobalErrorBoundary>
