@@ -5,7 +5,8 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ShieldCheck, FileText, Scale, Lock, Building, CheckCircle2 } from 'lucide-react';
+import { X, ShieldCheck, FileText, Scale, Lock, Building, CheckCircle2, Mail } from 'lucide-react';
+import { COMPANY_INFO } from '../data';
 
 export type LegalTab = 'mentions' | 'cgv' | 'confidentialite';
 
@@ -129,7 +130,7 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
                 <section className="space-y-2">
                   <h4 className="font-serif-heading text-base font-bold text-white">1. Objet du Service</h4>
                   <p>
-                    <strong>Deliverable Engine</strong> édite un service automatisé de génération de trames et de dossiers de réponse aux appels d'offres (RFP), accords-cadres, Systèmes d'Acquisition Dynamiques (SAD) et consultations privées. Le service produit un document au format PDF structuré et personnalisable, envoyé à l'adresse e-mail indiquée par le client.
+                    <strong>Deliverable Engine</strong> édite un service automatisé de génération de mémoires techniques et de dossiers complets de réponse aux appels d'offres (RFP), accords-cadres, Systèmes d'Acquisition Dynamiques (SAD) et consultations privées. Le service produit un document au format PDF structuré et personnalisable, envoyé à l'adresse e-mail indiquée par le client.
                   </p>
                 </section>
 
@@ -150,14 +151,23 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
                 <section className="space-y-2">
                   <h4 className="font-serif-heading text-base font-bold text-white">4. Garantie Révision 24h & Engagement Qualité</h4>
                   <p>
-                    Chaque génération bénéficie de la <strong>Garantie Révision & Sérénité 24h</strong> : 1 révision ou régénération gratuite est incluse. Si une section du document nécessite un ajustement ou ne répond pas fidèlement aux exigences de votre appel d'offres, vous pouvez en faire la demande par simple email à <a href="mailto:support@deliverable-engine.io" className="text-[#D4AF37] underline font-semibold">support@deliverable-engine.io</a> sous 24h ouvrées, sans justification requise.
+                    Chaque génération bénéficie de la <strong>Garantie Révision & Sérénité 24h</strong> : 1 révision ou régénération gratuite est incluse. Si une section du document nécessite un ajustement ou ne répond pas fidèlement aux exigences de votre appel d'offres, vous pouvez en faire la demande par simple contact sous 24h ouvrées, sans justification requise.
                   </p>
+                  <div className="pt-1">
+                    <a
+                      href={`mailto:${COMPANY_INFO.supportEmail}?subject=Demande%20de%20r%C3%A9vision%20gratuite%2024h`}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      Demander une révision par email
+                    </a>
+                  </div>
                 </section>
 
                 <section className="space-y-2">
                   <h4 className="font-serif-heading text-base font-bold text-white">5. Absence de garantie d'attribution de marché</h4>
                   <p>
-                    Deliverable Engine fournit une trame méthodologique et technique de haute qualité pour accélérer la rédaction des offres. Toutefois, Deliverable Engine ne garantit en aucun cas l'attribution ou le gain effectif d'un marché public ou privé, la sélection finale dépendant de multiples critères souverains de l'acheteur (prix proposé par le soumissionnaire, références, conformité administrative et adéquation globale).
+                    Deliverable Engine fournit un mémoire technique et un dossier méthodologique de haute qualité pour accélérer la rédaction des offres. Toutefois, Deliverable Engine ne garantit en aucun cas l'attribution ou le gain effectif d'un marché public ou privé, la sélection finale dépendant de multiples critères souverains de l'acheteur (prix proposé par le soumissionnaire, références, conformité administrative et adéquation globale).
                   </p>
                 </section>
 
@@ -175,15 +185,19 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
               <div className="space-y-5">
                 <section className="space-y-2">
                   <h4 className="font-serif-heading text-base font-bold text-white">1. Éditeur de la Plateforme</h4>
-                  <div className="p-4 bg-[#111A29] border border-slate-800 rounded-2xl space-y-1.5 text-xs text-slate-300">
-                    <p><strong className="text-white">Dénomination :</strong> Deliverable Engine Technologies</p>
-                    <p><strong className="text-white">Forme juridique :</strong> Société par Actions Simplifiée (SAS) / SRL Européenne</p>
-                    <p><strong className="text-white">Immatriculation France (SIRET) :</strong> 987 654 321 00014 (RCS Paris)</p>
-                    <p><strong className="text-white">Immatriculation Belgique (BCE) :</strong> Numéro d'entreprise 0789.123.456 (RPM Bruxelles)</p>
-                    <p><strong className="text-white">TVA Intracommunautaire :</strong> FR89987654321 / BE0789123456</p>
-                    <p><strong className="text-white">Siège social :</strong> 10 Rue de la Paix, 75002 Paris, France & Antenne Bruxelles, 1000 Bruxelles, Belgique</p>
-                    <p><strong className="text-white">Contact :</strong> <a href="mailto:support@deliverable-engine.io" className="text-[#D4AF37] underline">support@deliverable-engine.io</a></p>
-                    <p><strong className="text-white">Directeur de la Publication :</strong> Responsable des Opérations & Affaires Juridiques</p>
+                  <div className="p-4 bg-[#111A29] border border-slate-800 rounded-2xl space-y-2 text-xs text-slate-300">
+                    <p><strong className="text-white">Service :</strong> {COMPANY_INFO.name}</p>
+                    <p><strong className="text-white">Objet :</strong> {COMPANY_INFO.serviceDescription}</p>
+                    <p><strong className="text-white">Zone de couverture :</strong> {COMPANY_INFO.territories}</p>
+                    <div className="pt-2">
+                      <a
+                        href={`mailto:${COMPANY_INFO.supportEmail}?subject=Contact%20Support%20DeliverableEngine`}
+                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95 cursor-pointer shadow-sm"
+                      >
+                        <Mail className="h-3.5 w-3.5" />
+                        <span>Contacter le support</span>
+                      </a>
+                    </div>
                   </div>
                 </section>
 
@@ -245,8 +259,17 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
                 <section className="space-y-2">
                   <h4 className="font-serif-heading text-base font-bold text-white">4. Vos Droits RGPD</h4>
                   <p>
-                    Conformément aux articles 15 à 22 du RGPD, vous disposez d'un droit d'accès, de rectification, de portabilité et de suppression de vos données personnelles. Pour exercer ces droits, contactez notre Délégué à la Protection des Données à <a href="mailto:support@deliverable-engine.io" className="text-[#D4AF37] underline font-semibold">support@deliverable-engine.io</a>.
+                    Conformément aux articles 15 à 22 du RGPD, vous disposez d'un droit d'accès, de rectification, de portabilité et de suppression de vos données personnelles. Pour exercer ces droits, contactez notre équipe support :
                   </p>
+                  <div className="pt-1">
+                    <a
+                      href={`mailto:${COMPANY_INFO.supportEmail}?subject=Demande%20RGPD%20DeliverableEngine`}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95 cursor-pointer"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      Exercer mes droits RGPD par email
+                    </a>
+                  </div>
                 </section>
               </div>
             )}
