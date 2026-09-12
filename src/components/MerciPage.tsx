@@ -17,6 +17,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
+import { COMPANY_INFO } from '../data';
 
 interface MerciPageProps {
   onGoHome: () => void;
@@ -128,10 +129,10 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2 cursor-pointer" onClick={onGoHome}>
             <div className="w-7 h-7 rounded-lg bg-[#B8935A] text-[#1B263B] font-bold flex items-center justify-center text-sm font-serif-heading">
-              R
+              D
             </div>
             <span className="font-serif-heading text-xl font-bold tracking-tight text-white">
-              RFP<span className="text-[#B8935A]">Engine</span>
+              Deliverable<span className="text-[#B8935A]">Engine</span>
             </span>
           </div>
 
@@ -248,10 +249,17 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
               <div>
                 <p className="font-bold text-[#1B263B]">Garantie révision 24h incluse</p>
                 <p className="text-slate-600 mt-0.5">
-                  Une section ne correspond pas à votre appel d'offres ? Répondez simplement au mail de livraison ou écrivez à <a href="mailto:support@deliverable-engine.io" className="text-[#B8935A] font-bold underline">support@deliverable-engine.io</a> pour déclencher votre révision gratuite sous 24h.
+                  Une section ne correspond pas à votre appel d'offres ? Répondez simplement au mail de livraison ou contactez notre support sous 24h pour votre révision gratuite.
                 </p>
               </div>
             </div>
+            <a
+              href={`mailto:${COMPANY_INFO.supportEmail}?subject=Demande%20de%20r%C3%A9vision%20gratuite%2024h`}
+              className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs shadow-sm transition-all active:scale-95 cursor-pointer"
+            >
+              <Mail className="h-3.5 w-3.5" />
+              <span>Contacter le support</span>
+            </a>
           </div>
 
           {/* Estimated Time Box */}
@@ -281,14 +289,14 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
             className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#1B263B] hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow-lg transition-all cursor-pointer active:scale-95"
           >
             <ArrowLeft className="h-4 w-4" />
-            Retourner sur RFP Engine
+            Retourner sur DeliverableEngine
           </button>
         </div>
       </main>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 py-6 text-center text-xs text-slate-400">
-        <p>© {new Date().getFullYear()} RFPEngine. Tous droits réservés.</p>
+        <p>© {new Date().getFullYear()} DeliverableEngine. Tous droits réservés.</p>
       </footer>
     </div>
   );
