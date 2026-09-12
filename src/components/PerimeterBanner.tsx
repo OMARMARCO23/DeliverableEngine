@@ -88,8 +88,15 @@ export default function PerimeterBanner({ onOpenGenerate }: PerimeterBannerProps
       {/* ═══ MODAL DÉTAILS DU PÉRIMÈTRE (DESIGN RAFFINÉ & ÉPURÉ) ═══ */}
       <AnimatePresence>
         {showDetailModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <motion.div
+            key="perimeter-modal-container"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4"
+          >
             <motion.div
+              key="perimeter-modal-backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -98,6 +105,7 @@ export default function PerimeterBanner({ onOpenGenerate }: PerimeterBannerProps
             />
 
             <motion.div
+              key="perimeter-modal-content"
               initial={{ opacity: 0, scale: 0.96, y: 8 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.96, y: 8 }}
@@ -166,7 +174,7 @@ export default function PerimeterBanner({ onOpenGenerate }: PerimeterBannerProps
                 </button>
               </div>
             </motion.div>
-          </div>
+          </motion.div>
         )}
       </AnimatePresence>
     </>
