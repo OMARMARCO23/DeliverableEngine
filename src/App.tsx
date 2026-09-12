@@ -86,7 +86,7 @@ export default function App() {
         {/* 4. Section: Bénéfices */}
         <Solution />
 
-        {/* 5. Section visuelle: Regardez ce que le moteur génère en 5 minutes */}
+        {/* 5. Section visuelle: Regardez ce que le moteur génère en 10 minutes */}
         <DeliverablesShowcase onOpenGenerate={handleOpenGenerate} />
 
         {/* 6. Section: Aperçu de votre réponse (Modèles SAD & Conseil) */}
