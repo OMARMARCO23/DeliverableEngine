@@ -59,6 +59,14 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           console.warn('LocalStorage parse error:', e);
         }
 
+        // Fallback supplémentaire direct si rfp_text a été sauvé isolément
+        if (!storedData.rfp_text) {
+          const directRfpText = localStorage.getItem('rfp_text');
+          if (directRfpText) {
+            storedData.rfp_text = directRfpText;
+          }
+        }
+
         // 4. Update Supabase Database status to 'paid' in rfp_pending
         if (supabase && rfpId) {
           const updatePayload = {
