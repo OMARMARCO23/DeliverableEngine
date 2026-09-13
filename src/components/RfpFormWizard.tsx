@@ -334,7 +334,23 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     setVerificationStatusMessage("⏳ Vérification de l'éligibilité du dossier par le service d'analyse...");
     setIsSubmitting(true);
 
-    const rfpText = formData.rfp_text?.trim() || '';
+    // Extraction robuste du texte RFP (State React en priorité, avec fallback DOM si nécessaire)
+    const domTextarea = typeof document !== 'undefined' ? (document.getElementById('rfp-text') as HTMLTextAreaElement) : null;
+    const rfpText = (formData.rfp_text && formData.rfp_text.trim().length > 0)
+      ? formData.rfp_text.trim()
+      : (domTextarea?.value?.trim() || '');
+
+    // Sauvegarde immédiate dans localStorage pour assurer la persistance après redirection
+    try {
+      localStorage.setItem('rfp_latest_data', JSON.stringify({
+        ...formData,
+        rfp_text: rfpText
+      }));
+      localStorage.setItem('rfp_latest_email', formData.email);
+      localStorage.setItem('rfp_text', rfpText);
+    } catch (e) {
+      console.warn('LocalStorage save notice:', e);
+    }
 
     try {
       // 1. Détermination de l'URL du Webhook n8n (avec correction auto de l'extension ngrok .app -> .dev)
