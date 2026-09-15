@@ -43,7 +43,7 @@ export interface AdvancedOptions {
 
 export interface RfpFormData {
   country: 'FR' | 'BE';
-  marketType?: 'sad' | 'conseil' | 'marche_public' | 'autre';
+  marketType?: 'sad' | 'conseil' | 'mapa' | 'marche_public' | 'autre';
   rfp_text: string;
   client_name: string;
   email: string;
