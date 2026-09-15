@@ -67,28 +67,28 @@ const OBJECTIVE_OPTIONS = [
 
 const MARKET_TYPES = [
   {
+    value: 'mapa',
+    label: 'MAPA & Marchés Publics de Services',
+    badge: 'Procédure Adaptée',
+    description: 'Marché à procédure adaptée (MAPA), CCTP prestations intellectuelles & AMO'
+  },
+  {
     value: 'sad',
     label: 'Système d\'Acquisition Dynamique (SAD)',
-    badge: 'Marché Public',
-    description: 'Accord-cadre SAD & marchés subséquents IT / Conseil'
+    badge: 'Accord-Cadre Public',
+    description: 'Candidature de référencement SAD & marchés subséquents'
   },
   {
     value: 'conseil',
-    label: 'Mission de Conseil & Prestations Intellectuelles',
-    badge: 'Consultation Privée & Public',
-    description: 'Stratégie, audit, cadrage, PMO & transformation'
-  },
-  {
-    value: 'marche_public',
-    label: 'Marché Public Standard (DCE / CCTP)',
-    badge: 'Code Marchés Publics',
-    description: 'Procédure adaptée (MAPA) ou appel d\'offres ouvert'
+    label: 'Mission de Conseil Stratégique & AMO',
+    badge: 'Consultation & Cadrage',
+    description: 'Stratégie, audit, assistance à maîtrise d\'ouvrage, PMO & transformation'
   },
   {
     value: 'autre',
-    label: 'Autre Consultation / Cahier des charges',
-    badge: 'PME & ETI',
-    description: 'Brief client standard, devis ou proposition commerciale'
+    label: 'Conseil Privé & Autre Consultation',
+    badge: 'PME, ETI & Grands Comptes',
+    description: 'Proposition commerciale sur-mesure, brief client ou devis d\'expertise'
   }
 ] as const;
 
@@ -449,6 +449,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         setPerimeterRejection({
           raison: motif,
           categoriesAcceptees: result.perimetre_accepte || [
+            "Marchés Publics MAPA & Prestations intellectuelles",
             "AMO & Conseil stratégique",
             "Candidatures SAD (référencement)",
             "Propositions conseil privé"
@@ -488,6 +489,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       setPerimeterRejection({
         raison: messageErreur,
         categoriesAcceptees: [
+          "Marchés Publics MAPA & Prestations intellectuelles",
           "AMO & Conseil stratégique",
           "Candidatures SAD (référencement)",
           "Propositions conseil privé"
@@ -762,6 +764,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                             <span>✅</span> Consultations acceptées :
                           </p>
                           <ul className="space-y-0.5 text-slate-300 pl-4 list-disc text-[10.5px]">
+                            <li>Marchés Publics MAPA & Services</li>
                             <li>AMO & Conseil stratégique</li>
                             <li>Candidatures SAD (référencement)</li>
                             <li>Propositions de conseil privé</li>
@@ -814,7 +817,11 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                               <p className="font-semibold text-white">
                                 Rappel du périmètre exclusif de notre moteur :
                               </p>
-                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 pt-0.5 text-slate-200">
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1.5 pt-0.5 text-slate-200">
+                                <div className="flex items-center gap-1.5">
+                                  <span className="text-emerald-400">✅</span>
+                                  <span>Marchés Publics MAPA</span>
+                                </div>
                                 <div className="flex items-center gap-1.5">
                                   <span className="text-emerald-400">✅</span>
                                   <span>AMO & Conseil stratégique</span>
