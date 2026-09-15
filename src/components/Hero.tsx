@@ -15,7 +15,7 @@ interface HeroProps {
 export default function Hero({ onOpenGenerate }: HeroProps) {
   const [pastedText, setPastedText] = useState('');
   const [positioning, setPositioning] = useState('');
-  const [selectedQuickType, setSelectedQuickType] = useState<'sad' | 'conseil' | 'marche'>('sad');
+  const [selectedQuickType, setSelectedQuickType] = useState<'mapa' | 'sad' | 'conseil' | 'marche'>('mapa');
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,14 +25,16 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
     });
   };
 
-  const handlePresetSelect = (type: 'sad' | 'conseil' | 'marche') => {
+  const handlePresetSelect = (type: 'mapa' | 'sad' | 'conseil' | 'marche') => {
     setSelectedQuickType(type);
-    if (type === 'sad') {
+    if (type === 'mapa') {
+      setPositioning('Titulaire de Marchés Publics & MAPA en prestations intellectuelles et AMO');
+    } else if (type === 'sad') {
       setPositioning('Cabinet spécialisé Systèmes d\'Acquisition Dynamiques (SAD) & Marchés subséquents');
     } else if (type === 'conseil') {
       setPositioning('Cabinet de conseil en stratégie opérationnelle, cadrage et organisation');
     } else {
-      setPositioning('Prestataire en marchés publics, MAPA et accords-cadres de prestations intellectuelles');
+      setPositioning('Prestataire en conseil privé, audit et missions d\'expertise sur-mesure');
     }
   };
 
@@ -184,7 +186,18 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                   </label>
                   <span className="text-[10px] text-emerald-400 font-medium">✅ Périmètre optimisé</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1.5 text-xs">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => handlePresetSelect('mapa')}
+                    className={`py-1.5 px-2 rounded-xl border text-[11px] font-medium transition-all cursor-pointer truncate ${
+                      selectedQuickType === 'mapa'
+                        ? 'bg-[#B8935A]/20 border-[#B8935A] text-[#D4AF37] font-bold'
+                        : 'bg-slate-900/60 border-slate-800 text-slate-400 hover:text-slate-200'
+                    }`}
+                  >
+                    MAPA & Marchés
+                  </button>
                   <button
                     type="button"
                     onClick={() => handlePresetSelect('conseil')}
