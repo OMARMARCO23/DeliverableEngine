@@ -27,7 +27,9 @@ import {
   HelpCircle,
   Check,
   ShieldCheck,
-  Clock
+  ShieldAlert,
+  Clock,
+  Tag
 } from 'lucide-react';
 import { TeamMember, ClientReference, RfpFormData } from '../types';
 import { LegalTab } from './LegalModal';
@@ -68,14 +70,14 @@ const OBJECTIVE_OPTIONS = [
 const MARKET_TYPES = [
   {
     value: 'mapa',
-    label: 'MAPA & Marchés Publics de Services',
-    badge: 'Procédure Adaptée',
+    label: 'MAPA & Marchés Publics de Prestations',
+    badge: 'Procédure Adaptée (MAPA)',
     description: 'Marché à procédure adaptée (MAPA), CCTP prestations intellectuelles & AMO'
   },
   {
     value: 'sad',
     label: 'Système d\'Acquisition Dynamique (SAD)',
-    badge: 'Accord-Cadre Public',
+    badge: 'Accord-Cadre Public (SAD)',
     description: 'Candidature de référencement SAD & marchés subséquents'
   },
   {
@@ -176,6 +178,14 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [verificationStatusMessage, setVerificationStatusMessage] = useState<string | null>(null);
+  const [promoCodeInput, setPromoCodeInput] = useState<string>('');
+  const [appliedPromo, setAppliedPromo] = useState<{
+    code: string;
+    discountType: 'free' | 'launch_19';
+    label: string;
+    finalPrice: string;
+  } | null>(null);
+  const [promoFeedback, setPromoFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Reset form
   const handleClose = () => {
@@ -188,6 +198,9 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       setIsSuccess(false);
       setIsSubmitting(false);
       setRetractionWaiverAccepted(false);
+      setPromoCodeInput('');
+      setAppliedPromo(null);
+      setPromoFeedback(null);
       setFormData({
         country: 'FR',
         marketType: 'sad',
@@ -224,7 +237,9 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
           technicalMeans: '',
           authorizedSignatory: ''
         },
-        packSelection: 'unit'
+        packSelection: 'unit',
+        promo_code: '',
+        discount_applied: ''
       });
     }, 300);
   };
@@ -313,6 +328,83 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     }));
   };
 
+  // Gestion du code promo / code d'accès bêta (BETAFREE, BETA19)
+  const handleApplyPromoCode = (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const cleanCode = promoCodeInput.trim().toUpperCase();
+    if (!cleanCode) {
+      setPromoFeedback({ type: 'error', message: 'Veuillez saisir un code promo ou code bêta.' });
+      return;
+    }
+
+    if (cleanCode === 'BETAFREE') {
+      const promoData = {
+        code: 'BETAFREE',
+        discountType: 'free' as const,
+        label: 'Accès Bêta Testeur Offert (100 premières réponses)',
+        finalPrice: '0 € (Gratuit)'
+      };
+      setAppliedPromo(promoData);
+      setPromoFeedback({
+        type: 'success',
+        message: '🎉 Code BETAFREE appliqué ! Accès 100% offert pour les 100 premiers dossiers.'
+      });
+      setFormData((prev) => ({
+        ...prev,
+        promo_code: 'BETAFREE',
+        discount_applied: '100% (0€)'
+      }));
+      try {
+        localStorage.setItem('rfp_applied_promo', 'BETAFREE');
+      } catch (err) {
+        console.warn('LocalStorage error:', err);
+      }
+    } else if (cleanCode === 'BETA19') {
+      const promoData = {
+        code: 'BETA19',
+        discountType: 'launch_19' as const,
+        label: 'Tarif Lancement Bêta Privilège',
+        finalPrice: '19 € (au lieu de 29 €)'
+      };
+      setAppliedPromo(promoData);
+      setPromoFeedback({
+        type: 'success',
+        message: '🎉 Code BETA19 appliqué ! Vous bénéficiez du tarif de lancement à 19 € (prix définitif 29 €).'
+      });
+      setFormData((prev) => ({
+        ...prev,
+        promo_code: 'BETA19',
+        discount_applied: 'Remise 10€ (19€ au lieu de 29€)'
+      }));
+      try {
+        localStorage.setItem('rfp_applied_promo', 'BETA19');
+      } catch (err) {
+        console.warn('LocalStorage error:', err);
+      }
+    } else {
+      setPromoFeedback({
+        type: 'error',
+        message: 'Code non reconnu ou expiré. Vérifiez la saisie (ex: BETAFREE ou BETA19).'
+      });
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    setPromoCodeInput('');
+    setPromoFeedback(null);
+    setFormData((prev) => ({
+      ...prev,
+      promo_code: '',
+      discount_applied: ''
+    }));
+    try {
+      localStorage.removeItem('rfp_applied_promo');
+    } catch (err) {
+      console.warn('LocalStorage error:', err);
+    }
+  };
+
   // ═══════════════════════════════════════════════════
   // FONCTION : Vérifier le périmètre via n8n avant paiement Lemon Squeezy
   // RÈGLE : Le bouton ne doit JAMAIS ouvrir Lemon Squeezy directement.
@@ -340,14 +432,21 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       ? formData.rfp_text.trim()
       : (domTextarea?.value?.trim() || '');
 
+    const activePromoCode = appliedPromo?.code || formData.promo_code || (promoCodeInput.trim().toUpperCase() || '');
+
     // Sauvegarde immédiate dans localStorage pour assurer la persistance après redirection
     try {
       localStorage.setItem('rfp_latest_data', JSON.stringify({
         ...formData,
+        promo_code: activePromoCode,
+        discount_applied: appliedPromo?.discountType === 'free' ? '100% (0€)' : (appliedPromo ? 'BETA19' : ''),
         rfp_text: rfpText
       }));
       localStorage.setItem('rfp_latest_email', formData.email);
       localStorage.setItem('rfp_text', rfpText);
+      if (activePromoCode) {
+        localStorage.setItem('rfp_applied_promo', activePromoCode);
+      }
     } catch (e) {
       console.warn('LocalStorage save notice:', e);
     }
@@ -371,8 +470,14 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         cabinet_email: formData.email || '',
         type_procedure: formData.marketType || '',
         juridiction: formData.country || 'FR',
+        promo_code: activePromoCode,
+        beta_code: activePromoCode, // Compatible avec la colonne beta_code déjà ajoutée dans Supabase
+        discount_applied: appliedPromo?.label || '',
         formData: {
           ...formData,
+          promo_code: activePromoCode,
+          beta_code: activePromoCode,
+          discount_applied: appliedPromo?.label || '',
           rfp_text: rfpText
         }
       };
@@ -473,7 +578,20 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         return; // ← AUCUNE REDIRECTION VERS LEMON SQUEEZY
       }
 
-      // 3. SI OK ET CHECKOUT_URL FOURNIE PAR n8n → REDIRIGER VERS LEMON SQUEEZY
+      // 3. SI OK ET CODE PROMO GRATUIT BETAFREE (direct_success, bypass_payment ou statut FREE)
+      if (
+        result.status === "OK" && 
+        (result.bypass_payment === true || result.direct_success === true || result.status === "FREE" || (!result.checkout_url && activePromoCode === 'BETAFREE'))
+      ) {
+        setVerificationStatusMessage("🎉 Accès Bêta Testeur validé ! Redirection vers votre espace de confirmation...");
+        setIsSubmitting(false);
+        const encodedEmail = encodeURIComponent(formData.email || '');
+        const targetUrl = `/#merci?email=${encodedEmail}&promo=BETAFREE&order_id=BETAFREE_${Date.now()}`;
+        window.location.href = targetUrl;
+        return;
+      }
+
+      // 4. SI OK ET CHECKOUT_URL FOURNIE PAR n8n → REDIRIGER VERS LEMON SQUEEZY
       if (result.status === "OK" && result.checkout_url) {
         setVerificationStatusMessage("✅ Périmètre validé ! Redirection vers le paiement sécurisé...");
         // Redirection EXCLUSIVE vers l'URL fournie par le workflow n8n
@@ -481,7 +599,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         return;
       }
 
-      // 4. Cas où le statut n'est pas OK ou l'URL n'a pas été générée par n8n
+      // 5. Cas où le statut n'est pas OK ou l'URL n'a pas été générée par n8n
       setIsSubmitting(false);
       setVerificationStatusMessage(null);
 
@@ -1280,12 +1398,40 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                           </h4>
                         </div>
                         <div className="text-right">
-                          <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
-                            19 €
-                          </span>
-                          <span className="text-[10px] text-slate-400 block font-mono">
-                            Paiement unique
-                          </span>
+                          {appliedPromo?.discountType === 'free' ? (
+                            <div>
+                              <div className="flex items-center gap-2 justify-end">
+                                <span className="text-sm line-through text-slate-500 font-mono">19 €</span>
+                                <span className="text-2xl font-bold font-serif-heading text-emerald-400">
+                                  0 €
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-emerald-400 block font-mono font-bold">
+                                Bêta Testeur Offert (100 premiers)
+                              </span>
+                            </div>
+                          ) : appliedPromo?.discountType === 'launch_19' ? (
+                            <div>
+                              <div className="flex items-center gap-2 justify-end">
+                                <span className="text-sm line-through text-slate-500 font-mono">29 €</span>
+                                <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
+                                  19 €
+                                </span>
+                              </div>
+                              <span className="text-[10px] text-[#D4AF37] block font-mono font-semibold">
+                                Offre de lancement (BETA19)
+                              </span>
+                            </div>
+                          ) : (
+                            <div>
+                              <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
+                                19 €
+                              </span>
+                              <span className="text-[10px] text-slate-400 block font-mono">
+                                Paiement unique (Lancement)
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -1304,9 +1450,77 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                         </div>
                         <div className="flex items-center gap-2">
                           <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
-                          <span>Paiement sécurisé Lemon Squeezy</span>
+                          <span>{appliedPromo?.discountType === 'free' ? 'Accès direct sans carte bancaire' : 'Paiement sécurisé Lemon Squeezy'}</span>
                         </div>
                       </div>
+                    </div>
+
+                    {/* Champ Code Promo / Accès Bêta (BETAFREE, BETA19) */}
+                    <div className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 space-y-2.5">
+                      <div className="flex items-center justify-between">
+                        <label htmlFor="beta_code" className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                          <Tag className="h-3.5 w-3.5 text-[#D4AF37]" />
+                          <span>Code d'accès bêta / Code Promo (optionnel)</span>
+                        </label>
+                        <span className="text-[10px] text-slate-400">
+                          Ex: <span className="text-[#D4AF37] font-mono">BETAFREE</span> (100 premiers) · <span className="text-[#D4AF37] font-mono">BETA19</span>
+                        </span>
+                      </div>
+
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type="text"
+                            id="beta_code"
+                            name="beta_code"
+                            placeholder="Saisissez BETAFREE ou BETA19"
+                            value={promoCodeInput}
+                            onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleApplyPromoCode();
+                              }
+                            }}
+                            className="w-full text-xs uppercase font-mono tracking-wider border border-slate-700/80 rounded-xl px-3 py-2 bg-[#0B101B] text-white placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
+                          />
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleApplyPromoCode()}
+                          className="px-4 py-2 bg-[#1A2639] hover:bg-[#22334D] text-[#D4AF37] border border-[#B8935A]/40 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap"
+                        >
+                          Appliquer
+                        </button>
+                        {appliedPromo && (
+                          <button
+                            type="button"
+                            onClick={handleRemovePromo}
+                            className="px-3 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white text-xs rounded-xl transition-all cursor-pointer"
+                            title="Retirer le code"
+                          >
+                            Retirer
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Feedback Code Promo */}
+                      {promoFeedback && (
+                        <div
+                          className={`text-[11px] p-2.5 rounded-xl flex items-center gap-2 ${
+                            promoFeedback.type === 'success'
+                              ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-700/50'
+                              : 'bg-rose-950/40 text-rose-300 border border-rose-700/50'
+                          }`}
+                        >
+                          {promoFeedback.type === 'success' ? (
+                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                          ) : (
+                            <AlertCircle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
+                          )}
+                          <span>{promoFeedback.message}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Zone de message périmètre et statut */}
@@ -1316,6 +1530,27 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                         <span>{verificationStatusMessage}</span>
                       </div>
                     )}
+
+                    {/* Mentions Légales & Réglementaires Obligatoires (AI Act, CCP, Non-Garantie) */}
+                    <div className="p-4 rounded-2xl bg-slate-900/90 border border-amber-500/30 text-xs space-y-3">
+                      <div className="flex items-start gap-2.5">
+                        <ShieldAlert className="h-4 w-4 text-[#D4AF37] shrink-0 mt-0.5" />
+                        <div className="space-y-1.5 text-slate-300 text-[11px] leading-relaxed">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-[#B8935A]/15 border border-[#B8935A]/40 text-[#D4AF37] font-semibold text-[10px]">
+                              <span>🤖</span> Mention AI Act
+                            </span>
+                            <span className="text-white font-medium">Contenu généré par un système d'IA</span>
+                          </div>
+                          <p className="text-slate-200">
+                            <strong>« Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »</strong>
+                          </p>
+                          <p className="text-slate-400 text-[10.5px]">
+                            <strong className="text-slate-300">Clause de non-garantie d'attribution du marché :</strong> La fourniture du mémoire technique ne garantit en aucun cas l'attribution ou le gain effectif du marché, la décision d'attribution relevant du pouvoir souverain de l'acheteur.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
 
                     {/* Retraction Waiver Box */}
                     <div className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 text-xs space-y-2.5">
@@ -1441,14 +1676,26 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                     disabled={isSubmitting}
                     className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-xs transition-all active:scale-95 cursor-pointer ${
                       retractionWaiverAccepted
-                        ? 'bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] shadow-sm'
+                        ? appliedPromo?.discountType === 'free'
+                          ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-950/40'
+                          : 'bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] shadow-sm'
                         : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
                     }`}
                   >
                     {isSubmitting ? (
                       <>
-                        <Sparkles className="h-3.5 w-3.5 text-[#0D1522] animate-spin" />
-                        Traitement en cours...
+                        <Sparkles className="h-3.5 w-3.5 animate-spin" />
+                        Vérification & préparation...
+                      </>
+                    ) : appliedPromo?.discountType === 'free' ? (
+                      <>
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        <span>Recevoir mon mémoire technique — Gratuit (Bêta 100 premiers)</span>
+                      </>
+                    ) : appliedPromo?.discountType === 'launch_19' ? (
+                      <>
+                        <Lock className="h-3.5 w-3.5" />
+                        <span>Recevoir mon mémoire technique en 10 min — 19 € (au lieu de 29 €)</span>
                       </>
                     ) : (
                       <>
