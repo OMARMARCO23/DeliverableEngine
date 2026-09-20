@@ -196,17 +196,27 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
 
       {/* 3. Bottom Legal Sub-bar */}
       <div className="border-t border-slate-800 py-6 bg-slate-950/80">
-        <div className="mx-auto max-w-7xl px-4 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400 font-sans">
-          
-          <p className="text-slate-400 text-center sm:text-left">
-            © {currentYear} Deliverable Engine. Tous droits réservés.
-          </p>
+        <div className="mx-auto max-w-7xl px-4 sm:px-8 space-y-3 text-xs text-slate-400 font-sans">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-slate-400 text-center sm:text-left">
+              © {currentYear} Deliverable Engine. Tous droits réservés.
+            </p>
 
-          <p className="text-slate-400 text-center sm:text-right flex items-center gap-2 font-sans">
-            <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
-            <span>Conforme RGPD · Aucune utilisation des données pour entraînement de modèles IA publics</span>
-          </p>
+            <div className="text-slate-400 text-center sm:text-right flex flex-wrap items-center justify-center sm:justify-end gap-x-4 gap-y-1 font-sans">
+              <span className="flex items-center gap-1.5 text-slate-300">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                <span>Mention AI Act : Contenu généré par un système d'IA</span>
+              </span>
+              <span>·</span>
+              <span>Conforme RGPD (UE)</span>
+            </div>
+          </div>
 
+          <div className="pt-2 border-t border-slate-900 text-[11px] text-slate-500 text-center sm:text-left leading-relaxed">
+            <p>
+              <strong>Avertissement réglementaire & conformité commande publique :</strong> « Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. » · <strong className="text-slate-400">Clause de non-garantie d'attribution du marché :</strong> La fourniture du mémoire technique ne garantit en aucun cas l'attribution ou le gain effectif d'un marché public ou privé.
+            </p>
+          </div>
         </div>
       </div>
 
