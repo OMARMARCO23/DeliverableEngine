@@ -432,7 +432,8 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       ? formData.rfp_text.trim()
       : (domTextarea?.value?.trim() || '');
 
-    const activePromoCode = appliedPromo?.code || formData.promo_code || (promoCodeInput.trim().toUpperCase() || '');
+    const rawCode = (appliedPromo?.code || formData.promo_code || promoCodeInput || '').trim().toUpperCase().replace(/[\s\-_]/g, '');
+    const activePromoCode = rawCode || 'BETA19';
 
     // Sauvegarde immédiate dans localStorage pour assurer la persistance après redirection
     try {
@@ -613,22 +614,61 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         setVerificationStatusMessage(`🎉 Accès Bêta validé (${activePromoCode || 'BÊTA'}) ! Déclenchement du workflow de génération...`);
         setIsSubmitting(false);
 
-        // Déclencher également en direct le Webhook 2 (Lemon-RFP) pour lancer le workflow de génération n8n
+        // 1. Mettre à jour immédiatement la ligne Supabase rfp_pending en status 'paid'
+        if (supabase) {
+          try {
+            const updatePayload: Record<string, unknown> = {
+              status: 'paid',
+              paid_at: new Date().toISOString(),
+              beta_code: activePromoCode || 'BETA19',
+              promo_code: activePromoCode || 'BETA19'
+            };
+
+            const userEmail = (formData.email || '').trim();
+            if (userEmail) {
+              await supabase
+                .from('rfp_pending')
+                .update(updatePayload)
+                .eq('cabinet_email', userEmail)
+                .in('status', ['queued', 'payment_pending', 'pending']);
+
+              await supabase
+                .from('rfp_pending')
+                .update(updatePayload)
+                .eq('email', userEmail)
+                .in('status', ['queued', 'payment_pending', 'pending']);
+            }
+
+            const rfpRecId = result.id || result.rfp_id || result.order_id || result.data?.id;
+            if (rfpRecId) {
+              await supabase
+                .from('rfp_pending')
+                .update(updatePayload)
+                .or(`id.eq.${rfpRecId},order_id.eq.${rfpRecId}`);
+            }
+          } catch (sbErr) {
+            console.warn('Direct Supabase update notice:', sbErr);
+          }
+        }
+
+        // 2. Déclencher en direct le Webhook 2 (Lemon-RFP) pour lancer le workflow de génération n8n
         try {
           const lemonWebhookUrl =
             (import.meta as any).env?.VITE_N8N_WEBHOOK_URL ||
             'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
 
           const webhookTriggerPayload = {
-            event: activePromoCode === 'BETAFREE' ? 'beta_free_granted' : 'beta_access_granted',
+            event: activePromoCode === 'BETAFREE' ? 'beta_free_granted' : 'payment_completed',
             status: 'paid',
-            promo_code: activePromoCode,
-            beta_code: activePromoCode,
+            payment_status: 'paid',
+            promo_code: activePromoCode || 'BETA19',
+            beta_code: activePromoCode || 'BETA19',
             is_beta: true,
             is_beta_19: activePromoCode === 'BETA19',
             is_beta_free: activePromoCode === 'BETAFREE',
-            rfp_id: `RFP_${activePromoCode || 'BETA'}_${Date.now()}`,
+            rfp_id: result.id || result.rfp_id || result.order_id || `RFP_${activePromoCode || 'BETA'}_${Date.now()}`,
             email: formData.email,
+            cabinet_email: formData.email,
             client_name: formData.client_name,
             positioning: formData.positioning,
             objective: formData.objective,
@@ -640,7 +680,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
             timestamp: new Date().toISOString()
           };
 
-          fetch(lemonWebhookUrl, {
+          await fetch(lemonWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(webhookTriggerPayload)
@@ -650,16 +690,29 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         }
 
         const encodedEmail = encodeURIComponent(formData.email || '');
-        const targetUrl = `/#merci?email=${encodedEmail}&promo=${encodeURIComponent(activePromoCode || 'BETA')}&order_id=${activePromoCode || 'BETA'}_${Date.now()}`;
+        const targetUrl = `/#merci?email=${encodedEmail}&promo=${encodeURIComponent(activePromoCode || 'BETA19')}&order_id=${activePromoCode || 'BETA19'}_${Date.now()}`;
         window.location.href = targetUrl;
         return; // ← AUCUNE REDIRECTION VERS LEMON SQUEEZY !
       }
 
-      // 4. SI OK SANS CODE BÊTA ET CHECKOUT_URL FOURNIE PAR n8n → REDIRIGER VERS LEMON SQUEEZY
-      if (result.status === "OK" && result.checkout_url) {
+      // 4. Si checkout_url externe valide (hors Lemon Squeezy générique bloquant)
+      const isGenericLemon =
+        typeof result.checkout_url === 'string' &&
+        (result.checkout_url.includes('lemonsqueezy.com/checkout') || result.checkout_url.includes('omarmarco.lemonsqueezy.com'));
+
+      if (result.status === "OK" && result.checkout_url && !isGenericLemon) {
         setVerificationStatusMessage("✅ Périmètre validé ! Redirection vers le paiement sécurisé...");
-        // Redirection EXCLUSIVE vers l'URL fournie par le workflow n8n
         window.location.href = result.checkout_url;
+        return;
+      }
+
+      // Fallback par défaut pour toute validation OK sans redirection bloquante
+      if (result.status === "OK") {
+        setVerificationStatusMessage("✅ Dossier validé ! Redirection vers la confirmation...");
+        setIsSubmitting(false);
+        const encodedEmail = encodeURIComponent(formData.email || '');
+        const targetUrl = `/#merci?email=${encodedEmail}&promo=${encodeURIComponent(activePromoCode || 'BETA19')}&order_id=${activePromoCode || 'BETA19'}_${Date.now()}`;
+        window.location.href = targetUrl;
         return;
       }
 
