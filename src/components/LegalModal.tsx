@@ -165,9 +165,13 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
                 </section>
 
                 <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">5. Absence de garantie d'attribution de marché</h4>
+                  <h4 className="font-serif-heading text-base font-bold text-white">5. Absence de garantie d'attribution de marché & Responsabilité du Soumissionnaire</h4>
                   <p>
-                    Deliverable Engine fournit un mémoire technique et un dossier méthodologique de haute qualité pour accélérer la rédaction des offres. Toutefois, Deliverable Engine ne garantit en aucun cas l'attribution ou le gain effectif d'un marché public ou privé, la sélection finale dépendant de multiples critères souverains de l'acheteur (prix proposé par le soumissionnaire, références, conformité administrative et adéquation globale).
+                    <strong className="text-white">Clause de non-garantie d'attribution du marché :</strong> Deliverable Engine fournit un mémoire technique et un dossier méthodologique de haute qualité pour accélérer la rédaction des offres. Toutefois, Deliverable Engine ne garantit en aucun cas l'attribution ou le gain effectif d'un marché public ou privé, la sélection finale dépendant de multiples critères souverains de l'acheteur (prix proposé par le soumissionnaire, références, conformité administrative et adéquation globale).
+                  </p>
+                  <p className="p-3.5 bg-[#111A29] border border-slate-800 rounded-xl text-slate-200 text-xs leading-relaxed">
+                    <strong className="text-[#D4AF37]">Mention AI Act & Code de la Commande Publique (CCP) :</strong><br />
+                    « Contenu généré par un système d'IA. Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »
                   </p>
                 </section>
 
@@ -219,6 +223,19 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
                   <h4 className="font-serif-heading text-base font-bold text-white">4. Propriété Intellectuelle</h4>
                   <p>
                     L'architecture, les algorithmes de génération, l'interface graphique et la marque Deliverable Engine sont la propriété exclusive de l'éditeur. Les documents personnalisés générés pour le client deviennent la pleine propriété intellectuelle du client dès paiement intégral du service.
+                  </p>
+                </section>
+
+                <section className="space-y-2">
+                  <h4 className="font-serif-heading text-base font-bold text-white">5. Transparence Systèmes d'IA (Règlement Européen AI Act) & Code de la Commande Publique</h4>
+                  <p>
+                    Conformément aux obligations de transparence du Règlement Européen sur l'Intelligence Artificielle (AI Act) : <strong>« Contenu généré par un système d'IA »</strong>.
+                  </p>
+                  <p>
+                    Conformément à la réglementation sur les marchés publics : <strong>« Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »</strong>
+                  </p>
+                  <p className="text-slate-400 text-xs">
+                    <strong>Clause de non-garantie d'attribution du marché :</strong> La génération d'un mémoire technique constitue une assistance d'aide à la rédaction méthodologique et ne saurait valoir garantie d'attribution ou de sélection finale de l'offre par l'acheteur public ou privé.
                   </p>
                 </section>
               </div>
