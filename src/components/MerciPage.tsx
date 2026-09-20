@@ -91,42 +91,59 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         }
 
         // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
-        const webhookUrl =
+        const primaryWebhook =
           envMeta?.VITE_N8N_WEBHOOK_URL ||
-          envMeta?.VITE_N8N_WEBHOOK1_URL;
+          'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
+        const intakeWebhook =
+          envMeta?.VITE_N8N_WEBHOOK1_URL ||
+          'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
 
-        if (
-          webhookUrl &&
-          typeof webhookUrl === 'string' &&
-          (webhookUrl.startsWith('http://') || webhookUrl.startsWith('https://')) &&
-          !webhookUrl.includes('YOUR_') &&
-          !webhookUrl.includes('placeholder')
-        ) {
-          try {
-            const webhookPayload = {
-              event: appliedPromo === 'BETAFREE' ? 'beta_free_granted' : 'payment_completed',
-              status: 'paid',
-              promo_code: appliedPromo,
-              beta_code: appliedPromo,
-              is_beta_free: appliedPromo === 'BETAFREE',
-              rfp_id: rfpId || 'UNKNOWN',
-              email: email || storedData.email,
-              client_name: storedData.client_name,
-              positioning: storedData.positioning,
-              objective: storedData.objective,
-              differentiation: storedData.differentiation || storedData.differentiation_full,
-              rfp_text: storedData.rfp_text,
-              timestamp: new Date().toISOString()
-            };
+        const isBeta =
+          appliedPromo === 'BETAFREE' ||
+          appliedPromo === 'BETA19' ||
+          (typeof appliedPromo === 'string' && appliedPromo.toUpperCase().startsWith('BETA'));
 
-            await fetch(webhookUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(webhookPayload)
-            }).catch((err) => console.warn('Webhook notification notice:', err?.message || err));
-          } catch (wErr) {
-            console.warn('Webhook trigger notice:', wErr);
-          }
+        const webhookPayload = {
+          event: isBeta ? (appliedPromo === 'BETAFREE' ? 'beta_free_granted' : 'beta_access_granted') : 'payment_completed',
+          status: 'paid',
+          promo_code: appliedPromo,
+          beta_code: appliedPromo,
+          is_beta: isBeta,
+          is_beta_free: appliedPromo === 'BETAFREE',
+          is_beta_19: appliedPromo === 'BETA19',
+          rfp_id: rfpId || `RFP_${appliedPromo || 'ORDER'}_${Date.now()}`,
+          email: email || storedData.email,
+          client_name: storedData.client_name,
+          positioning: storedData.positioning,
+          objective: storedData.objective,
+          differentiation: storedData.differentiation || storedData.differentiation_full,
+          type_procedure: storedData.marketType || 'mapa',
+          juridiction: storedData.country || 'FR',
+          rfp_text: storedData.rfp_text,
+          formData: storedData,
+          timestamp: new Date().toISOString()
+        };
+
+        // Appeler le webhook de déclenchement d'exécution Lemon-RFP
+        try {
+          await fetch(primaryWebhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookPayload)
+          }).catch((err) => console.warn('Primary webhook trigger notice:', err?.message || err));
+        } catch (wErr) {
+          console.warn('Primary webhook error:', wErr);
+        }
+
+        // Appeler également le webhook intake form-rfp en parallèle pour garantir la réception par n8n
+        try {
+          fetch(intakeWebhook, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ ...webhookPayload, direct_generation: true })
+          }).catch(() => {});
+        } catch {
+          // Ignorer les erreurs secondaires
         }
 
         setSyncStatus('success');
