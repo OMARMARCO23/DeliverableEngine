@@ -68,23 +68,40 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         }
 
         // 4. Update Supabase Database status to 'paid' in rfp_pending
-        const appliedPromo = urlParams.get('promo') || localStorage.getItem('rfp_applied_promo') || (storedData.promo_code as string) || '';
+        const appliedPromo = urlParams.get('promo') || localStorage.getItem('rfp_applied_promo') || (storedData.promo_code as string) || 'BETA19';
 
-        if (supabase && rfpId) {
+        if (supabase) {
           const updatePayload: Record<string, unknown> = {
             status: 'paid',
-            paid_at: new Date().toISOString()
+            paid_at: new Date().toISOString(),
+            beta_code: appliedPromo,
+            promo_code: appliedPromo
           };
-          if (appliedPromo) {
-            updatePayload.beta_code = appliedPromo;
-            updatePayload.promo_code = appliedPromo;
-          }
 
           try {
-            await supabase
-              .from('rfp_pending')
-              .update(updatePayload)
-              .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
+            // Mise à jour par ID si présent
+            if (rfpId) {
+              await supabase
+                .from('rfp_pending')
+                .update(updatePayload)
+                .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
+            }
+
+            // Mise à jour de toute entrée correspondante par email encore en attente (queued / pending)
+            const targetEmail = (email || (storedData.email as string) || '').trim();
+            if (targetEmail) {
+              await supabase
+                .from('rfp_pending')
+                .update(updatePayload)
+                .eq('cabinet_email', targetEmail)
+                .in('status', ['queued', 'payment_pending', 'pending']);
+
+              await supabase
+                .from('rfp_pending')
+                .update(updatePayload)
+                .eq('email', targetEmail)
+                .in('status', ['queued', 'payment_pending', 'pending']);
+            }
           } catch (err: unknown) {
             console.warn('Supabase rfp_pending update notice:', err instanceof Error ? err.message : err);
           }
