@@ -22,7 +22,7 @@ export const FAQ_DATA: FaqItem[] = [
   {
     id: 'garantie-victoire',
     question: "Ce document garantit-il de gagner l'appel d'offres ?",
-    answer: "Non, et nous tenons à être parfaitement clairs et transparents : aucun outil ne peut garantir une victoire. La qualité du mémoire technique est un critère déterminant (souvent 40 à 60% de la note dans la commande publique), mais la décision finale dépend aussi de votre adéquation tarifaire, de la pertinence de vos références et du fit avec le client. Notre promesse concrète : vous faire gagner 4 à 6 heures de travail en générant en 10 minutes un dossier complet solide, ultra-structuré et personnalisé, prêt à recevoir vos ajustements finaux."
+    answer: "Non, conformément à notre clause de non-garantie d'attribution du marché : aucun outil ne peut garantir une victoire. La décision finale d'attribution relève exclusivement du pouvoir adjudicateur. Par ailleurs, au sens des dispositions réglementaires (Mention AI Act : Contenu généré par un système d'IA), la relecture et la validation du document par le soumissionnaire sont obligatoires. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. Notre rôle : vous faire gagner 4 à 6 heures en produisant un livrable ultra-structuré de haute qualité en 10 minutes."
   },
   {
     id: 'format-word-docx',
