@@ -63,18 +63,31 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
 
               {/* Price Block */}
               <div className="my-8 pb-8 border-b border-slate-700/80">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-5xl sm:text-6xl font-extrabold font-serif-heading text-[#B8935A]">
-                    {tier.price}
+                <div className="flex items-baseline gap-3.5">
+                  <span className="text-2xl sm:text-3xl font-bold font-serif-heading text-slate-400 line-through decoration-slate-400">
+                    29 €
                   </span>
-                  <span className="text-slate-400 text-sm font-sans">
-                    TTC · Paiement unique
+                  <span className="text-5xl sm:text-6xl font-extrabold font-serif-heading text-[#B8935A]">
+                    19 €
+                  </span>
+                  <span className="text-slate-300 text-xs sm:text-sm font-sans font-medium">
+                    TTC · Offre de lancement (Code <span className="font-mono text-[#D4AF37] font-bold">BETA19</span>)
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2 font-sans flex items-center gap-1.5">
-                  <Lock className="h-3.5 w-3.5 text-[#B8935A]" />
-                  Paiement sécurisé via Lemon Squeezy · Facture téléchargeable automatiquement
-                </p>
+                <div className="mt-2 text-xs text-slate-400">
+                  Prix définitif : <strong className="text-slate-300">29 €</strong> · Accès gratuit pour les 100 premiers testeurs avec le code <strong className="text-[#D4AF37] font-mono">BETAFREE</strong>.
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-slate-300 font-sans">
+                  <span className="inline-flex items-center gap-1 bg-slate-800/80 border border-slate-700 px-2 py-0.5 rounded-md text-emerald-400 font-mono">
+                    <Lock className="h-3 w-3" />
+                    SSL 256-bit
+                  </span>
+                  <span className="inline-flex items-center gap-1 bg-slate-800/80 border border-slate-700 px-2 py-0.5 rounded-md text-slate-300 font-medium">
+                    <ShieldCheck className="h-3 w-3 text-[#B8935A]" />
+                    Lemon Squeezy (Merchant of Record)
+                  </span>
+                  <span className="text-slate-400">· Facture TVA automatique</span>
+                </div>
               </div>
 
               {/* Features List */}
@@ -148,6 +161,20 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
               <Globe className="h-4 w-4 text-[#B8935A] shrink-0" />
               <span>Conforme France & Belgique</span>
             </div>
+          </div>
+
+          {/* Legal AI Act & CCP Transparency Box */}
+          <div className="mt-6 pt-4 border-t border-slate-100 text-[11px] text-slate-500 font-sans leading-relaxed space-y-1 bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+            <p className="font-semibold text-slate-700 flex items-center gap-1.5">
+              <span>⚖️</span>
+              <span>Mention AI Act : Contenu généré par un système d'IA</span>
+            </p>
+            <p>
+              « Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »
+            </p>
+            <p className="text-[10.5px] text-slate-400">
+              Clause de non-garantie d'attribution du marché : la prestation constitue un appui méthodologique et ne saurait garantir l'attribution finale du marché.
+            </p>
           </div>
         </motion.div>
 
