@@ -68,11 +68,17 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         }
 
         // 4. Update Supabase Database status to 'paid' in rfp_pending
+        const appliedPromo = urlParams.get('promo') || localStorage.getItem('rfp_applied_promo') || (storedData.promo_code as string) || '';
+
         if (supabase && rfpId) {
-          const updatePayload = {
+          const updatePayload: Record<string, unknown> = {
             status: 'paid',
             paid_at: new Date().toISOString()
           };
+          if (appliedPromo) {
+            updatePayload.beta_code = appliedPromo;
+            updatePayload.promo_code = appliedPromo;
+          }
 
           try {
             await supabase
@@ -98,8 +104,11 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         ) {
           try {
             const webhookPayload = {
-              event: 'payment_completed',
+              event: appliedPromo === 'BETAFREE' ? 'beta_free_granted' : 'payment_completed',
               status: 'paid',
+              promo_code: appliedPromo,
+              beta_code: appliedPromo,
+              is_beta_free: appliedPromo === 'BETAFREE',
               rfp_id: rfpId || 'UNKNOWN',
               email: email || storedData.email,
               client_name: storedData.client_name,
@@ -163,7 +172,9 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B8935A]/15 text-[#B8935A] border border-[#B8935A]/30 text-xs font-bold mb-4 font-mono">
           <Sparkles className="h-3.5 w-3.5" />
-          Paiement confirmé · Commande validée
+          {new URLSearchParams(window.location.search).get('promo') === 'BETAFREE' || localStorage.getItem('rfp_applied_promo') === 'BETAFREE'
+            ? 'Accès Bêta Testeur Offert (Code BETAFREE) · Commande validée'
+            : 'Paiement confirmé · Commande validée'}
         </div>
 
         <h1 className="font-serif-heading text-3xl sm:text-4xl font-extrabold text-[#1B263B] text-center tracking-tight">
@@ -171,7 +182,9 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         </h1>
         
         <p className="mt-3 text-slate-600 text-center max-w-lg text-sm sm:text-base">
-          Votre paiement a bien été traité. Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.
+          {new URLSearchParams(window.location.search).get('promo') === 'BETAFREE' || localStorage.getItem('rfp_applied_promo') === 'BETAFREE'
+            ? 'Votre accès bêta gratuit a bien été validé (0 € au lieu de 29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'
+            : 'Votre paiement a bien été traité. Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'}
         </p>
 
         {/* Live Status Badge */}
@@ -287,6 +300,19 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
             <span>
               <strong>Note importante :</strong> N’oubliez pas de vérifier votre dossier « Courriers indésirables » ou « Spams » si vous ne voyez rien arriver d’ici 10 à 15 minutes.
             </span>
+          </div>
+
+          {/* Legal AI Act & CCP reminder */}
+          <div className="text-[11px] text-slate-500 bg-slate-50 border border-slate-200 rounded-xl p-3.5 space-y-1">
+            <p className="font-semibold text-slate-700">
+              Mention AI Act : Contenu généré par un système d'IA
+            </p>
+            <p>
+              « Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »
+            </p>
+            <p className="text-[10.5px] text-slate-400">
+              Clause de non-garantie d'attribution du marché : la prestation ne garantit en aucun cas l'attribution ou le gain effectif du marché.
+            </p>
           </div>
         </div>
 
