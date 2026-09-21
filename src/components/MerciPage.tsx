@@ -26,25 +26,31 @@ interface MerciPageProps {
 export default function MerciPage({ onGoHome }: MerciPageProps) {
   const [syncStatus, setSyncStatus] = useState<'syncing' | 'success' | 'done'>('syncing');
   const [userEmail, setUserEmail] = useState<string>('');
+  const [promoCodeState, setPromoCodeState] = useState<string>('');
 
   useEffect(() => {
     async function processOrderConfirmation() {
       try {
         const envMeta = (import.meta as unknown as { env?: Record<string, string> }).env;
-        const urlParams = new URLSearchParams(window.location.search);
+
+        // Support both search parameters (?...) and hash parameters (#merci?...)
+        const searchParams = new URLSearchParams(window.location.search);
+        const hashQueryIndex = window.location.hash.indexOf('?');
+        const hashParams = new URLSearchParams(hashQueryIndex !== -1 ? window.location.hash.substring(hashQueryIndex) : '');
+        const getParam = (key: string) => searchParams.get(key) || hashParams.get(key);
 
         // 1. Get RFP ID from query params or localStorage
         const rfpId =
-          urlParams.get('rfp_id') ||
-          urlParams.get('custom_rfp_id') ||
-          urlParams.get('checkout[custom][rfp_id]') ||
-          urlParams.get('order_id') ||
+          getParam('rfp_id') ||
+          getParam('custom_rfp_id') ||
+          getParam('checkout[custom][rfp_id]') ||
+          getParam('order_id') ||
           localStorage.getItem('rfp_latest_id');
 
         // 2. Get email from query params or localStorage
         const email =
-          urlParams.get('email') ||
-          urlParams.get('checkout[email]') ||
+          getParam('email') ||
+          getParam('checkout[email]') ||
           localStorage.getItem('rfp_latest_email') ||
           '';
 
@@ -67,47 +73,53 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           }
         }
 
-        // 4. Update Supabase Database status to 'paid' in rfp_pending
-        const appliedPromo = urlParams.get('promo') || localStorage.getItem('rfp_applied_promo') || (storedData.promo_code as string) || 'BETA19';
+        // 4. Promo code: only use real applied promo, DO NOT fallback to BETA19 if no discount was chosen
+        const rawPromo = getParam('promo') || (storedData.promo_code as string) || '';
+        const appliedPromo = rawPromo.trim();
+        setPromoCodeState(appliedPromo);
 
+        // 5. Update Supabase Database payment_status to 'PAID' in rfp_pending
         if (supabase) {
           const updatePayload: Record<string, unknown> = {
-            status: 'paid',
-            paid_at: new Date().toISOString(),
-            beta_code: appliedPromo,
-            promo_code: appliedPromo
+            payment_status: 'PAID',
+            processing_status: 'processing',
+            updated_at: new Date().toISOString()
           };
+          if (appliedPromo) {
+            updatePayload.beta_code = appliedPromo;
+          }
 
           try {
-            // Mise à jour par ID si présent
+            // Mise à jour par ID ou order_id si présent
             if (rfpId) {
-              await supabase
-                .from('rfp_pending')
-                .update(updatePayload)
-                .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
+              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rfpId);
+              if (isUuid) {
+                await supabase
+                  .from('rfp_pending')
+                  .update(updatePayload)
+                  .or(`id.eq.${rfpId},order_id.eq.${rfpId}`);
+              } else {
+                await supabase
+                  .from('rfp_pending')
+                  .update(updatePayload)
+                  .eq('order_id', rfpId);
+              }
             }
 
-            // Mise à jour de toute entrée correspondante par email encore en attente (queued / pending)
-            const targetEmail = (email || (storedData.email as string) || '').trim();
+            // Mise à jour par email cabinet_email
+            const targetEmail = (email || (storedData.cabinet_email as string) || (storedData.email as string) || '').trim();
             if (targetEmail) {
               await supabase
                 .from('rfp_pending')
                 .update(updatePayload)
-                .eq('cabinet_email', targetEmail)
-                .in('status', ['queued', 'payment_pending', 'pending']);
-
-              await supabase
-                .from('rfp_pending')
-                .update(updatePayload)
-                .eq('email', targetEmail)
-                .in('status', ['queued', 'payment_pending', 'pending']);
+                .eq('cabinet_email', targetEmail);
             }
           } catch (err: unknown) {
             console.warn('Supabase rfp_pending update notice:', err instanceof Error ? err.message : err);
           }
         }
 
-        // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
+        // 6. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
         const primaryWebhook =
           envMeta?.VITE_N8N_WEBHOOK_URL ||
           'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
@@ -118,24 +130,30 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         const isBeta =
           appliedPromo === 'BETAFREE' ||
           appliedPromo === 'BETA19' ||
-          (typeof appliedPromo === 'string' && appliedPromo.toUpperCase().startsWith('BETA'));
+          (typeof appliedPromo === 'string' && appliedPromo.length > 0 && appliedPromo.toUpperCase().startsWith('BETA'));
 
         const webhookPayload = {
           event: isBeta ? (appliedPromo === 'BETAFREE' ? 'beta_free_granted' : 'beta_access_granted') : 'payment_completed',
           status: 'paid',
+          payment_status: 'PAID',
+          processing_status: 'processing',
           promo_code: appliedPromo,
-          beta_code: appliedPromo,
+          beta_code: appliedPromo || null,
           is_beta: isBeta,
           is_beta_free: appliedPromo === 'BETAFREE',
           is_beta_19: appliedPromo === 'BETA19',
           rfp_id: rfpId || `RFP_${appliedPromo || 'ORDER'}_${Date.now()}`,
-          email: email || storedData.email,
-          client_name: storedData.client_name,
+          order_id: rfpId || `ORDER_${Date.now()}`,
+          id: rfpId,
+          email: email || storedData.email || storedData.cabinet_email,
+          cabinet_email: email || storedData.cabinet_email || storedData.email,
+          client_name: storedData.client_name || storedData.cabinet_nom,
+          cabinet_nom: storedData.cabinet_nom || storedData.client_name,
           positioning: storedData.positioning,
-          objective: storedData.objective,
+          objective: storedData.objective || storedData.objectif,
           differentiation: storedData.differentiation || storedData.differentiation_full,
-          type_procedure: storedData.marketType || 'mapa',
-          juridiction: storedData.country || 'FR',
+          type_procedure: storedData.marketType || storedData.type_procedure || 'sad',
+          juridiction: storedData.country || storedData.juridiction || 'FR',
           rfp_text: storedData.rfp_text,
           formData: storedData,
           timestamp: new Date().toISOString()
@@ -161,6 +179,17 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           }).catch(() => {});
         } catch {
           // Ignorer les erreurs secondaires
+        }
+
+        // Appeler également /api/confirm-order sur le serveur local
+        try {
+          await fetch('/api/confirm-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(webhookPayload)
+          }).catch(() => {});
+        } catch {
+          // Ignorer
         }
 
         setSyncStatus('success');
@@ -206,8 +235,10 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B8935A]/15 text-[#B8935A] border border-[#B8935A]/30 text-xs font-bold mb-4 font-mono">
           <Sparkles className="h-3.5 w-3.5" />
-          {new URLSearchParams(window.location.search).get('promo') === 'BETAFREE' || localStorage.getItem('rfp_applied_promo') === 'BETAFREE'
+          {promoCodeState === 'BETAFREE'
             ? 'Accès Bêta Testeur Offert (Code BETAFREE) · Commande validée'
+            : promoCodeState === 'BETA19'
+            ? 'Offre Bêta de lancement (Code BETA19) · Commande validée'
             : 'Paiement confirmé · Commande validée'}
         </div>
 
@@ -216,9 +247,11 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         </h1>
         
         <p className="mt-3 text-slate-600 text-center max-w-lg text-sm sm:text-base">
-          {new URLSearchParams(window.location.search).get('promo') === 'BETAFREE' || localStorage.getItem('rfp_applied_promo') === 'BETAFREE'
+          {promoCodeState === 'BETAFREE'
             ? 'Votre accès bêta gratuit a bien été validé (0 € au lieu de 29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'
-            : 'Votre paiement a bien été traité. Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'}
+            : promoCodeState === 'BETA19'
+            ? 'Votre offre de lancement a bien été prise en compte (19 € au lieu de 29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'
+            : 'Votre commande a bien été validée (29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'}
         </p>
 
         {/* Live Status Badge */}
