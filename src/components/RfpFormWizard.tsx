@@ -178,14 +178,6 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [verificationStatusMessage, setVerificationStatusMessage] = useState<string | null>(null);
-  const [promoCodeInput, setPromoCodeInput] = useState<string>('');
-  const [appliedPromo, setAppliedPromo] = useState<{
-    code: string;
-    discountType: 'free' | 'launch_19';
-    label: string;
-    finalPrice: string;
-  } | null>(null);
-  const [promoFeedback, setPromoFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Reset form
   const handleClose = () => {
@@ -198,9 +190,6 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       setIsSuccess(false);
       setIsSubmitting(false);
       setRetractionWaiverAccepted(false);
-      setPromoCodeInput('');
-      setAppliedPromo(null);
-      setPromoFeedback(null);
       setFormData({
         country: 'FR',
         marketType: 'sad',
@@ -237,9 +226,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
           technicalMeans: '',
           authorizedSignatory: ''
         },
-        packSelection: 'unit',
-        promo_code: '',
-        discount_applied: ''
+        packSelection: 'unit'
       });
     }, 300);
   };
@@ -328,88 +315,11 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     }));
   };
 
-  // Gestion du code promo / code d'accès bêta (BETAFREE, BETA19)
-  const handleApplyPromoCode = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    const cleanCode = promoCodeInput.trim().toUpperCase();
-    if (!cleanCode) {
-      setPromoFeedback({ type: 'error', message: 'Veuillez saisir un code promo ou code bêta.' });
-      return;
-    }
-
-    if (cleanCode === 'BETAFREE') {
-      const promoData = {
-        code: 'BETAFREE',
-        discountType: 'free' as const,
-        label: 'Accès Bêta Testeur Offert (100 premières réponses)',
-        finalPrice: '0 € (Gratuit)'
-      };
-      setAppliedPromo(promoData);
-      setPromoFeedback({
-        type: 'success',
-        message: '🎉 Code BETAFREE appliqué ! Accès 100% offert pour les 100 premiers dossiers.'
-      });
-      setFormData((prev) => ({
-        ...prev,
-        promo_code: 'BETAFREE',
-        discount_applied: '100% (0€)'
-      }));
-      try {
-        localStorage.setItem('rfp_applied_promo', 'BETAFREE');
-      } catch (err) {
-        console.warn('LocalStorage error:', err);
-      }
-    } else if (cleanCode === 'BETA19') {
-      const promoData = {
-        code: 'BETA19',
-        discountType: 'launch_19' as const,
-        label: 'Accès Bêta Testeur Privilège (BETA19)',
-        finalPrice: '19 € (Accès Bêta)'
-      };
-      setAppliedPromo(promoData);
-      setPromoFeedback({
-        type: 'success',
-        message: '🎉 Code BETA19 validé ! Accès Bêta activé : génération immédiate de votre mémoire technique sans passer par Lemon Squeezy.'
-      });
-      setFormData((prev) => ({
-        ...prev,
-        promo_code: 'BETA19',
-        discount_applied: 'BETA19 (Accès Bêta)'
-      }));
-      try {
-        localStorage.setItem('rfp_applied_promo', 'BETA19');
-      } catch (err) {
-        console.warn('LocalStorage error:', err);
-      }
-    } else {
-      setPromoFeedback({
-        type: 'error',
-        message: 'Code non reconnu ou expiré. Vérifiez la saisie (ex: BETAFREE ou BETA19).'
-      });
-    }
-  };
-
-  const handleRemovePromo = () => {
-    setAppliedPromo(null);
-    setPromoCodeInput('');
-    setPromoFeedback(null);
-    setFormData((prev) => ({
-      ...prev,
-      promo_code: '',
-      discount_applied: ''
-    }));
-    try {
-      localStorage.removeItem('rfp_applied_promo');
-    } catch (err) {
-      console.warn('LocalStorage error:', err);
-    }
-  };
-
   // ═══════════════════════════════════════════════════
-  // FONCTION : Vérifier le périmètre via n8n avant paiement Lemon Squeezy
-  // RÈGLE : Le bouton ne doit JAMAIS ouvrir Lemon Squeezy directement.
-  // C'est le workflow n8n qui renvoie checkout_url si et seulement si OK.
+  // FONCTION : Vérifier le périmètre via n8n puis redirection Lemon Squeezy
+  // Le workflow n8n vérifie l'éligibilité et renvoie checkout_url.
   // Si HORS_PERIMETRE → Bloquer et retourner au formulaire (Étape 1).
+  // Si OK → Redirection immédiate vers Lemon Squeezy pour le paiement.
   // ═══════════════════════════════════════════════════
   async function verifierEtPayer() {
     if (!formData.email.trim() || !formData.email.includes('@')) {
@@ -423,45 +333,35 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     }
 
     setStepError(null);
-    setVerificationStatusMessage("⏳ Vérification de l'éligibilité du dossier par le service d'analyse...");
+    setVerificationStatusMessage("⏳ Vérification de l'éligibilité du dossier et préparation de l'accès sécurisé...");
     setIsSubmitting(true);
 
-    // Extraction robuste du texte RFP (State React en priorité, avec fallback DOM si nécessaire)
+    // Extraction robuste du texte RFP
     const domTextarea = typeof document !== 'undefined' ? (document.getElementById('rfp-text') as HTMLTextAreaElement) : null;
     const rfpText = (formData.rfp_text && formData.rfp_text.trim().length > 0)
       ? formData.rfp_text.trim()
       : (domTextarea?.value?.trim() || '');
 
-    const rawCode = (appliedPromo?.code || formData.promo_code || promoCodeInput || '').trim().toUpperCase().replace(/[\s\-_]/g, '');
-    const activePromoCode = appliedPromo ? appliedPromo.code : (rawCode === 'BETA19' || rawCode === 'BETAFREE' ? rawCode : '');
-
-    // Sauvegarde immédiate dans localStorage pour assurer la persistance après redirection
+    // Sauvegarde immédiate dans localStorage pour assurer la persistance après paiement
     try {
       localStorage.setItem('rfp_latest_data', JSON.stringify({
         ...formData,
-        promo_code: activePromoCode,
-        discount_applied: appliedPromo?.discountType === 'free' ? '100% (0€)' : (appliedPromo ? appliedPromo.code : ''),
         rfp_text: rfpText
       }));
       localStorage.setItem('rfp_latest_email', formData.email);
       localStorage.setItem('rfp_text', rfpText);
-      if (activePromoCode) {
-        localStorage.setItem('rfp_applied_promo', activePromoCode);
-      } else {
-        localStorage.removeItem('rfp_applied_promo');
-      }
+      localStorage.removeItem('rfp_applied_promo');
     } catch (e) {
       console.warn('LocalStorage save notice:', e);
     }
 
     try {
-      // 1. Détermination de l'URL du Webhook n8n (avec correction auto de l'extension ngrok .app -> .dev)
+      // 1. Détermination de l'URL du Webhook n8n (production par défaut)
       const configuredUrl =
-        (import.meta as any).env?.VITE_INTAKE_WEBHOOK_URL ||
         (import.meta as any).env?.VITE_N8N_WEBHOOK1_URL ||
+        (import.meta as any).env?.VITE_INTAKE_WEBHOOK_URL ||
         'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
 
-      // S'assurer que le domaine ngrok gratuit utilise .dev et non .app (qui est hors ligne)
       const primaryUrl = configuredUrl.replace('.ngrok-free.app', '.ngrok-free.dev');
       const fallbackUrl = primaryUrl.includes('/webhook/intake-rfp')
         ? primaryUrl.replace('/webhook/intake-rfp', '/webhook/form-rfp')
@@ -473,25 +373,11 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         cabinet_email: formData.email || '',
         type_procedure: formData.marketType || '',
         juridiction: formData.country || 'FR',
-        promo_code: activePromoCode,
-        beta_code: activePromoCode || null,
-        discount_applied: appliedPromo?.label || '',
         formData: {
           ...formData,
-          promo_code: activePromoCode,
-          beta_code: activePromoCode || null,
-          discount_applied: appliedPromo?.label || '',
           rfp_text: rfpText
         }
       };
-
-      const isBetaCode =
-        Boolean(activePromoCode) &&
-        (activePromoCode === 'BETAFREE' ||
-         activePromoCode === 'BETA19' ||
-         activePromoCode.startsWith('BETA') ||
-         appliedPromo?.discountType === 'free' ||
-         appliedPromo?.discountType === 'launch_19');
 
       let response: Response | null = null;
       let responseBody = '';
@@ -512,28 +398,10 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
           });
         } catch (errFallback) {
           console.warn("Échec sur les deux URLs de webhook distants:", errFallback);
-          // Si nous sommes avec un code BÊTA (BETA19 / BETAFREE), secours via le filtre de périmètre interne
-          if (isBetaCode) {
-            try {
-              const localRes = await fetch('/api/check-perimeter', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ rfp_text: rfpText })
-              });
-              if (localRes.ok) {
-                response = localRes;
-              }
-            } catch (localErr) {
-              console.warn('Local perimeter check fallback failed:', localErr);
-            }
-          }
-          if (!response) {
-            throw errFallback;
-          }
         }
       }
 
-      // Si le webhook renvoie 404 (non enregistré dans n8n), tenter le second endpoint
+      // Si le webhook renvoie 404 (non actif en test), tenter le second endpoint
       if (response && response.status === 404 && primaryUrl !== fallbackUrl) {
         try {
           const secondAttempt = await fetch(fallbackUrl, {
@@ -545,15 +413,15 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
             response = secondAttempt;
           }
         } catch {
-          // Conserver la première réponse
+          // Conserver la réponse initiale
         }
       }
 
-      if (!response.ok) {
-        responseBody = await response.text().catch(() => '');
-        let errorHint = "Le service de vérification est temporairement indisponible.";
-        if (response.status === 404) {
-          errorHint = "Le webhook n8n n'est pas encore actif. Vérifiez que votre workflow est activé dans n8n (bouton 'Active' en haut à droite).";
+      if (!response || !response.ok) {
+        responseBody = response ? await response.text().catch(() => '') : '';
+        let errorHint = "Le service de vérification est temporairement indisponible. Veuillez réessayer dans un instant.";
+        if (response && response.status === 404) {
+          errorHint = "Le webhook n8n n'est pas encore actif. Vérifiez que votre workflow est activé dans n8n.";
         }
         throw new Error(errorHint);
       }
@@ -578,7 +446,6 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
 
         const motif = result.raison || result.message || "Cet appel d'offres ne relève pas de notre périmètre pris en charge (AMO, SAD, Conseil).";
         
-        // Stockage du motif d'exclusion pour affichage sur l'étape 1
         setPerimeterRejection({
           raison: motif,
           categoriesAcceptees: result.perimetre_accepte || [
@@ -590,11 +457,8 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         });
 
         setStepError(`⚠️ Consultation hors périmètre : ${motif}`);
-
-        // RETOUR IMMÉDIAT VERS LE FORMULAIRE (Étape 1)
         setCurrentStep(1);
 
-        // Faire défiler l'écran vers le champ de texte
         setTimeout(() => {
           const textarea = document.getElementById('rfp-text');
           if (textarea) {
@@ -603,16 +467,17 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
           }
         }, 120);
 
-        return; // ← AUCUNE REDIRECTION VERS LEMON SQUEEZY
+        return;
       }
 
-      // 3. SI ÉLIGIBLE / OK : EXTRACTION DE L'ORDER_ID SUPABASE ET DÉCLENCHEMENT DE N8N SANS LEMON SQUEEZY
-      // Extraction de l'order_id exact créé par n8n dans Supabase (dans checkout[custom][order_id])
+      // 3. SI ÉLIGIBLE / OK : EXTRACTION DE L'ORDER_ID SUPABASE ET REDIRECTION VERS LEMON SQUEEZY
       let exactOrderId = result.order_id || result.id || result.rfp_id || result.data?.id || '';
 
-      if (result.checkout_url) {
+      const rawCheckoutUrl = result.checkout_url || result.url || result.payment_url;
+
+      if (rawCheckoutUrl) {
         try {
-          const parsedUrl = new URL(result.checkout_url);
+          const parsedUrl = new URL(rawCheckoutUrl);
           const customOrderId =
             parsedUrl.searchParams.get('checkout[custom][order_id]') ||
             parsedUrl.searchParams.get('custom_order_id') ||
@@ -621,7 +486,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
             exactOrderId = customOrderId;
           }
         } catch (urlErr) {
-          const match = String(result.checkout_url).match(/checkout\[custom\]\[order_id\]=([a-zA-Z0-9_\-]+)/);
+          const match = String(rawCheckoutUrl).match(/checkout\[custom\]\[order_id\]=([a-zA-Z0-9_\-]+)/);
           if (match && match[1]) {
             exactOrderId = match[1];
           }
@@ -629,7 +494,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       }
 
       if (!exactOrderId) {
-        exactOrderId = activePromoCode ? `${activePromoCode}_${Date.now()}` : `ORDER_${Date.now()}`;
+        exactOrderId = `ORDER_${Date.now()}`;
       }
 
       try {
@@ -639,195 +504,25 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         console.warn('LocalStorage save error:', err);
       }
 
-      if (
-        isBetaCode ||
-        result.bypass_payment === true ||
-        result.direct_success === true ||
-        result.status === "FREE" ||
-        result.status === "OK"
-      ) {
-        if (isBetaCode) {
-          setVerificationStatusMessage(`🎉 Accès Bêta validé (${activePromoCode}) ! Lancement immédiat de la rédaction...`);
-        } else {
-          setVerificationStatusMessage("✅ Dossier validé ! Lancement immédiat de la rédaction...");
-        }
-        setIsSubmitting(false);
+      // Détermination de l'URL finale de paiement Lemon Squeezy
+      let targetCheckoutUrl = rawCheckoutUrl;
 
-        // 1. Mettre à jour la ligne Supabase rfp_pending (colonnes existantes uniquement)
-        if (supabase) {
-          try {
-            const updatePayload: Record<string, unknown> = {
-              payment_status: 'PAID',
-              processing_status: 'processing',
-              updated_at: new Date().toISOString()
-            };
-            if (activePromoCode) {
-              updatePayload.beta_code = activePromoCode;
-            }
+      // Fallback si n8n n'a pas retourné d'URL directe
+      if (!targetCheckoutUrl) {
+        const envLemon = (import.meta as any).env?.VITE_LEMON_SQUEEZY_PAYMENT_LINK;
+        const baseLemon = (typeof envLemon === 'string' && envLemon.startsWith('http'))
+          ? envLemon
+          : 'https://omarmarco.lemonsqueezy.com/buy/071b4a1d-af46-4db9-865e-7f688e7c54ab';
 
-            const userEmail = (formData.email || '').trim();
-            if (userEmail) {
-              await supabase
-                .from('rfp_pending')
-                .update(updatePayload)
-                .eq('cabinet_email', userEmail);
-            }
-
-            if (exactOrderId) {
-              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(exactOrderId);
-              if (isUuid) {
-                await supabase
-                  .from('rfp_pending')
-                  .update(updatePayload)
-                  .or(`id.eq.${exactOrderId},order_id.eq.${exactOrderId}`);
-              } else {
-                await supabase
-                  .from('rfp_pending')
-                  .update(updatePayload)
-                  .eq('order_id', exactOrderId);
-              }
-            }
-          } catch (sbErr) {
-            console.warn('Direct Supabase update notice:', sbErr);
-          }
-        }
-
-        // 2. Préparer le payload au format Lemon Squeezy attendu par le webhook n8n Lemon-RFP
-        const lemonWebhookPayload = {
-          meta: {
-            event_name: 'order_created',
-            custom_data: {
-              order_id: exactOrderId,
-              rfp_id: exactOrderId,
-              promo_code: activePromoCode || ''
-            }
-          },
-          data: {
-            id: `order_${Date.now()}`,
-            type: 'orders',
-            attributes: {
-              order_number: Math.floor(1000 + Math.random() * 9000),
-              user_name: formData.client_name || 'Client',
-              user_email: formData.email,
-              status: 'paid',
-              status_formatted: 'Paid',
-              total: activePromoCode === 'BETAFREE' ? 0 : (activePromoCode === 'BETA19' ? 1900 : 2900),
-              currency: 'EUR',
-              custom_data: {
-                order_id: exactOrderId,
-                rfp_id: exactOrderId
-              }
-            }
-          },
-          // Top-level fallbacks pour tous les types d'expressions n8n
-          custom_data: {
-            order_id: exactOrderId
-          },
-          order_id: exactOrderId,
-          rfp_id: exactOrderId,
-          id: exactOrderId,
-          email: formData.email,
-          cabinet_email: formData.email,
-          client_name: formData.client_name,
-          positioning: formData.positioning,
-          objective: formData.objective,
-          differentiation: formData.differentiation || '',
-          type_procedure: formData.marketType,
-          juridiction: formData.country,
-          status: 'paid',
-          payment_status: 'PAID',
-          processing_status: 'processing',
-          promo_code: activePromoCode || '',
-          beta_code: activePromoCode || null,
-          is_beta: isBetaCode,
-          is_beta_19: activePromoCode === 'BETA19',
-          is_beta_free: activePromoCode === 'BETAFREE',
-          rfp_text: rfpText,
-          formData: payload.formData,
-          timestamp: new Date().toISOString()
-        };
-
-        try {
-          // A) Appel serveur /api/confirm-order
-          await fetch('/api/confirm-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(lemonWebhookPayload)
-          }).catch((err) => console.warn('/api/confirm-order async notice:', err));
-
-          // B) Appel direct vers le webhook Lemon-RFP
-          const lemonWebhookUrl =
-            (import.meta as any).env?.VITE_N8N_WEBHOOK_URL ||
-            'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
-
-          await fetch(lemonWebhookUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(lemonWebhookPayload)
-          }).catch((err) => console.warn('Direct Lemon-RFP async notice:', err));
-        } catch (wErr) {
-          console.warn('Webhook trigger notice:', wErr);
-        }
-
-        const encodedEmail = encodeURIComponent(formData.email || '');
-        const promoParam = activePromoCode ? `&promo=${encodeURIComponent(activePromoCode)}` : '';
-        const targetUrl = `/#merci?email=${encodedEmail}${promoParam}&order_id=${encodeURIComponent(exactOrderId)}`;
-
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        onClose();
-
-        window.location.hash = targetUrl.replace('/#', '#');
-        if (window.location.pathname !== '/' && window.location.pathname !== '') {
-          window.location.href = targetUrl;
-        }
-        return;
+        const delimiter = baseLemon.includes('?') ? '&' : '?';
+        targetCheckoutUrl = `${baseLemon}${delimiter}checkout[email]=${encodeURIComponent(formData.email)}&checkout[custom][order_id]=${encodeURIComponent(exactOrderId)}`;
       }
 
-      // 4. Si checkout_url externe valide (hors Lemon Squeezy générique bloquant)
-      const isGenericLemon =
-        typeof result.checkout_url === 'string' &&
-        (result.checkout_url.includes('lemonsqueezy.com/checkout') || result.checkout_url.includes('omarmarco.lemonsqueezy.com'));
+      setVerificationStatusMessage("✅ Dossier validé ! Redirection immédiate vers Lemon Squeezy...");
 
-      if (result.status === "OK" && result.checkout_url && !isGenericLemon) {
-        setVerificationStatusMessage("✅ Périmètre validé ! Redirection vers le paiement sécurisé...");
-        window.location.href = result.checkout_url;
-        return;
-      }
-
-      // Fallback par défaut pour toute validation OK sans redirection bloquante
-      if (result.status === "OK") {
-        setVerificationStatusMessage("✅ Dossier validé ! Redirection vers la confirmation...");
-        setIsSubmitting(false);
-        setIsSuccess(true);
-        onClose();
-        const encodedEmail = encodeURIComponent(formData.email || '');
-        const promoParam = activePromoCode ? `&promo=${encodeURIComponent(activePromoCode)}` : '';
-        const targetUrl = `/#merci?email=${encodedEmail}${promoParam}&order_id=${encodeURIComponent(exactOrderId)}`;
-        window.location.hash = targetUrl.replace('/#', '#');
-        if (window.location.pathname !== '/' && window.location.pathname !== '') {
-          window.location.href = targetUrl;
-        }
-        return;
-      }
-
-      // 5. Cas où le statut n'est pas OK ou l'URL n'a pas été générée par n8n
-      setIsSubmitting(false);
-      setVerificationStatusMessage(null);
-
-      const messageErreur = result.message || "Le service n'a pas validé ce dossier ou n'a pas fourni de lien de paiement.";
-      setPerimeterRejection({
-        raison: messageErreur,
-        categoriesAcceptees: [
-          "Marchés Publics MAPA & Prestations intellectuelles",
-          "AMO & Conseil stratégique",
-          "Candidatures SAD (référencement)",
-          "Propositions conseil privé"
-        ]
-      });
-      setStepError(`⚠️ ${messageErreur}`);
-      // Retour au formulaire
-      setCurrentStep(1);
+      // Redirection immédiate vers Lemon Squeezy
+      window.location.href = targetCheckoutUrl;
+      return;
 
     } catch (error: any) {
       console.error("Erreur vérification périmètre:", error);
@@ -1610,40 +1305,15 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                           </h4>
                         </div>
                         <div className="text-right">
-                          {appliedPromo?.discountType === 'free' ? (
-                            <div>
-                              <div className="flex items-center gap-2 justify-end">
-                                <span className="text-sm line-through text-slate-500 font-mono">19 €</span>
-                                <span className="text-2xl font-bold font-serif-heading text-emerald-400">
-                                  0 €
-                                </span>
-                              </div>
-                              <span className="text-[10px] text-emerald-400 block font-mono font-bold">
-                                Bêta Testeur Offert (100 premiers)
-                              </span>
-                            </div>
-                          ) : appliedPromo?.discountType === 'launch_19' ? (
-                            <div>
-                              <div className="flex items-center gap-2 justify-end">
-                                <span className="text-sm line-through text-slate-500 font-mono">29 €</span>
-                                <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
-                                  19 €
-                                </span>
-                              </div>
-                              <span className="text-[10px] text-[#D4AF37] block font-mono font-semibold">
-                                Offre de lancement (BETA19)
-                              </span>
-                            </div>
-                          ) : (
-                            <div>
-                              <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
-                                29 €
-                              </span>
-                              <span className="text-[10px] text-slate-400 block font-mono">
-                                Tarif standard (Sans code)
-                              </span>
-                            </div>
-                          )}
+                          <div className="flex items-center gap-2 justify-end">
+                            <span className="text-sm line-through text-slate-500 font-mono">29 €</span>
+                            <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
+                              19 €
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 block font-mono">
+                            TTC · Offre de lancement
+                          </span>
                         </div>
                       </div>
 
@@ -1662,77 +1332,9 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                         </div>
                         <div className="flex items-center gap-2">
                           <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
-                          <span>{appliedPromo ? 'Accès direct Bêta validé (Génération immédiate)' : 'Paiement sécurisé Lemon Squeezy'}</span>
+                          <span>Paiement sécurisé Lemon Squeezy</span>
                         </div>
                       </div>
-                    </div>
-
-                    {/* Champ Code Promo / Accès Bêta (BETAFREE, BETA19) */}
-                    <div className="p-4 rounded-2xl bg-[#111A29] border border-slate-800 space-y-2.5">
-                      <div className="flex items-center justify-between">
-                        <label htmlFor="beta_code" className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                          <Tag className="h-3.5 w-3.5 text-[#D4AF37]" />
-                          <span>Code d'accès bêta / Code Promo (optionnel)</span>
-                        </label>
-                        <span className="text-[10px] text-slate-400">
-                          Ex: <span className="text-[#D4AF37] font-mono">BETAFREE</span> (100 premiers) · <span className="text-[#D4AF37] font-mono">BETA19</span>
-                        </span>
-                      </div>
-
-                      <div className="flex gap-2">
-                        <div className="relative flex-1">
-                          <input
-                            type="text"
-                            id="beta_code"
-                            name="beta_code"
-                            placeholder="Saisissez BETAFREE ou BETA19"
-                            value={promoCodeInput}
-                            onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
-                            onKeyDown={(e) => {
-                              if (e.key === 'Enter') {
-                                e.preventDefault();
-                                handleApplyPromoCode();
-                              }
-                            }}
-                            className="w-full text-xs uppercase font-mono tracking-wider border border-slate-700/80 rounded-xl px-3 py-2 bg-[#0B101B] text-white placeholder-slate-500 focus:border-[#B8935A] focus:outline-none"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => handleApplyPromoCode()}
-                          className="px-4 py-2 bg-[#1A2639] hover:bg-[#22334D] text-[#D4AF37] border border-[#B8935A]/40 text-xs font-bold rounded-xl transition-all cursor-pointer whitespace-nowrap"
-                        >
-                          Appliquer
-                        </button>
-                        {appliedPromo && (
-                          <button
-                            type="button"
-                            onClick={handleRemovePromo}
-                            className="px-3 py-2 bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white text-xs rounded-xl transition-all cursor-pointer"
-                            title="Retirer le code"
-                          >
-                            Retirer
-                          </button>
-                        )}
-                      </div>
-
-                      {/* Feedback Code Promo */}
-                      {promoFeedback && (
-                        <div
-                          className={`text-[11px] p-2.5 rounded-xl flex items-center gap-2 ${
-                            promoFeedback.type === 'success'
-                              ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-700/50'
-                              : 'bg-rose-950/40 text-rose-300 border border-rose-700/50'
-                          }`}
-                        >
-                          {promoFeedback.type === 'success' ? (
-                            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
-                          ) : (
-                            <AlertCircle className="h-3.5 w-3.5 text-rose-400 shrink-0" />
-                          )}
-                          <span>{promoFeedback.message}</span>
-                        </div>
-                      )}
                     </div>
 
                     {/* Zone de message périmètre et statut */}
@@ -1888,11 +1490,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                     disabled={isSubmitting}
                     className={`inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full font-bold text-xs transition-all active:scale-95 cursor-pointer ${
                       retractionWaiverAccepted
-                        ? appliedPromo?.discountType === 'free'
-                          ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-md shadow-emerald-950/40'
-                          : appliedPromo?.discountType === 'launch_19'
-                            ? 'bg-[#D4AF37] hover:bg-[#E5C158] text-[#0D1522] shadow-md shadow-[#D4AF37]/30'
-                            : 'bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] shadow-sm'
+                        ? 'bg-[#B8935A] hover:bg-[#c49f64] text-[#0D1522] shadow-sm'
                         : 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700'
                     }`}
                   >
@@ -1901,20 +1499,10 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                         <Sparkles className="h-3.5 w-3.5 animate-spin" />
                         Vérification & préparation...
                       </>
-                    ) : appliedPromo?.discountType === 'free' ? (
-                      <>
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        <span>Recevoir mon mémoire technique — Gratuit (BETAFREE)</span>
-                      </>
-                    ) : appliedPromo?.discountType === 'launch_19' ? (
-                      <>
-                        <Sparkles className="h-3.5 w-3.5 text-[#0D1522]" />
-                        <span>Valider mon accès Bêta (BETA19) & Lancer la génération</span>
-                      </>
                     ) : (
                       <>
                         <Lock className="h-3.5 w-3.5" />
-                        <span>Recevoir mon mémoire technique en 10 min — 29 €</span>
+                        <span>Paiement sécurisé via Lemon Squeezy — 19 €</span>
                       </>
                     )}
                   </button>
