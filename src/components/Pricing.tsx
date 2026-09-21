@@ -71,11 +71,11 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
                     19 €
                   </span>
                   <span className="text-slate-300 text-xs sm:text-sm font-sans font-medium">
-                    TTC · Offre de lancement (Code <span className="font-mono text-[#D4AF37] font-bold">BETA19</span>)
+                    TTC · Offre de lancement
                   </span>
                 </div>
                 <div className="mt-2 text-xs text-slate-400">
-                  Prix définitif : <strong className="text-slate-300">29 €</strong> · Accès gratuit pour les 100 premiers testeurs avec le code <strong className="text-[#D4AF37] font-mono">BETAFREE</strong>.
+                  Tarif unique de lancement · Dossier complet prêt à déposer sans abonnement.
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-2 text-[11px] text-slate-300 font-sans">
                   <span className="inline-flex items-center gap-1 bg-slate-800/80 border border-slate-700 px-2 py-0.5 rounded-md text-emerald-400 font-mono">
