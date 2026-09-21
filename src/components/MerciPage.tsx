@@ -111,71 +111,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           }
         }
 
-        // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
-        const primaryWebhook =
-          envMeta?.VITE_N8N_WEBHOOK_URL ||
-          'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
-
-        const intakeWebhook =
-          envMeta?.VITE_N8N_WEBHOOK1_URL ||
-          envMeta?.VITE_INTAKE_WEBHOOK_URL ||
-          'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
-
-        const webhookPayload = {
-          event: 'payment_completed',
-          status: 'paid',
-          payment_status: 'PAID',
-          processing_status: 'processing',
-          rfp_id: rfpId || `ORDER_${Date.now()}`,
-          order_id: rfpId || `ORDER_${Date.now()}`,
-          id: rfpId,
-          email: email || storedData.email || storedData.cabinet_email,
-          cabinet_email: email || storedData.cabinet_email || storedData.email,
-          client_name: storedData.client_name || storedData.cabinet_nom,
-          cabinet_nom: storedData.cabinet_nom || storedData.client_name,
-          positioning: storedData.positioning,
-          objective: storedData.objective || storedData.objectif,
-          differentiation: storedData.differentiation || storedData.differentiation_full,
-          type_procedure: storedData.marketType || storedData.type_procedure || 'sad',
-          juridiction: storedData.country || storedData.juridiction || 'FR',
-          rfp_text: storedData.rfp_text,
-          formData: storedData,
-          timestamp: new Date().toISOString()
-        };
-
-        // Appeler le webhook de déclenchement d'exécution Lemon-RFP
-        try {
-          await fetch(primaryWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookPayload)
-          }).catch((err) => console.warn('Primary webhook trigger notice:', err?.message || err));
-        } catch (wErr) {
-          console.warn('Primary webhook error:', wErr);
-        }
-
-        // Appeler également le webhook intake form-rfp en parallèle pour garantir la réception par n8n
-        try {
-          fetch(intakeWebhook, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...webhookPayload, direct_generation: true })
-          }).catch(() => {});
-        } catch {
-          // Ignorer les erreurs secondaires
-        }
-
-        // Appeler également /api/confirm-order sur le serveur local
-        try {
-          await fetch('/api/confirm-order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookPayload)
-          }).catch(() => {});
-        } catch {
-          // Ignorer
-        }
-
+        // 5. Lemon Squeezy triggers n8n directly via its official webhook (no duplicate frontend trigger)
         setSyncStatus('success');
       } catch (err) {
         console.error('Error during order confirmation processing:', err);
