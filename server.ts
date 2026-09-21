@@ -27,7 +27,6 @@ async function startServer() {
 
       const orderId = payload.order_id || payload.rfp_id || payload.meta?.custom_data?.order_id;
       const userEmail = (payload.cabinet_email || payload.email || payload.data?.attributes?.user_email || "").trim();
-      const promoCode = payload.beta_code || payload.promo_code;
 
       console.log("[Server API] Forwarding payment confirmation to n8n:", {
         order_id: orderId,
@@ -45,9 +44,6 @@ async function startServer() {
             processing_status: "processing",
             updated_at: new Date().toISOString()
           };
-          if (promoCode) {
-            updateData.beta_code = promoCode;
-          }
 
           if (orderId) {
             const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId);
