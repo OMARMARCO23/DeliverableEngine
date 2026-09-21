@@ -26,7 +26,6 @@ interface MerciPageProps {
 export default function MerciPage({ onGoHome }: MerciPageProps) {
   const [syncStatus, setSyncStatus] = useState<'syncing' | 'success' | 'done'>('syncing');
   const [userEmail, setUserEmail] = useState<string>('');
-  const [promoCodeState, setPromoCodeState] = useState<string>('');
 
   useEffect(() => {
     async function processOrderConfirmation() {
@@ -43,6 +42,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         const rfpId =
           getParam('rfp_id') ||
           getParam('custom_rfp_id') ||
+          getParam('checkout[custom][order_id]') ||
           getParam('checkout[custom][rfp_id]') ||
           getParam('order_id') ||
           localStorage.getItem('rfp_latest_id');
@@ -73,21 +73,13 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           }
         }
 
-        // 4. Promo code: only use real applied promo, DO NOT fallback to BETA19 if no discount was chosen
-        const rawPromo = getParam('promo') || (storedData.promo_code as string) || '';
-        const appliedPromo = rawPromo.trim();
-        setPromoCodeState(appliedPromo);
-
-        // 5. Update Supabase Database payment_status to 'PAID' in rfp_pending
+        // 4. Update Supabase Database payment_status to 'PAID' in rfp_pending
         if (supabase) {
           const updatePayload: Record<string, unknown> = {
             payment_status: 'PAID',
             processing_status: 'processing',
             updated_at: new Date().toISOString()
           };
-          if (appliedPromo) {
-            updatePayload.beta_code = appliedPromo;
-          }
 
           try {
             // Mise à jour par ID ou order_id si présent
@@ -119,30 +111,22 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           }
         }
 
-        // 6. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
+        // 5. Trigger n8n Webhook 2 (Payment & Workflow Execution) if valid
         const primaryWebhook =
           envMeta?.VITE_N8N_WEBHOOK_URL ||
           'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
+
         const intakeWebhook =
           envMeta?.VITE_N8N_WEBHOOK1_URL ||
+          envMeta?.VITE_INTAKE_WEBHOOK_URL ||
           'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
 
-        const isBeta =
-          appliedPromo === 'BETAFREE' ||
-          appliedPromo === 'BETA19' ||
-          (typeof appliedPromo === 'string' && appliedPromo.length > 0 && appliedPromo.toUpperCase().startsWith('BETA'));
-
         const webhookPayload = {
-          event: isBeta ? (appliedPromo === 'BETAFREE' ? 'beta_free_granted' : 'beta_access_granted') : 'payment_completed',
+          event: 'payment_completed',
           status: 'paid',
           payment_status: 'PAID',
           processing_status: 'processing',
-          promo_code: appliedPromo,
-          beta_code: appliedPromo || null,
-          is_beta: isBeta,
-          is_beta_free: appliedPromo === 'BETAFREE',
-          is_beta_19: appliedPromo === 'BETA19',
-          rfp_id: rfpId || `RFP_${appliedPromo || 'ORDER'}_${Date.now()}`,
+          rfp_id: rfpId || `ORDER_${Date.now()}`,
           order_id: rfpId || `ORDER_${Date.now()}`,
           id: rfpId,
           email: email || storedData.email || storedData.cabinet_email,
@@ -235,11 +219,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
 
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#B8935A]/15 text-[#B8935A] border border-[#B8935A]/30 text-xs font-bold mb-4 font-mono">
           <Sparkles className="h-3.5 w-3.5" />
-          {promoCodeState === 'BETAFREE'
-            ? 'Accès Bêta Testeur Offert (Code BETAFREE) · Commande validée'
-            : promoCodeState === 'BETA19'
-            ? 'Offre Bêta de lancement (Code BETA19) · Commande validée'
-            : 'Paiement confirmé · Commande validée'}
+          Paiement confirmé · Commande validée
         </div>
 
         <h1 className="font-serif-heading text-3xl sm:text-4xl font-extrabold text-[#1B263B] text-center tracking-tight">
@@ -247,11 +227,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
         </h1>
         
         <p className="mt-3 text-slate-600 text-center max-w-lg text-sm sm:text-base">
-          {promoCodeState === 'BETAFREE'
-            ? 'Votre accès bêta gratuit a bien été validé (0 € au lieu de 29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'
-            : promoCodeState === 'BETA19'
-            ? 'Votre offre de lancement a bien été prise en compte (19 € au lieu de 29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'
-            : 'Votre commande a bien été validée (29 €). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.'}
+          Votre paiement a bien été validé (19 € TTC). Notre moteur IA est déjà en train de rédiger votre réponse à l’appel d’offres.
         </p>
 
         {/* Live Status Badge */}
