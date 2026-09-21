@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { createServer as createViteServer } from "vite";
+import { createClient } from "@supabase/supabase-js";
 
 dotenv.config();
 
@@ -24,10 +25,47 @@ async function startServer() {
         process.env.VITE_N8N_WEBHOOK_URL ||
         "https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP";
 
+      const orderId = payload.order_id || payload.rfp_id || payload.meta?.custom_data?.order_id;
+      const userEmail = (payload.cabinet_email || payload.email || payload.data?.attributes?.user_email || "").trim();
+      const promoCode = payload.beta_code || payload.promo_code;
+
       console.log("[Server API] Forwarding payment confirmation to n8n:", {
-        order_id: payload.order_id || payload.meta?.custom_data?.order_id,
-        email: payload.email || payload.data?.attributes?.user_email
+        order_id: orderId,
+        email: userEmail
       });
+
+      // Update Supabase Database directly from server
+      const supabaseUrl = process.env.VITE_SUPABASE_URL;
+      const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+      if (supabaseUrl && supabaseKey) {
+        try {
+          const supabase = createClient(supabaseUrl, supabaseKey);
+          const updateData: Record<string, unknown> = {
+            payment_status: "PAID",
+            processing_status: "processing",
+            updated_at: new Date().toISOString()
+          };
+          if (promoCode) {
+            updateData.beta_code = promoCode;
+          }
+
+          if (orderId) {
+            const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(orderId);
+            if (isUuid) {
+              await supabase.from("rfp_pending").update(updateData).or(`id.eq.${orderId},order_id.eq.${orderId}`);
+            } else {
+              await supabase.from("rfp_pending").update(updateData).eq("order_id", orderId);
+            }
+          }
+
+          if (userEmail) {
+            await supabase.from("rfp_pending").update(updateData).eq("cabinet_email", userEmail);
+          }
+          console.log("[Server API] Supabase rfp_pending payment_status set to PAID for:", { orderId, userEmail });
+        } catch (sbErr) {
+          console.warn("[Server API] Supabase update warning:", sbErr);
+        }
+      }
 
       const response = await fetch(lemonWebhookUrl, {
         method: "POST",
