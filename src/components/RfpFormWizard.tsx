@@ -433,20 +433,22 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       : (domTextarea?.value?.trim() || '');
 
     const rawCode = (appliedPromo?.code || formData.promo_code || promoCodeInput || '').trim().toUpperCase().replace(/[\s\-_]/g, '');
-    const activePromoCode = rawCode || 'BETA19';
+    const activePromoCode = appliedPromo ? appliedPromo.code : (rawCode === 'BETA19' || rawCode === 'BETAFREE' ? rawCode : '');
 
     // Sauvegarde immédiate dans localStorage pour assurer la persistance après redirection
     try {
       localStorage.setItem('rfp_latest_data', JSON.stringify({
         ...formData,
         promo_code: activePromoCode,
-        discount_applied: appliedPromo?.discountType === 'free' ? '100% (0€)' : (appliedPromo ? 'BETA19' : ''),
+        discount_applied: appliedPromo?.discountType === 'free' ? '100% (0€)' : (appliedPromo ? appliedPromo.code : ''),
         rfp_text: rfpText
       }));
       localStorage.setItem('rfp_latest_email', formData.email);
       localStorage.setItem('rfp_text', rfpText);
       if (activePromoCode) {
         localStorage.setItem('rfp_applied_promo', activePromoCode);
+      } else {
+        localStorage.removeItem('rfp_applied_promo');
       }
     } catch (e) {
       console.warn('LocalStorage save notice:', e);
@@ -472,23 +474,24 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         type_procedure: formData.marketType || '',
         juridiction: formData.country || 'FR',
         promo_code: activePromoCode,
-        beta_code: activePromoCode, // Compatible avec la colonne beta_code déjà ajoutée dans Supabase
+        beta_code: activePromoCode || null,
         discount_applied: appliedPromo?.label || '',
         formData: {
           ...formData,
           promo_code: activePromoCode,
-          beta_code: activePromoCode,
+          beta_code: activePromoCode || null,
           discount_applied: appliedPromo?.label || '',
           rfp_text: rfpText
         }
       };
 
       const isBetaCode =
-        activePromoCode === 'BETAFREE' ||
-        activePromoCode === 'BETA19' ||
-        activePromoCode.startsWith('BETA') ||
-        appliedPromo?.discountType === 'free' ||
-        appliedPromo?.discountType === 'launch_19';
+        Boolean(activePromoCode) &&
+        (activePromoCode === 'BETAFREE' ||
+         activePromoCode === 'BETA19' ||
+         activePromoCode.startsWith('BETA') ||
+         appliedPromo?.discountType === 'free' ||
+         appliedPromo?.discountType === 'launch_19');
 
       let response: Response | null = null;
       let responseBody = '';
@@ -603,96 +606,182 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         return; // ← AUCUNE REDIRECTION VERS LEMON SQUEEZY
       }
 
-      // 3. SI OK ET CODE PROMO BÊTA (BETA19, BETAFREE, bypass_payment, direct_success ou statut FREE)
-      // DÉCLENCHER LE WORKFLOW DE GÉNÉRATION ET ALLER SUR LA PAGE MERCI SANS PASSER PAR LEMON SQUEEZY !
+      // 3. SI ÉLIGIBLE / OK : EXTRACTION DE L'ORDER_ID SUPABASE ET DÉCLENCHEMENT DE N8N SANS LEMON SQUEEZY
+      // Extraction de l'order_id exact créé par n8n dans Supabase (dans checkout[custom][order_id])
+      let exactOrderId = result.order_id || result.id || result.rfp_id || result.data?.id || '';
+
+      if (result.checkout_url) {
+        try {
+          const parsedUrl = new URL(result.checkout_url);
+          const customOrderId =
+            parsedUrl.searchParams.get('checkout[custom][order_id]') ||
+            parsedUrl.searchParams.get('custom_order_id') ||
+            parsedUrl.searchParams.get('order_id');
+          if (customOrderId) {
+            exactOrderId = customOrderId;
+          }
+        } catch (urlErr) {
+          const match = String(result.checkout_url).match(/checkout\[custom\]\[order_id\]=([a-zA-Z0-9_\-]+)/);
+          if (match && match[1]) {
+            exactOrderId = match[1];
+          }
+        }
+      }
+
+      if (!exactOrderId) {
+        exactOrderId = activePromoCode ? `${activePromoCode}_${Date.now()}` : `ORDER_${Date.now()}`;
+      }
+
+      try {
+        localStorage.setItem('rfp_latest_id', exactOrderId);
+        localStorage.setItem('rfp_order_id', exactOrderId);
+      } catch (err) {
+        console.warn('LocalStorage save error:', err);
+      }
+
       if (
         isBetaCode ||
         result.bypass_payment === true ||
         result.direct_success === true ||
-        result.status === "FREE"
+        result.status === "FREE" ||
+        result.status === "OK"
       ) {
-        setVerificationStatusMessage(`🎉 Accès Bêta validé (${activePromoCode || 'BÊTA'}) ! Déclenchement du workflow de génération...`);
+        if (isBetaCode) {
+          setVerificationStatusMessage(`🎉 Accès Bêta validé (${activePromoCode}) ! Lancement immédiat de la rédaction...`);
+        } else {
+          setVerificationStatusMessage("✅ Dossier validé ! Lancement immédiat de la rédaction...");
+        }
         setIsSubmitting(false);
 
-        // 1. Mettre à jour immédiatement la ligne Supabase rfp_pending en status 'paid'
+        // 1. Mettre à jour la ligne Supabase rfp_pending (colonnes existantes uniquement)
         if (supabase) {
           try {
             const updatePayload: Record<string, unknown> = {
-              status: 'paid',
-              paid_at: new Date().toISOString(),
-              beta_code: activePromoCode || 'BETA19',
-              promo_code: activePromoCode || 'BETA19'
+              payment_status: 'PAID',
+              processing_status: 'processing',
+              updated_at: new Date().toISOString()
             };
+            if (activePromoCode) {
+              updatePayload.beta_code = activePromoCode;
+            }
 
             const userEmail = (formData.email || '').trim();
             if (userEmail) {
               await supabase
                 .from('rfp_pending')
                 .update(updatePayload)
-                .eq('cabinet_email', userEmail)
-                .in('status', ['queued', 'payment_pending', 'pending']);
-
-              await supabase
-                .from('rfp_pending')
-                .update(updatePayload)
-                .eq('email', userEmail)
-                .in('status', ['queued', 'payment_pending', 'pending']);
+                .eq('cabinet_email', userEmail);
             }
 
-            const rfpRecId = result.id || result.rfp_id || result.order_id || result.data?.id;
-            if (rfpRecId) {
-              await supabase
-                .from('rfp_pending')
-                .update(updatePayload)
-                .or(`id.eq.${rfpRecId},order_id.eq.${rfpRecId}`);
+            if (exactOrderId) {
+              const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(exactOrderId);
+              if (isUuid) {
+                await supabase
+                  .from('rfp_pending')
+                  .update(updatePayload)
+                  .or(`id.eq.${exactOrderId},order_id.eq.${exactOrderId}`);
+              } else {
+                await supabase
+                  .from('rfp_pending')
+                  .update(updatePayload)
+                  .eq('order_id', exactOrderId);
+              }
             }
           } catch (sbErr) {
             console.warn('Direct Supabase update notice:', sbErr);
           }
         }
 
-        // 2. Déclencher en direct le Webhook 2 (Lemon-RFP) pour lancer le workflow de génération n8n
+        // 2. Préparer le payload au format Lemon Squeezy attendu par le webhook n8n Lemon-RFP
+        const lemonWebhookPayload = {
+          meta: {
+            event_name: 'order_created',
+            custom_data: {
+              order_id: exactOrderId,
+              rfp_id: exactOrderId,
+              promo_code: activePromoCode || ''
+            }
+          },
+          data: {
+            id: `order_${Date.now()}`,
+            type: 'orders',
+            attributes: {
+              order_number: Math.floor(1000 + Math.random() * 9000),
+              user_name: formData.client_name || 'Client',
+              user_email: formData.email,
+              status: 'paid',
+              status_formatted: 'Paid',
+              total: activePromoCode === 'BETAFREE' ? 0 : (activePromoCode === 'BETA19' ? 1900 : 2900),
+              currency: 'EUR',
+              custom_data: {
+                order_id: exactOrderId,
+                rfp_id: exactOrderId
+              }
+            }
+          },
+          // Top-level fallbacks pour tous les types d'expressions n8n
+          custom_data: {
+            order_id: exactOrderId
+          },
+          order_id: exactOrderId,
+          rfp_id: exactOrderId,
+          id: exactOrderId,
+          email: formData.email,
+          cabinet_email: formData.email,
+          client_name: formData.client_name,
+          positioning: formData.positioning,
+          objective: formData.objective,
+          differentiation: formData.differentiation || '',
+          type_procedure: formData.marketType,
+          juridiction: formData.country,
+          status: 'paid',
+          payment_status: 'PAID',
+          processing_status: 'processing',
+          promo_code: activePromoCode || '',
+          beta_code: activePromoCode || null,
+          is_beta: isBetaCode,
+          is_beta_19: activePromoCode === 'BETA19',
+          is_beta_free: activePromoCode === 'BETAFREE',
+          rfp_text: rfpText,
+          formData: payload.formData,
+          timestamp: new Date().toISOString()
+        };
+
         try {
+          // A) Appel serveur /api/confirm-order
+          await fetch('/api/confirm-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(lemonWebhookPayload)
+          }).catch((err) => console.warn('/api/confirm-order async notice:', err));
+
+          // B) Appel direct vers le webhook Lemon-RFP
           const lemonWebhookUrl =
             (import.meta as any).env?.VITE_N8N_WEBHOOK_URL ||
             'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/Lemon-RFP';
 
-          const webhookTriggerPayload = {
-            event: activePromoCode === 'BETAFREE' ? 'beta_free_granted' : 'payment_completed',
-            status: 'paid',
-            payment_status: 'paid',
-            promo_code: activePromoCode || 'BETA19',
-            beta_code: activePromoCode || 'BETA19',
-            is_beta: true,
-            is_beta_19: activePromoCode === 'BETA19',
-            is_beta_free: activePromoCode === 'BETAFREE',
-            rfp_id: result.id || result.rfp_id || result.order_id || `RFP_${activePromoCode || 'BETA'}_${Date.now()}`,
-            email: formData.email,
-            cabinet_email: formData.email,
-            client_name: formData.client_name,
-            positioning: formData.positioning,
-            objective: formData.objective,
-            differentiation: formData.differentiation || '',
-            type_procedure: formData.marketType,
-            juridiction: formData.country,
-            rfp_text: rfpText,
-            formData: payload.formData,
-            timestamp: new Date().toISOString()
-          };
-
           await fetch(lemonWebhookUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(webhookTriggerPayload)
-          }).catch((err) => console.warn('Notification webhook 2 async:', err));
+            body: JSON.stringify(lemonWebhookPayload)
+          }).catch((err) => console.warn('Direct Lemon-RFP async notice:', err));
         } catch (wErr) {
-          console.warn('Webhook 2 trigger notice:', wErr);
+          console.warn('Webhook trigger notice:', wErr);
         }
 
         const encodedEmail = encodeURIComponent(formData.email || '');
-        const targetUrl = `/#merci?email=${encodedEmail}&promo=${encodeURIComponent(activePromoCode || 'BETA19')}&order_id=${activePromoCode || 'BETA19'}_${Date.now()}`;
-        window.location.href = targetUrl;
-        return; // ← AUCUNE REDIRECTION VERS LEMON SQUEEZY !
+        const promoParam = activePromoCode ? `&promo=${encodeURIComponent(activePromoCode)}` : '';
+        const targetUrl = `/#merci?email=${encodedEmail}${promoParam}&order_id=${encodeURIComponent(exactOrderId)}`;
+
+        setIsSubmitting(false);
+        setIsSuccess(true);
+        onClose();
+
+        window.location.hash = targetUrl.replace('/#', '#');
+        if (window.location.pathname !== '/' && window.location.pathname !== '') {
+          window.location.href = targetUrl;
+        }
+        return;
       }
 
       // 4. Si checkout_url externe valide (hors Lemon Squeezy générique bloquant)
@@ -710,9 +799,15 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       if (result.status === "OK") {
         setVerificationStatusMessage("✅ Dossier validé ! Redirection vers la confirmation...");
         setIsSubmitting(false);
+        setIsSuccess(true);
+        onClose();
         const encodedEmail = encodeURIComponent(formData.email || '');
-        const targetUrl = `/#merci?email=${encodedEmail}&promo=${encodeURIComponent(activePromoCode || 'BETA19')}&order_id=${activePromoCode || 'BETA19'}_${Date.now()}`;
-        window.location.href = targetUrl;
+        const promoParam = activePromoCode ? `&promo=${encodeURIComponent(activePromoCode)}` : '';
+        const targetUrl = `/#merci?email=${encodedEmail}${promoParam}&order_id=${encodeURIComponent(exactOrderId)}`;
+        window.location.hash = targetUrl.replace('/#', '#');
+        if (window.location.pathname !== '/' && window.location.pathname !== '') {
+          window.location.href = targetUrl;
+        }
         return;
       }
 
@@ -1542,10 +1637,10 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                           ) : (
                             <div>
                               <span className="text-2xl font-bold font-serif-heading text-[#D4AF37]">
-                                19 €
+                                29 €
                               </span>
                               <span className="text-[10px] text-slate-400 block font-mono">
-                                Paiement unique (Lancement)
+                                Tarif standard (Sans code)
                               </span>
                             </div>
                           )}
@@ -1819,7 +1914,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                     ) : (
                       <>
                         <Lock className="h-3.5 w-3.5" />
-                        <span>Recevoir mon mémoire technique en 10 min — 19 €</span>
+                        <span>Recevoir mon mémoire technique en 10 min — 29 €</span>
                       </>
                     )}
                   </button>
