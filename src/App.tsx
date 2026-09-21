@@ -25,7 +25,10 @@ import LegalModal, { LegalTab } from './components/LegalModal';
 import MerciPage from './components/MerciPage';
 
 export default function App() {
-  const [currentPath, setCurrentPath] = useState<string>(() => window.location.pathname);
+  const [urlLocation, setUrlLocation] = useState(() => ({
+    pathname: window.location.pathname,
+    hash: window.location.hash
+  }));
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [initialHeroData, setInitialHeroData] = useState<{ rfp_text?: string; positioning?: string } | undefined>(undefined);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
@@ -35,16 +38,24 @@ export default function App() {
   });
 
   useEffect(() => {
-    const handlePopState = () => {
-      setCurrentPath(window.location.pathname);
+    const handleUrlChange = () => {
+      setUrlLocation({
+        pathname: window.location.pathname,
+        hash: window.location.hash
+      });
     };
-    window.addEventListener('popstate', handlePopState);
-    return () => window.removeEventListener('popstate', handlePopState);
+    window.addEventListener('popstate', handleUrlChange);
+    window.addEventListener('hashchange', handleUrlChange);
+    return () => {
+      window.removeEventListener('popstate', handleUrlChange);
+      window.removeEventListener('hashchange', handleUrlChange);
+    };
   }, []);
 
   const handleGoHome = () => {
     window.history.pushState({}, '', '/');
-    setCurrentPath('/');
+    window.location.hash = '';
+    setUrlLocation({ pathname: '/', hash: '' });
   };
 
   const handleOpenGenerate = (data?: { rfp_text?: string; positioning?: string }) => {
@@ -63,8 +74,15 @@ export default function App() {
     });
   };
 
-  // Render Merci Page if URL is /merci or #merci
-  if (currentPath === '/merci' || currentPath === '/merci/' || window.location.hash === '#merci') {
+  // Render Merci Page if URL is /merci, /merci/ or #merci (with or without query parameters)
+  const isMerci =
+    urlLocation.pathname === '/merci' ||
+    urlLocation.pathname === '/merci/' ||
+    urlLocation.pathname.startsWith('/merci') ||
+    urlLocation.hash === '#merci' ||
+    urlLocation.hash.startsWith('#merci');
+
+  if (isMerci) {
     return <MerciPage onGoHome={handleGoHome} />;
   }
 
