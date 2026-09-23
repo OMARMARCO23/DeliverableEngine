@@ -84,7 +84,7 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
                   </span>
                   <span className="inline-flex items-center gap-1 bg-slate-800/80 border border-slate-700 px-2 py-0.5 rounded-md text-slate-300 font-medium">
                     <ShieldCheck className="h-3 w-3 text-[#B8935A]" />
-                    Lemon Squeezy (Merchant of Record)
+                    Gumroad (Merchant of Record)
                   </span>
                   <span className="text-slate-400">· Facture TVA automatique</span>
                 </div>
@@ -155,7 +155,7 @@ export default function Pricing({ onOpenGenerate, onOpenLegal }: PricingProps) {
             </div>
             <div className="flex items-center gap-2">
               <Zap className="h-4 w-4 text-[#B8935A] shrink-0" />
-              <span>Paiement sécurisé via Lemon Squeezy</span>
+              <span>Paiement sécurisé via Gumroad</span>
             </div>
             <div className="flex items-center gap-2">
               <Globe className="h-4 w-4 text-[#B8935A] shrink-0" />
