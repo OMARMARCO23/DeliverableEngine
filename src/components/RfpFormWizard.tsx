@@ -316,10 +316,10 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
   };
 
   // ═══════════════════════════════════════════════════
-  // FONCTION : Vérifier le périmètre via n8n puis redirection Lemon Squeezy
+  // FONCTION : Vérifier le périmètre via n8n puis redirection Gumroad
   // Le workflow n8n vérifie l'éligibilité et renvoie checkout_url.
   // Si HORS_PERIMETRE → Bloquer et retourner au formulaire (Étape 1).
-  // Si OK → Redirection immédiate vers Lemon Squeezy pour le paiement.
+  // Si OK → Redirection immédiate vers Gumroad pour le paiement.
   // ═══════════════════════════════════════════════════
   async function verifierEtPayer() {
     if (!formData.email.trim() || !formData.email.includes('@')) {
@@ -469,7 +469,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         return;
       }
 
-      // 3. SI ÉLIGIBLE / OK : EXTRACTION DE L'ORDER_ID SUPABASE ET REDIRECTION VERS LEMON SQUEEZY
+      // 3. SI ÉLIGIBLE / OK : EXTRACTION DE L'ORDER_ID SUPABASE ET REDIRECTION VERS GUMROAD
       let exactOrderId = result.order_id || result.id || result.rfp_id || result.data?.id || '';
 
       const rawCheckoutUrl = result.checkout_url || result.url || result.payment_url;
@@ -503,23 +503,23 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         console.warn('LocalStorage save error:', err);
       }
 
-      // Détermination de l'URL finale de paiement Lemon Squeezy
+      // Détermination de l'URL finale de paiement Gumroad
       let targetCheckoutUrl = rawCheckoutUrl;
 
-      // Fallback si n8n n'a pas retourné d'URL directe
-      if (!targetCheckoutUrl) {
-        const envLemon = (import.meta as any).env?.VITE_LEMON_SQUEEZY_PAYMENT_LINK;
-        const baseLemon = (typeof envLemon === 'string' && envLemon.startsWith('http'))
-          ? envLemon
-          : 'https://omarmarco.lemonsqueezy.com/buy/071b4a1d-af46-4db9-865e-7f688e7c54ab';
+      // Si l'URL n'est pas spécifiée ou contenait l'ancien lien Lemon Squeezy, on utilise le lien Gumroad officiel
+      if (!targetCheckoutUrl || targetCheckoutUrl.includes('lemonsqueezy.com')) {
+        const envGumroad = (import.meta as any).env?.VITE_GUMROAD_PAYMENT_LINK;
+        const baseGumroad = (typeof envGumroad === 'string' && envGumroad.startsWith('http'))
+          ? envGumroad
+          : 'https://deliverableengine.gumroad.com/l/dev';
 
-        const delimiter = baseLemon.includes('?') ? '&' : '?';
-        targetCheckoutUrl = `${baseLemon}${delimiter}checkout[email]=${encodeURIComponent(formData.email)}&checkout[custom][order_id]=${encodeURIComponent(exactOrderId)}`;
+        const delimiter = baseGumroad.includes('?') ? '&' : '?';
+        targetCheckoutUrl = `${baseGumroad}${delimiter}email=${encodeURIComponent(formData.email)}&order_id=${encodeURIComponent(exactOrderId)}`;
       }
 
-      setVerificationStatusMessage("✅ Dossier validé ! Redirection immédiate vers Lemon Squeezy...");
+      setVerificationStatusMessage("✅ Dossier validé ! Redirection immédiate vers Gumroad...");
 
-      // Redirection immédiate vers Lemon Squeezy
+      // Redirection immédiate vers Gumroad
       window.location.href = targetCheckoutUrl;
       return;
 
@@ -1331,7 +1331,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                         </div>
                         <div className="flex items-center gap-2">
                           <Check className="h-3.5 w-3.5 text-[#D4AF37] shrink-0" />
-                          <span>Paiement sécurisé Lemon Squeezy</span>
+                          <span>Paiement sécurisé via Gumroad</span>
                         </div>
                       </div>
                     </div>
@@ -1501,7 +1501,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                     ) : (
                       <>
                         <Lock className="h-3.5 w-3.5" />
-                        <span>Paiement sécurisé via Lemon Squeezy — 19 €</span>
+                        <span>Paiement sécurisé via Gumroad — 19 €</span>
                       </>
                     )}
                   </button>
