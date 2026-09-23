@@ -356,16 +356,15 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
     }
 
     try {
-      // 1. Détermination de l'URL du Webhook n8n (production par défaut)
-      const configuredUrl =
+      // 1. Détermination de l'URL du Webhook n8n (production Cloudflare par défaut)
+      const primaryUrl =
         (import.meta as any).env?.VITE_N8N_WEBHOOK1_URL ||
         (import.meta as any).env?.VITE_INTAKE_WEBHOOK_URL ||
-        'https://limeade-spiffy-uneasily.ngrok-free.dev/webhook/form-rfp';
+        'https://appearing-ranking-enjoyed-graham.trycloudflare.com/webhook/form-rfp';
 
-      const primaryUrl = configuredUrl.replace('.ngrok-free.app', '.ngrok-free.dev');
-      const fallbackUrl = primaryUrl.includes('/webhook/intake-rfp')
-        ? primaryUrl.replace('/webhook/intake-rfp', '/webhook/form-rfp')
-        : primaryUrl.replace('/webhook/form-rfp', '/webhook/intake-rfp');
+      const fallbackUrl =
+        (import.meta as any).env?.VITE_N8N_DELIVERABLE_WEBHOOK_URL ||
+        'https://appearing-ranking-enjoyed-graham.trycloudflare.com/webhook/deliverable-engine-rfp';
 
       const payload = {
         rfp_text: rfpText,
