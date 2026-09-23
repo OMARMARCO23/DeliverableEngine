@@ -8,7 +8,7 @@ import { FaqItem, PricingTier } from './types';
 export const COMPANY_INFO = {
   name: "Deliverable Engine",
   supportEmail: "deliverable.engine@gmail.com",
-  serviceDescription: "Plateforme d'assistance à la rédaction de réponses aux appels d'offres et marchés publics (France & Belgique)",
+  serviceDescription: "Plateforme d'assistance à la rédaction et de mise en forme automatisée de mémoires techniques et dossiers de candidature (MAPA, SAD et consultations privées)",
   territories: "France & Belgique",
   guaranteeHours: 24
 };
