@@ -5,10 +5,10 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, ShieldCheck, FileText, Scale, Lock, Building, CheckCircle2, Mail } from 'lucide-react';
+import { X, ShieldCheck, FileText, Scale, Lock, Building, CheckCircle2, Mail, Server, CreditCard, Sparkles, AlertTriangle } from 'lucide-react';
 import { COMPANY_INFO } from '../data';
 
-export type LegalTab = 'mentions' | 'cgv' | 'confidentialite';
+export type LegalTab = 'cgv' | 'mentions' | 'confidentialite';
 
 interface LegalModalProps {
   isOpen: boolean;
@@ -59,10 +59,10 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
               </div>
               <div>
                 <h3 className="font-serif-heading text-lg sm:text-xl font-bold text-white leading-tight">
-                  Informations Juridiques & Réglementaires
+                  Pack Juridique Officiel : Deliverable Engine
                 </h3>
                 <p className="text-xs text-slate-400 font-sans mt-0.5">
-                  Conformité France (Code de la commande publique) & Belgique (Loi du 17 juin 2016)
+                  Mentions Légales (LCEN) · CGV & CGU · Conformité IA (AI Act) & RGPD
                 </p>
               </div>
             </div>
@@ -70,6 +70,7 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
             <button
               onClick={onClose}
               className="text-slate-400 hover:text-white rounded-full p-2 hover:bg-slate-800 transition-colors cursor-pointer"
+              aria-label="Fermer"
             >
               <X className="h-4 w-4" />
             </button>
@@ -86,7 +87,7 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
               }`}
             >
               <FileText className="h-3.5 w-3.5" />
-              <span>Conditions Générales de Vente (CGV)</span>
+              <span>CGV & CGU</span>
             </button>
 
             <button
@@ -98,7 +99,7 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
               }`}
             >
               <Building className="h-3.5 w-3.5" />
-              <span>Mentions Légales</span>
+              <span>1. Mentions Légales</span>
             </button>
 
             <button
@@ -110,75 +111,108 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
               }`}
             >
               <Lock className="h-3.5 w-3.5" />
-              <span>Politique de Confidentialité (RGPD)</span>
+              <span>3. Politique de Confidentialité & RGPD</span>
             </button>
           </div>
 
           {/* Content Body */}
           <div className="p-6 sm:p-8 overflow-y-auto flex-1 text-xs sm:text-sm text-slate-300 leading-relaxed font-sans space-y-6 bg-[#0D1522]">
-            {/* TAB 1: CGV */}
+            
+            {/* TAB 1: CGV / CGU */}
             {activeTab === 'cgv' && (
-              <div className="space-y-5">
+              <div className="space-y-6">
                 <div className="p-4 bg-[#B8935A]/10 border border-[#B8935A]/30 rounded-2xl text-slate-200 text-xs flex items-start gap-3">
                   <ShieldCheck className="h-5 w-5 text-[#D4AF37] shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block font-bold text-white mb-1">Clause essentielle relative à l'exécution immédiate du service numérique :</strong>
-                    En validant votre commande et en cochant la case dédiée, vous demandez expressément l'exécution immédiate du service de génération (livraison du document sous 10 minutes) et renoncez expressément à votre droit de rétractation de 14 jours, conformément à l'article L.221-28 13° du Code de la consommation (France) et aux dispositions équivalentes du Code de droit économique (Belgique).
+                    <strong className="block font-bold text-white mb-1">
+                      CONDITIONS GÉNÉRALES DE VENTE & D’UTILISATION (CGV / CGU) — DELIVERABLE ENGINE
+                    </strong>
+                    Les présentes conditions régissent l'accès et l'utilisation du service numérique Deliverable Engine. Toute commande implique l'acceptation expresse et sans réserve des présentes clauses.
                   </div>
                 </div>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">1. Objet du Service</h4>
-                  <p>
-                    <strong>Deliverable Engine</strong> édite un service automatisé de génération de mémoires techniques et de dossiers complets de réponse aux appels d'offres (RFP), accords-cadres, Systèmes d'Acquisition Dynamiques (SAD) et consultations privées. Le service produit un document au format PDF structuré et personnalisable, envoyé à l'adresse e-mail indiquée par le client.
+                {/* Article 1 */}
+                <section className="space-y-2.5 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-[#B8935A]/20 text-[#D4AF37] text-xs flex items-center justify-center font-sans font-bold">1</span>
+                    Article 1 – Objet du Service
+                  </h4>
+                  <p className="text-slate-300">
+                    <strong>Deliverable Engine</strong> est une plateforme logicielle en ligne fournissant un outil d'assistance à la rédaction et de mise en forme automatisée de documents professionnels (mémoires techniques, propositions d'intervention, dossiers de candidature MAPA, SAD et consultations privées).
                   </p>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">2. Tarification & Modalités de Paiement</h4>
-                  <p>
-                    Le service est commercialisé au prix unique et transparent de <strong className="text-[#D4AF37]">19 € TTC</strong> par génération de dossier. Il s'agit d'un achat à l'acte, sans aucun abonnement récurrent ni engagement de durée. Le traitement des paiements est opéré de manière sécurisée par notre partenaire <strong>Lemon Squeezy</strong> (Merchant of Record certifié PCI-DSS). Une facture conforme avec ventilation de TVA est automatiquement émise et téléchargeable après achat.
-                  </p>
-                </section>
-
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">3. Délais de Livraison & Exécution</h4>
-                  <p>
-                    Le livrable est généré automatiquement par nos algorithmes d'analyse et expédié à l'adresse électronique fournie par l'utilisateur dans un délai indicatif de 10 minutes à compter de la confirmation de paiement.
-                  </p>
-                </section>
-
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">4. Garantie Révision 24h & Engagement Qualité</h4>
-                  <p>
-                    Chaque génération bénéficie de la <strong>Garantie Révision & Sérénité 24h</strong> : 1 révision ou régénération gratuite est incluse. Si une section du document nécessite un ajustement ou ne répond pas fidèlement aux exigences de votre appel d'offres, vous pouvez en faire la demande par simple contact sous 24h ouvrées, sans justification requise.
-                  </p>
-                  <div className="pt-1">
-                    <a
-                      href={`mailto:${COMPANY_INFO.supportEmail}?subject=Demande%20de%20r%C3%A9vision%20gratuite%2024h`}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95"
-                    >
-                      <Mail className="h-3.5 w-3.5" />
-                      Demander une révision par email
-                    </a>
+                {/* Article 2 */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-[#B8935A]/20 text-[#D4AF37] text-xs flex items-center justify-center font-sans font-bold">2</span>
+                    Article 2 – Caractère de l'outil et Responsabilité du Soumissionnaire
+                  </h4>
+                  <div className="space-y-2 text-slate-300">
+                    <p>
+                      <strong className="text-white">Outil d'aide à la décision et à la rédaction :</strong> Le service constitue exclusivement une solution d'assistance automatisée. Les documents générés sont fournis à titre de projet de travail / livrable de synthèse.
+                    </p>
+                    <p className="p-3.5 bg-slate-900/90 border border-slate-700/60 rounded-xl text-slate-200">
+                      <strong className="text-[#D4AF37] block mb-1">Obligation de relecture du client :</strong>
+                      En vertu des règles de la commande publique (notamment les articles R. 2143-3 et R. 2143-8 du Code de la commande publique), le soumissionnaire/client demeure seul et unique responsable de l'exactitude des informations, des engagements financiers, des moyens humains et des qualifications mentionnés dans son offre finale remise à l'acheteur public ou privé.
+                    </p>
+                    <p>
+                      <strong className="text-white">Absence de garantie de succès :</strong> Deliverable Engine n'est en aucun cas partie aux procédures de mise en concurrence et ne garantit en aucun cas l'attribution ou le gain d'un marché public ou d'un contrat privé.
+                    </p>
                   </div>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">5. Absence de garantie d'attribution de marché & Responsabilité du Soumissionnaire</h4>
-                  <p>
-                    <strong className="text-white">Clause de non-garantie d'attribution du marché :</strong> Deliverable Engine fournit un mémoire technique et un dossier méthodologique de haute qualité pour accélérer la rédaction des offres. Toutefois, Deliverable Engine ne garantit en aucun cas l'attribution ou le gain effectif d'un marché public ou privé, la sélection finale dépendant de multiples critères souverains de l'acheteur (prix proposé par le soumissionnaire, références, conformité administrative et adéquation globale).
+                {/* Article 3 */}
+                <section className="space-y-2.5 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-[#B8935A]/20 text-[#D4AF37] text-xs flex items-center justify-center font-sans font-bold">3</span>
+                    Article 3 – Transparence et Intelligence Artificielle (AI Act UE)
+                  </h4>
+                  <p className="text-slate-300">
+                    Conformément à la réglementation européenne sur l'Intelligence Artificielle (AI Act) :
                   </p>
-                  <p className="p-3.5 bg-[#111A29] border border-slate-800 rounded-xl text-slate-200 text-xs leading-relaxed">
-                    <strong className="text-[#D4AF37]">Mention AI Act & Code de la Commande Publique (CCP) :</strong><br />
-                    « Contenu généré par un système d'IA. Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »
-                  </p>
+                  <ul className="list-disc pl-5 space-y-1.5 text-slate-300">
+                    <li>
+                      Le client est informé que la structuration et la rédaction préliminaire des mémoires techniques font appel à des modèles de traitement automatique du langage naturel (LLM).
+                    </li>
+                    <li>
+                      Le système intègre des protocoles d'assainissement de données (sanitization) pour limiter les erreurs factuelles, mais le document final requiert expressément la validation et signature humaine du client avant tout usage officiel.
+                    </li>
+                  </ul>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">6. Droit Applicable & Juridiction</h4>
-                  <p>
-                    Les présentes CGV sont soumises au droit applicable de l'Union Européenne, et plus particulièrement au droit français et belge pour les opérations transfrontalières. En cas de litige, une solution amiable sera systématiquement recherchée avant toute action judiciaire.
+                {/* Article 4 */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <span className="w-6 h-6 rounded-lg bg-[#B8935A]/20 text-[#D4AF37] text-xs flex items-center justify-center font-sans font-bold">4</span>
+                    Article 4 – Tarifs, Modalités de Paiement et Livraison
+                  </h4>
+                  <div className="space-y-2.5 text-slate-300">
+                    <p>
+                      <strong className="text-white">Prix :</strong> Le service est facturé à l'acte, au tarif forfaitaire unitaire indiqué sur la page de commande (ex: 19,00 € TTC).
+                    </p>
+                    <p>
+                      <strong className="text-white">Paiement :</strong> Le règlement s'effectue comptant et de manière sécurisée par carte bancaire via notre prestataire de paiement Stripe.
+                    </p>
+                    <p>
+                      <strong className="text-white">Livraison numérique :</strong> Dès la confirmation du paiement et du traitement des données par l'orchestrateur, le document généré (au format PDF haute définition) est transmis automatiquement par courrier électronique à l'adresse renseignée par le client dans un délai indicatif inférieur à 10 minutes.
+                    </p>
+                    <div className="p-3.5 bg-[#B8935A]/15 border border-[#B8935A]/30 rounded-xl text-slate-200">
+                      <strong className="text-[#D4AF37] block mb-1">
+                        Renonciation au droit de rétractation (art. L. 221-28 13° du Code de la consommation) :
+                      </strong>
+                      S'agissant d'une prestation de fourniture d'un contenu numérique non fourni sur support matériel dont l'exécution commence immédiatement après validation du paiement avec l'accord exprès du client, ce dernier renonce expressément à son droit de rétractation conformément à l'article L. 221-28 13° du Code de la consommation (applicable aux contrats B2B et consommateurs).
+                    </div>
+                  </div>
+                </section>
+
+                {/* Garantie Révision 24h */}
+                <section className="space-y-2 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white">
+                    Garantie Révision 24h & Service Client
+                  </h4>
+                  <p className="text-slate-300 text-xs">
+                    Chaque commande bénéficie d'une garantie d'ajustement : 1 révision ou régénération gratuite est incluse sur simple demande sous 24h ouvrées adressée à notre support : <a href={`mailto:${COMPANY_INFO.supportEmail}`} className="text-[#D4AF37] underline font-mono">{COMPANY_INFO.supportEmail}</a>.
                   </p>
                 </section>
               </div>
@@ -186,105 +220,170 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
 
             {/* TAB 2: MENTIONS LÉGALES */}
             {activeTab === 'mentions' && (
-              <div className="space-y-5">
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">1. Éditeur de la Plateforme</h4>
-                  <div className="p-4 bg-[#111A29] border border-slate-800 rounded-2xl space-y-2 text-xs text-slate-300">
-                    <p><strong className="text-white">Service :</strong> {COMPANY_INFO.name}</p>
-                    <p><strong className="text-white">Objet :</strong> {COMPANY_INFO.serviceDescription}</p>
-                    <p><strong className="text-white">Zone de couverture :</strong> {COMPANY_INFO.territories}</p>
-                    <div className="pt-2">
-                      <a
-                        href={`mailto:${COMPANY_INFO.supportEmail}?subject=Contact%20Support%20DeliverableEngine`}
-                        className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95 cursor-pointer shadow-sm"
-                      >
-                        <Mail className="h-3.5 w-3.5" />
-                        <span>Contacter le support</span>
-                      </a>
+              <div className="space-y-6">
+                <div className="p-4 bg-[#B8935A]/10 border border-[#B8935A]/30 rounded-2xl text-slate-200 text-xs flex items-start gap-3">
+                  <Building className="h-5 w-5 text-[#D4AF37] shrink-0 mt-0.5" />
+                  <div>
+                    <strong className="block font-bold text-white mb-1">
+                      1. MENTIONS LÉGALES — DELIVERABLE ENGINE
+                    </strong>
+                    Informations légales conformes à la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique (LCEN).
+                  </div>
+                </div>
+
+                {/* Éditeur */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white">
+                    Éditeur du site
+                  </h4>
+                  <div className="space-y-2 text-slate-300">
+                    <p>
+                      Le site <strong>Deliverable Engine</strong> est édité par :
+                    </p>
+                    <div className="p-3.5 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2 text-xs">
+                      <p>
+                        <strong className="text-white">Édition et Exploitation du Service :</strong><br />
+                        Le service en ligne Deliverable Engine est édité et exploité sous la marque commerciale <strong>Deliverable Engine</strong>.
+                      </p>
+                      <p className="text-slate-400">
+                        Conformément aux dispositions de l'article 6, III-2 de la loi n° 2004-575 du 21 juin 2004 (LCEN), l'exploitant a exercé son droit à l'anonymat légal. Les coordonnées d'identification personnelle ont été régulièrement transmises et sont conservées par l'hébergeur du site.
+                      </p>
                     </div>
                   </div>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">2. Opérateur de Paiement & Facturation</h4>
-                  <p>
-                    La gestion des transactions financières et l'émission des factures sont assurées par <strong>Lemon Squeezy, LLC</strong>, agissant en qualité de Merchant of Record (222 S Main St Suite 500, Salt Lake City, UT 84101, États-Unis).
+                {/* Contact */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <Mail className="h-4 w-4 text-[#D4AF37]" />
+                    Contact Support & Réclamations
+                  </h4>
+                  <p className="text-slate-300">
+                    Pour toute demande technique, commerciale ou réclamation :
                   </p>
+                  <div className="pt-1">
+                    <a
+                      href={`mailto:${COMPANY_INFO.supportEmail}?subject=Contact%20Support%20Deliverable%20Engine`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95 cursor-pointer font-mono"
+                    >
+                      <Mail className="h-3.5 w-3.5" />
+                      <span>{COMPANY_INFO.supportEmail}</span>
+                    </a>
+                  </div>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">3. Hébergement de l'Application & Sécurité</h4>
-                  <p>
-                    L'application et ses bases de données sont hébergées sur des serveurs sécurisés situés exclusivement au sein de l'<strong>Union Européenne</strong> (Google Cloud Platform région europe-west / Supabase EU), garantissant la conformité stricte au Règlement Général sur la Protection des Données (RGPD).
-                  </p>
-                </section>
+                {/* Hébergement & Infrastructure */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <Server className="h-4 w-4 text-[#D4AF37]" />
+                    Hébergement & Infrastructure
+                  </h4>
+                  <div className="space-y-3 text-slate-300 text-xs">
+                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <strong className="text-white block font-semibold mb-0.5">
+                        Hébergeur d'infrastructure web :
+                      </strong>
+                      <span>Cloudflare, Inc. – 101 Townsend St, San Francisco, CA 94107, USA.</span>
+                    </div>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">4. Propriété Intellectuelle</h4>
-                  <p>
-                    L'architecture, les algorithmes de génération, l'interface graphique et la marque Deliverable Engine sont la propriété exclusive de l'éditeur. Les documents personnalisés générés pour le client deviennent la pleine propriété intellectuelle du client dès paiement intégral du service.
-                  </p>
-                </section>
+                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <strong className="text-white block font-semibold mb-0.5">
+                        Base de données & API :
+                      </strong>
+                      <span>Supabase Inc. – Région Europe (AWS eu-central-1, Francfort).</span>
+                    </div>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">5. Transparence Systèmes d'IA (Règlement Européen AI Act) & Code de la Commande Publique</h4>
-                  <p>
-                    Conformément aux obligations de transparence du Règlement Européen sur l'Intelligence Artificielle (AI Act) : <strong>« Contenu généré par un système d'IA »</strong>.
-                  </p>
-                  <p>
-                    Conformément à la réglementation sur les marchés publics : <strong>« Document généré par IA, relecture et validation obligatoires par le soumissionnaire. Le soumissionnaire reste seul responsable de l'exactitude des informations au sens des articles R.2143-3 et R.2143-8 du CCP. »</strong>
-                  </p>
-                  <p className="text-slate-400 text-xs">
-                    <strong>Clause de non-garantie d'attribution du marché :</strong> La génération d'un mémoire technique constitue une assistance d'aide à la rédaction méthodologique et ne saurait valoir garantie d'attribution ou de sélection finale de l'offre par l'acheteur public ou privé.
-                  </p>
+                    <div className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <strong className="text-white block font-semibold mb-0.5">
+                        Traitement des paiements sécurisés :
+                      </strong>
+                      <span>Stripe Payments Europe, Ltd. – 1 Grand Canal Street Lower, Dublin 2, Irlande.</span>
+                    </div>
+                  </div>
                 </section>
               </div>
             )}
 
-            {/* TAB 3: CONFIDENTIALITÉ RGPD */}
+            {/* TAB 3: CONFIDENTIALITÉ & RGPD */}
             {activeTab === 'confidentialite' && (
-              <div className="space-y-5">
-                <div className="p-4 bg-[#111A29] border border-slate-800 rounded-2xl text-slate-300 text-xs flex items-start gap-3">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+              <div className="space-y-6">
+                <div className="p-4 bg-[#B8935A]/10 border border-[#B8935A]/30 rounded-2xl text-slate-200 text-xs flex items-start gap-3">
+                  <Lock className="h-5 w-5 text-[#D4AF37] shrink-0 mt-0.5" />
                   <div>
-                    <strong className="block font-bold text-white mb-1">Garantie stricte de non-réutilisation de vos données :</strong>
-                    Vos données de propositions commerciales, vos grilles de TJM, vos CV d'intervenants et les textes de vos appels d'offres ne sont <strong className="text-[#D4AF37]">JAMAIS</strong> utilisés pour entraîner ou affiner des modèles d'intelligence artificielle publics.
+                    <strong className="block font-bold text-white mb-1">
+                      3. POLITIQUE DE CONFIDENTIALITÉ & RGPD — DELIVERABLE ENGINE
+                    </strong>
+                    Engagement strict de conformité au Règlement Général sur la Protection des Données (Règlement UE 2016/679).
                   </div>
                 </div>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">1. Données Collectées</h4>
-                  <p>
-                    Nous collectons uniquement les données strictement nécessaires au traitement de votre commande : adresse électronique de livraison, nom du cabinet ou consultant, texte ou cahier des charges de la consultation, grille de TJM/tarifs et informations d'équipe renseignées volontairement dans le formulaire.
+                {/* Données collectées et finalité */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white">
+                    Données collectées et finalité
+                  </h4>
+                  <p className="text-slate-300">
+                    <strong>Deliverable Engine</strong> collecte uniquement les données strictement nécessaires à l'exécution de la prestation demandée :
                   </p>
+                  <ul className="space-y-2 text-slate-300">
+                    <li className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <strong className="text-white block font-semibold mb-0.5">
+                        Données d'identification :
+                      </strong>
+                      <span>Adresse email du client (pour la transmission du PDF et le suivi de commande), prénom/nom du représentant si renseigné.</span>
+                    </li>
+                    <li className="p-3 bg-slate-900/90 rounded-xl border border-slate-800">
+                      <strong className="text-white block font-semibold mb-0.5">
+                        Données du projet / DCE :
+                      </strong>
+                      <span>Éléments méthodologiques, critères du marché et informations saisis par l'utilisateur dans le formulaire de génération.</span>
+                    </li>
+                  </ul>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">2. Finalité Exclusive du Traitement</h4>
-                  <p>
-                    Les données sont traitées pour l'unique finalité de générer votre document de réponse RFP et d'assurer le service après-vente (garantie révision 24h, facturation).
-                  </p>
+                {/* Sécurité et Non-Réutilisation */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    Sécurité et Non-Réutilisation des Données
+                  </h4>
+                  <div className="space-y-2.5 text-slate-300">
+                    <div className="p-3.5 bg-emerald-950/20 border border-emerald-800/40 rounded-xl">
+                      <strong className="text-emerald-300 block font-semibold mb-1">
+                        Confidentialité absolue :
+                      </strong>
+                      <p className="text-slate-300 text-xs">
+                        Vos données de réponse, méthodologies et grilles tarifaires ne sont jamais revendues, ni utilisées pour entraîner publiquement des modèles d'IA tiers.
+                      </p>
+                    </div>
+
+                    <div className="p-3.5 bg-slate-900/90 border border-slate-800 rounded-xl">
+                      <strong className="text-white block font-semibold mb-1">
+                        Durée de conservation :
+                      </strong>
+                      <p className="text-slate-300 text-xs">
+                        Les fichiers PDF générés et stockés dans l'espace sécurisé temporaire sont purgés automatiquement après une durée maximale de <strong>7 jours post-livraison</strong>.
+                      </p>
+                    </div>
+                  </div>
                 </section>
 
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">3. Durée de Conservation & Chiffrement</h4>
-                  <p>
-                    Les données de travail sont chiffrées selon la norme <strong>AES-256</strong> au repos et en transit via protocole TLS 1.3. Les données associées à une génération sont purgées de nos bases temporaires sous 30 jours, ou immédiatement sur simple demande de votre part.
-                  </p>
-                </section>
-
-                <section className="space-y-2">
-                  <h4 className="font-serif-heading text-base font-bold text-white">4. Vos Droits RGPD</h4>
-                  <p>
-                    Conformément aux articles 15 à 22 du RGPD, vous disposez d'un droit d'accès, de rectification, de portabilité et de suppression de vos données personnelles. Pour exercer ces droits, contactez notre équipe support :
+                {/* Vos droits RGPD */}
+                <section className="space-y-3 p-5 bg-[#111A29] rounded-2xl border border-slate-800">
+                  <h4 className="font-serif-heading text-base font-bold text-white flex items-center gap-2">
+                    <Scale className="h-4 w-4 text-[#D4AF37]" />
+                    Vos droits
+                  </h4>
+                  <p className="text-slate-300">
+                    Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données personnelles sur simple demande adressée par email à :
                   </p>
                   <div className="pt-1">
                     <a
-                      href={`mailto:${COMPANY_INFO.supportEmail}?subject=Demande%20RGPD%20DeliverableEngine`}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95 cursor-pointer"
+                      href={`mailto:${COMPANY_INFO.supportEmail}?subject=Demande%20Exercice%20Droits%20RGPD`}
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#B8935A] hover:bg-[#a17e47] text-[#1B263B] font-bold text-xs transition-all active:scale-95 cursor-pointer font-mono"
                     >
                       <Mail className="h-3.5 w-3.5" />
-                      Exercer mes droits RGPD par email
+                      <span>{COMPANY_INFO.supportEmail}</span>
                     </a>
                   </div>
                 </section>
@@ -294,8 +393,8 @@ export default function LegalModal({ isOpen, initialTab = 'cgv', onClose }: Lega
 
           {/* Footer */}
           <div className="bg-[#0D1522] p-4 sm:p-5 border-t border-slate-800 flex items-center justify-between shrink-0 font-sans text-xs">
-            <span className="text-slate-500">
-              Dernière mise à jour : 2026 · Conforme RGPD & Droit de la consommation
+            <span className="text-slate-400">
+              Deliverable Engine · Pack Juridique Officiel (LCEN, Code de la commande publique, AI Act & RGPD)
             </span>
             <button
               onClick={onClose}
