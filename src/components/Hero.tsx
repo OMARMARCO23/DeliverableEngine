@@ -135,7 +135,7 @@ export default function Hero({ onOpenGenerate }: HeroProps) {
                 </span>
                 <span className="flex items-center gap-1 bg-slate-900/60 border border-slate-800 px-2.5 py-1 rounded-full">
                   <Lock className="h-3.5 w-3.5 text-[#D4AF37]" />
-                  SSL & Lemon Squeezy sécurisé
+                  Paiement sécurisé via Gumroad
                 </span>
                 <span className="flex items-center gap-1 bg-slate-900/60 border border-slate-800 px-2.5 py-1 rounded-full">
                   <Globe className="h-3.5 w-3.5 text-[#D4AF37]" />
