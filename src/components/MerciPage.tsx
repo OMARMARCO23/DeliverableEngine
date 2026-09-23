@@ -111,7 +111,7 @@ export default function MerciPage({ onGoHome }: MerciPageProps) {
           }
         }
 
-        // 5. Lemon Squeezy triggers n8n directly via its official webhook (no duplicate frontend trigger)
+        // 5. Payment platform triggers n8n directly via its official webhook (no duplicate frontend trigger)
         setSyncStatus('success');
       } catch (err) {
         console.error('Error during order confirmation processing:', err);
