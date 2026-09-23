@@ -59,7 +59,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
             </span>
             <span className="flex items-center gap-1.5">
               <Lock className="h-3.5 w-3.5 text-[#B8935A]" />
-              Paiement sécurisé via Lemon Squeezy
+              Paiement sécurisé par carte bancaire (Stripe)
             </span>
             <span className="flex items-center gap-1.5">
               <Globe className="h-3.5 w-3.5 text-[#B8935A]" />
@@ -138,7 +138,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
                   className="hover:text-white transition-colors cursor-pointer text-left flex items-center gap-1.5"
                 >
                   <FileText className="h-3 w-3 text-[#B8935A]" />
-                  Conditions Générales de Vente (CGV)
+                  Conditions Générales (CGV / CGU)
                 </button>
               </li>
               <li>
@@ -147,7 +147,7 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
                   className="hover:text-white transition-colors cursor-pointer text-left flex items-center gap-1.5"
                 >
                   <Building className="h-3 w-3 text-[#B8935A]" />
-                  Mentions Légales (FR / BE)
+                  1. Mentions Légales (LCEN)
                 </button>
               </li>
               <li>
@@ -156,12 +156,12 @@ export default function Footer({ onOpenGenerate, onOpenLegal }: FooterProps) {
                   className="hover:text-white transition-colors cursor-pointer text-left flex items-center gap-1.5"
                 >
                   <Lock className="h-3 w-3 text-[#B8935A]" />
-                  Politique de Confidentialité (RGPD)
+                  3. Politique de Confidentialité (RGPD)
                 </button>
               </li>
               <li>
-                <span className="text-[11px] text-slate-500 block pt-1">
-                  Renonciation au délai de rétractation de 14j pour exécution immédiate (art. L.221-28 13° Code de la consommation)
+                <span className="text-[11px] text-slate-500 block pt-1 leading-relaxed">
+                  Renonciation au droit de rétractation pour exécution immédiate (art. L. 221-28 13° Code de la consommation)
                 </span>
               </li>
             </ul>
