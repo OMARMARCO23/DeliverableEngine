@@ -76,7 +76,7 @@ export const PRICING_DATA: PricingTier[] = [
       'Conforme aux exigences des acheteurs publics & privés',
       '1 révision ou régénération gratuite sous 24h incluse',
       'Facture avec TVA téléchargeable automatiquement',
-      'Paiement sécurisé via Lemon Squeezy'
+      'Paiement sécurisé via Gumroad'
     ],
     ctaText: "Répondre à mon appel d'offres maintenant (19 €)",
     recommended: true
