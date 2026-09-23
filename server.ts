@@ -17,11 +17,12 @@ async function startServer() {
     res.json({ status: "ok" });
   });
 
-  // Confirm order and trigger n8n Lemon-RFP webhook server-side
+  // Confirm order and trigger n8n payment webhook server-side
   app.post("/api/confirm-order", async (req, res) => {
     try {
       const payload = req.body || {};
-      const lemonWebhookUrl =
+      const paymentWebhookUrl =
+        process.env.VITE_N8N_PAYMENT_WEBHOOK_URL ||
         process.env.VITE_N8N_WEBHOOK_URL ||
         "https://appearing-ranking-enjoyed-graham.trycloudflare.com/webhook/Lemon-RFP";
 
@@ -63,7 +64,7 @@ async function startServer() {
         }
       }
 
-      const response = await fetch(lemonWebhookUrl, {
+      const response = await fetch(paymentWebhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
