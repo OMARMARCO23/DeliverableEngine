@@ -1392,7 +1392,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                           onClick={() => onOpenLegal && onOpenLegal('cgv')}
                           className="hover:text-[#D4AF37] underline cursor-pointer"
                         >
-                          CGV
+                          CGV / CGU
                         </button>
                         <span>·</span>
                         <button
@@ -1400,7 +1400,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                           onClick={() => onOpenLegal && onOpenLegal('mentions')}
                           className="hover:text-[#D4AF37] underline cursor-pointer"
                         >
-                          Mentions Légales (FR / BE)
+                          Mentions Légales (LCEN)
                         </button>
                         <span>·</span>
                         <button
@@ -1408,7 +1408,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
                           onClick={() => onOpenLegal && onOpenLegal('confidentialite')}
                           className="hover:text-[#D4AF37] underline cursor-pointer"
                         >
-                          Confidentialité (RGPD)
+                          Confidentialité & RGPD
                         </button>
                       </div>
                     </div>
