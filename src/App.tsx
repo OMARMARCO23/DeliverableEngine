@@ -39,11 +39,27 @@ export default function App() {
 
   useEffect(() => {
     const handleUrlChange = () => {
+      const currentHash = window.location.hash.toLowerCase();
       setUrlLocation({
         pathname: window.location.pathname,
         hash: window.location.hash
       });
+
+      // Handle direct hash navigation to legal sections
+      if (currentHash === '#mentions' || currentHash === '#mentions-legales') {
+        setLegalModalState({ isOpen: true, tab: 'mentions' });
+      } else if (currentHash === '#cgv' || currentHash === '#cgv-cgu') {
+        setLegalModalState({ isOpen: true, tab: 'cgv' });
+      } else if (currentHash === '#confidentialite' || currentHash === '#rgpd' || currentHash === '#politique-de-confidentialite') {
+        setLegalModalState({ isOpen: true, tab: 'confidentialite' });
+      } else if (currentHash === '#legal' || currentHash === '#pack-juridique') {
+        setLegalModalState({ isOpen: true, tab: 'cgv' });
+      }
     };
+
+    // Initial check on mount
+    handleUrlChange();
+
     window.addEventListener('popstate', handleUrlChange);
     window.addEventListener('hashchange', handleUrlChange);
     return () => {
