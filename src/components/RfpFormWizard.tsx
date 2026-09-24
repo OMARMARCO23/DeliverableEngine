@@ -528,7 +528,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         const envGumroad = (import.meta as any).env?.VITE_GUMROAD_PAYMENT_LINK;
         const baseGumroad = (typeof envGumroad === 'string' && envGumroad.startsWith('http'))
           ? envGumroad
-          : 'https://deliverableengine.gumroad.com/l/dev';
+          : 'https://deliverableengine.gumroad.com/l/dev/BETAFREE';
 
         const delimiter = baseGumroad.includes('?') ? '&' : '?';
         targetCheckoutUrl = `${baseGumroad}${delimiter}email=${encodeURIComponent(formData.email)}&order_id=${encodeURIComponent(exactOrderId)}`;
