@@ -416,24 +416,23 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         }
       }
 
-      if (!response || !response.ok) {
-        responseBody = response ? await response.text().catch(() => '') : '';
-        let errorHint = "Le service de vérification est temporairement indisponible. Veuillez réessayer dans un instant.";
-        if (response && response.status === 404) {
-          errorHint = "Le webhook n8n n'est pas encore actif. Vérifiez que votre workflow est activé dans n8n.";
-        }
-        throw new Error(errorHint);
-      }
-
-      responseBody = await response.text().catch(() => '{}');
       let result: any = {};
-      try {
-        result = responseBody ? JSON.parse(responseBody) : {};
-      } catch {
-        result = {};
+      
+      if (response && response.ok) {
+        responseBody = await response.text().catch(() => '{}');
+        try {
+          result = responseBody ? JSON.parse(responseBody) : {};
+        } catch {
+          result = {};
+        }
+      } else {
+        console.warn(
+          "Webhook de vérification n8n non joignable (tunnel Cloudflare déconnecté ou URL expirée). " +
+          "Bascule automatique vers le paiement Gumroad pour garantir la commande du client."
+        );
       }
 
-      // 2. SI HORS PÉRIMÈTRE → BLOQUER ET RETOURNER AU FORMULAIRE (ÉTAPE 1)
+      // 2. SI HORS PÉRIMÈTRE (reçu explicitement de n8n) → BLOQUER ET RETOURNER AU FORMULAIRE (ÉTAPE 1)
       const isHorsPerimetre =
         result.status === "HORS_PERIMETRE" ||
         result.status === "REJET" ||
@@ -469,7 +468,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         return;
       }
 
-      // 3. SI ÉLIGIBLE / OK : EXTRACTION DE L'ORDER_ID SUPABASE ET REDIRECTION VERS GUMROAD
+      // 3. SI ÉLIGIBLE OU FALLBACK DIRECT : GÉNÉRATION DE L'ORDER_ID ET REDIRECTION VERS GUMROAD
       let exactOrderId = result.order_id || result.id || result.rfp_id || result.data?.id || '';
 
       const rawCheckoutUrl = result.checkout_url || result.url || result.payment_url;
@@ -493,7 +492,25 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
       }
 
       if (!exactOrderId) {
-        exactOrderId = `ORDER_${Date.now()}`;
+        exactOrderId = `ORD_${Date.now()}_${Math.random().toString(36).substring(2, 7).toUpperCase()}`;
+      }
+
+      // Sauvegarde dans Supabase rfp_pending si disponible
+      try {
+        if (supabase) {
+          await supabase.from('rfp_pending').upsert({
+            order_id: exactOrderId,
+            cabinet_email: formData.email,
+            client_name: formData.client_name || '',
+            rfp_text: rfpText,
+            procedure_type: formData.marketType || 'mapa',
+            country: formData.country || 'FR',
+            payment_status: 'payment_pending',
+            created_at: new Date().toISOString()
+          }, { onConflict: 'order_id' });
+        }
+      } catch (sbErr) {
+        console.warn('Supabase rfp_pending write warning:', sbErr);
       }
 
       try {
@@ -517,7 +534,7 @@ export function RfpFormWizard({ isOpen, onClose, initialData, onOpenLegal }: Rfp
         targetCheckoutUrl = `${baseGumroad}${delimiter}email=${encodeURIComponent(formData.email)}&order_id=${encodeURIComponent(exactOrderId)}`;
       }
 
-      setVerificationStatusMessage("✅ Dossier validé ! Redirection immédiate vers Gumroad...");
+      setVerificationStatusMessage("✅ Dossier prêt ! Redirection vers la page de paiement sécurisée Gumroad...");
 
       // Redirection immédiate vers Gumroad
       window.location.href = targetCheckoutUrl;
